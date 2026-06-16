@@ -10,7 +10,58 @@ import { LoginLangSwitcherSlot, LoginPageFrame } from "./login-page-frame";
 import { LoginShell } from "./login-shell";
 
 const modeCardClass =
-  "group h-auto w-full min-w-0 touch-manipulation flex-col items-start gap-0 rounded-2xl border-2 p-4 text-left sm:p-5 md:p-6";
+  "flex h-auto w-full min-w-0 max-w-full touch-manipulation flex-col items-start justify-start gap-0 rounded-2xl border-2 p-4 text-left text-sm transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 sm:p-5 md:p-6";
+
+function ModeChoiceCard({
+  badge,
+  badgeClassName,
+  title,
+  description,
+  cta,
+  loading,
+  borderClassName,
+  ctaClassName,
+  onClick,
+  disabled,
+}: {
+  badge: string;
+  badgeClassName: string;
+  title: string;
+  description: string;
+  cta: string;
+  loading?: boolean;
+  borderClassName: string;
+  ctaClassName: string;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(modeCardClass, borderClassName, disabled && "opacity-60")}
+    >
+      <span
+        className={cn(
+          "mb-3 inline-flex w-fit max-w-full rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest",
+          badgeClassName,
+        )}
+      >
+        {badge}
+      </span>
+      <span className="w-full font-[family-name:var(--font-rajdhani)] text-lg font-bold text-foreground sm:text-xl">
+        {title}
+      </span>
+      <span className="mt-2 w-full whitespace-normal break-words text-sm leading-relaxed text-muted-foreground">
+        {description}
+      </span>
+      <span className={cn("mt-4 w-full whitespace-normal py-1 text-sm font-bold", ctaClassName)}>
+        {loading ? "…" : `${cta} →`}
+      </span>
+    </button>
+  );
+}
 
 export function LoginWelcome({
   signInAction,
@@ -77,7 +128,7 @@ export function LoginWelcome({
         <LanguageSwitcher />
       </LoginLangSwitcherSlot>
 
-      <div className="mb-6 flex w-full max-w-2xl flex-col items-center text-center sm:mb-8">
+      <div className="mb-6 flex w-full min-w-0 max-w-2xl flex-col items-center text-center sm:mb-8">
         <LogoHex />
         <h1 className="mt-4 font-[family-name:var(--font-rajdhani)] text-[clamp(1.75rem,5vw,2.25rem)] font-bold leading-tight">
           <span className="text-primary">BSCL</span>.gg
@@ -87,55 +138,32 @@ export function LoginWelcome({
         </p>
       </div>
 
-      <div className="grid w-full max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={chooseStandard}
+      <div className="grid w-full min-w-0 max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+        <ModeChoiceCard
+          badge={t.login.standardBadge}
+          badgeClassName="border-primary/35 bg-primary/12 text-primary"
+          title={t.login.standardTitle}
+          description={t.login.standardDesc}
+          cta={t.login.standardCta}
+          loading={loadingStandard}
           disabled={loadingStandard}
-          className={cn(
-            modeCardClass,
-            "border-primary/35 bg-gradient-to-br from-primary/8 to-card hover:border-primary",
-          )}
-        >
-          <span className="mb-3 inline-flex w-fit rounded-full border border-primary/35 bg-primary/12 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary">
-            {t.login.standardBadge}
-          </span>
-          <span className="font-[family-name:var(--font-rajdhani)] text-lg font-bold text-foreground sm:text-xl">
-            {t.login.standardTitle}
-          </span>
-          <span className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-            {t.login.standardDesc}
-          </span>
-          <span className="mt-4 min-h-[44px] text-sm font-bold leading-[44px] text-primary group-hover:underline sm:min-h-0 sm:leading-normal">
-            {loadingStandard ? "…" : `${t.login.standardCta} →`}
-          </span>
-        </Button>
+          onClick={chooseStandard}
+          borderClassName="border-primary/35 bg-gradient-to-br from-primary/8 to-card hover:border-primary"
+          ctaClassName="text-primary"
+        />
 
-        <Button
-          type="button"
-          variant="outline"
-          onClick={enterDemo}
+        <ModeChoiceCard
+          badge={t.login.demoBadge}
+          badgeClassName="border-chart-3/35 bg-chart-3/12 text-chart-3"
+          title={t.login.demoTitle}
+          description={t.login.demoCardDesc}
+          cta={t.login.demoCtaCard}
+          loading={loadingDemo}
           disabled={loadingDemo}
-          className={cn(
-            modeCardClass,
-            "border-chart-3/35 bg-gradient-to-br from-chart-3/8 to-card hover:border-chart-3",
-            loadingDemo && "opacity-60",
-          )}
-        >
-          <span className="mb-3 inline-flex w-fit rounded-full border border-chart-3/35 bg-chart-3/12 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-chart-3">
-            {t.login.demoBadge}
-          </span>
-          <span className="font-[family-name:var(--font-rajdhani)] text-lg font-bold text-foreground sm:text-xl">
-            {t.login.demoTitle}
-          </span>
-          <span className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
-            {t.login.demoCardDesc}
-          </span>
-          <span className="mt-4 min-h-[44px] text-sm font-bold leading-[44px] text-chart-3 group-hover:underline sm:min-h-0 sm:leading-normal">
-            {loadingDemo ? "…" : `${t.login.demoCtaCard} →`}
-          </span>
-        </Button>
+          onClick={enterDemo}
+          borderClassName="border-chart-3/35 bg-gradient-to-br from-chart-3/8 to-card hover:border-chart-3"
+          ctaClassName="text-chart-3"
+        />
       </div>
     </LoginPageFrame>
   );
