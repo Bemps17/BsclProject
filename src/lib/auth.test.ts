@@ -6,6 +6,10 @@ vi.mock("@/auth", () => ({
   auth: vi.fn(),
 }));
 
+vi.mock("@/lib/backend", () => ({
+  isBackendEnabled: vi.fn(() => true),
+}));
+
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     user: {

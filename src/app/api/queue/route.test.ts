@@ -13,6 +13,10 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+vi.mock("@/lib/backend", () => ({
+  isBackendEnabled: vi.fn(() => true),
+}));
+
 vi.mock("@/lib/auth", () => ({
   requireAuth: vi.fn(),
 }));

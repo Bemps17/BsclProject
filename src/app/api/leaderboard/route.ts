@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
+import { isBackendEnabled } from "@/lib/backend";
 import { prisma } from "@/lib/prisma";
 import { RANK_LABELS } from "@/lib/elo";
 
 export async function GET() {
+  if (!isBackendEnabled()) return NextResponse.json([]);
+
   const players = await prisma.player.findMany({
     orderBy: { elo: "desc" },
     take: 100,

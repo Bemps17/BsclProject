@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
+import { isBackendEnabled } from "@/lib/backend";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
+  if (!isBackendEnabled()) return NextResponse.json([]);
   const matches = await prisma.match.findMany({
     orderBy: { number: "desc" },
     take: 50,
