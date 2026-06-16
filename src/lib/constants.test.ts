@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { DEMO_LEADERBOARD, NAV_ITEMS, RANK_LABELS, RANK_STYLES } from "./constants";
+import { NAV_ITEMS, RANK_LABELS, RANK_STYLES, type RankKey } from "./constants";
+
+const ALL_RANKS: RankKey[] = ["bronze", "silver", "gold", "plat", "diamond", "elite"];
 
 describe("rank constants", () => {
   it("defines styles and labels for every rank key", () => {
-    const ranks = new Set(DEMO_LEADERBOARD.all.map((p) => p.rank));
-    for (const rank of ranks) {
+    for (const rank of ALL_RANKS) {
       expect(RANK_LABELS[rank]).toBeTruthy();
       expect(RANK_STYLES[rank]).toContain("border");
     }

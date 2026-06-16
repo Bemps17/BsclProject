@@ -4,7 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LogoHex } from "@/components/bscl/ui";
-import { NAV_ITEMS, PAGE_TITLES } from "@/lib/constants";
+import { NAV_ITEMS, PAGE_TITLES, RANK_LABELS, type RankKey } from "@/lib/constants";
+
+export type ShellUser = {
+  name: string;
+  initials: string;
+  rankKey: RankKey;
+  elo: number;
+} | null;
 
 function NavLink({
   href,
@@ -47,7 +54,37 @@ function NavLink({
   );
 }
 
-export function Sidebar() {
+function UserTile({ user }: { user: ShellUser }) {
+  if (!user) {
+    return (
+      <Link
+        href="/login"
+        className="flex items-center justify-center rounded-lg border border-[#1E2D45] bg-[#162032] p-2.5 text-xs font-semibold text-[#0066FF] transition hover:border-[#0066FF]"
+      >
+        Sign in with Discord
+      </Link>
+    );
+  }
+
+  return (
+    <Link
+      href="/profile"
+      className="flex items-center gap-2.5 rounded-lg border border-[#1E2D45] bg-[#162032] p-2.5 transition hover:border-[#0066FF]"
+    >
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-[#0066FF] bg-[#0066FF] font-[family-name:var(--font-rajdhani)] text-sm font-bold text-white shadow-[0_0_10px_rgba(0,102,255,.28)]">
+        {user.initials}
+      </div>
+      <div className="min-w-0">
+        <div className="truncate text-[13px] font-semibold">{user.name}</div>
+        <div className="text-[11px] font-semibold text-[#F59E0B]">
+          ◆ {RANK_LABELS[user.rankKey]} · {user.elo} ELO
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+export function Sidebar({ user }: { user: ShellUser }) {
   const pathname = usePathname();
   const sections = ["platform", "account", "staff"] as const;
   const labels = { platform: "Platform", account: "Account", staff: "Staff" };
@@ -85,15 +122,7 @@ export function Sidebar() {
       })}
 
       <div className="mt-auto border-t border-[#1E2D45] p-3">
-        <div className="flex items-center gap-2.5 rounded-lg border border-[#1E2D45] bg-[#162032] p-2.5">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-[#0066FF] bg-[#0066FF] font-[family-name:var(--font-rajdhani)] text-sm font-bold text-white shadow-[0_0_10px_rgba(0,102,255,.28)]">
-            XG
-          </div>
-          <div>
-            <div className="text-[13px] font-semibold">xGhost_BR</div>
-            <div className="text-[11px] font-semibold text-[#F59E0B]">◆ Diamond · 1642 ELO</div>
-          </div>
-        </div>
+        <UserTile user={user} />
       </div>
     </aside>
   );
@@ -165,10 +194,16 @@ export function Tabbar() {
   );
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user: ShellUser;
+}) {
   return (
     <div className="flex min-h-svh flex-col md:grid md:h-screen md:grid-cols-[228px_1fr] md:grid-rows-[56px_1fr] md:overflow-hidden">
-      <Sidebar />
+      <Sidebar user={user} />
       <Topbar />
       <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 pb-[calc(64px+env(safe-area-inset-bottom,0px)+16px)] md:col-start-2 md:overflow-y-auto md:p-6 md:pb-6">
         <div className="mx-auto flex max-w-5xl flex-col gap-4">{children}</div>
