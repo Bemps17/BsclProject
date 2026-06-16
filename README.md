@@ -77,10 +77,10 @@ The schema and UI exist; **orchestration** is the main gap.
 
 | Step | Scope | Status |
 |------|--------|--------|
-| **7a** | **Matchmaker** — pop queue at 10 players, snake draft, create `Match` + `MatchPlayer` rows | Not started |
-| **7b** | **Results pipeline** — submit → confirm → `EloHistory` + player ELO update (transactional) | Not started |
+| **7a** | **Matchmaker** — pop queue at 10 players, snake draft, create `Match` + `MatchPlayer` rows | Done |
+| **7b** | **Results pipeline** — submit → confirm → `EloHistory` + player ELO update (transactional) | Done |
 | **7c** | **Bot sync** — replace in-memory bot queue; wire `/result`, `/confirm`, `/dispute` to API/DB | Not started |
-| **7d** | **Auth guards** — middleware, `/admin` role check, banned users on mutating routes | Not started |
+| **7d** | **Auth guards** — middleware, `/admin` role check, banned users on mutating routes | Partial (`/admin` server guard) |
 | **7e** | **Integration tests** — OAuth → queue → match → ELO; confirm idempotency | Not started |
 | **7f** | **Security review** — rate limits, error sanitization, audit log on admin actions | Not started |
 
@@ -134,6 +134,9 @@ See `src/lib/backend.ts` and `.env.example` for required variables.
 | GET/POST/DELETE | `/api/queue` | PUG queue status / join / leave |
 | GET | `/api/teams` | Team list |
 | GET | `/api/matches` | Match history |
+| POST | `/api/matches/[id]/result` | Captain submits score (LIVE → SUBMITTED) |
+| POST | `/api/matches/[id]/confirm` | Opposing captain confirms (SUBMITTED → CONFIRMED + ELO) |
+| POST | `/api/matches/[id]/dispute` | Captain disputes result → ticket |
 | GET | `/api/status` | Service health |
 
 ## User roles
@@ -143,7 +146,7 @@ See `src/lib/backend.ts` and `.env.example` for required variables.
 ## Tests
 
 ```bash
-npm test              # 46 unit/integration tests
+npm test              # 55 unit/integration tests
 npm run test:coverage # coverage report (v8)
 ```
 
