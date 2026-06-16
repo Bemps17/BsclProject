@@ -7,6 +7,7 @@ import { useDemoOptional } from "@/components/bscl/demo-provider";
 import { useT } from "@/components/bscl/locale-provider";
 import { Card, CardHeader } from "@/components/bscl/ui";
 import type { ShellUser } from "@/components/bscl/shell";
+import { ChevronRight, NavIcon } from "@/components/bscl/icons";
 import { MOBILE_MORE_PATHS, NAV_ITEMS, type NavPage } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -47,7 +48,7 @@ function MoreNavItem({
           : "border-[#1E2D45] bg-[#162032] text-[#E5E7EB] hover:border-[#2A3F5F]",
       )}
     >
-      <span className="w-5 shrink-0 text-center text-base opacity-90">{item.icon}</span>
+      <NavIcon name={item.icon} className="h-5 w-5 opacity-90" />
       <span className="min-w-0 flex-1 truncate">{label}</span>
       {item.badge !== undefined && (
         <span
@@ -59,7 +60,7 @@ function MoreNavItem({
           {item.badge}
         </span>
       )}
-      <span className="text-[#6B7280]">→</span>
+      <ChevronRight className="h-4 w-4 text-[#6B7280]" aria-hidden strokeWidth={2} />
     </Link>
   );
 }
@@ -91,7 +92,7 @@ export function MoreMenu({
       id: "demo",
       href: "/demo",
       label: "Demo",
-      icon: "◎",
+      icon: "demo",
       section: "platform",
     });
   }
@@ -134,7 +135,7 @@ export function MoreMenu({
               ◆ {t.ranks[user.rankKey]} · {user.elo} {t.common.elo}
             </p>
           </div>
-          <span className="text-[#6B7280]">→</span>
+          <ChevronRight className="h-4 w-4 text-[#6B7280]" aria-hidden strokeWidth={2} />
         </Link>
       )}
 

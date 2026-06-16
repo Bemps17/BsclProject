@@ -1,3 +1,5 @@
+import type { NavIconId } from "@/lib/nav-icons";
+
 export const BSCL = {
   name: "Black Squad Competitive League",
   shortName: "BSCL",
@@ -37,7 +39,7 @@ export type NavPage = {
   id: string;
   href: string;
   label: string;
-  icon: string;
+  icon: NavIconId;
   badge?: number;
   badgeRed?: boolean;
   section?: "platform" | "account" | "staff";
@@ -45,16 +47,16 @@ export type NavPage = {
 };
 
 export const NAV_ITEMS: NavPage[] = [
-  { id: "home", href: "/", label: "Home", icon: "⬡", section: "platform", mobile: true },
-  { id: "play", href: "/play", label: "Play", icon: "▶", section: "platform", mobile: true },
-  { id: "rankings", href: "/rankings", label: "Rankings", icon: "◈", section: "platform", mobile: true },
-  { id: "teams", href: "/teams", label: "Teams", icon: "◆", section: "platform" },
-  { id: "tournaments", href: "/tournaments", label: "Tournaments", icon: "◉", section: "platform" },
-  { id: "matches", href: "/matches", label: "Match History", icon: "▣", section: "platform" },
-  { id: "profile", href: "/profile", label: "My Profile", icon: "○", section: "account", mobile: true },
-  { id: "tickets", href: "/tickets", label: "Support", icon: "□", section: "account" },
-  { id: "admin", href: "/admin", label: "Admin", icon: "⚙", section: "staff" },
-  { id: "more", href: "/more", label: "More", icon: "☰", section: "platform", mobile: true },
+  { id: "home", href: "/", label: "Home", icon: "home", section: "platform", mobile: true },
+  { id: "play", href: "/play", label: "Play", icon: "play", section: "platform", mobile: true },
+  { id: "rankings", href: "/rankings", label: "Rankings", icon: "rankings", section: "platform", mobile: true },
+  { id: "teams", href: "/teams", label: "Teams", icon: "teams", section: "platform" },
+  { id: "tournaments", href: "/tournaments", label: "Tournaments", icon: "tournaments", section: "platform" },
+  { id: "matches", href: "/matches", label: "Match History", icon: "matches", section: "platform" },
+  { id: "profile", href: "/profile", label: "My Profile", icon: "profile", section: "account", mobile: true },
+  { id: "tickets", href: "/tickets", label: "Support", icon: "tickets", section: "account" },
+  { id: "admin", href: "/admin", label: "Admin", icon: "admin", section: "staff" },
+  { id: "more", href: "/more", label: "More", icon: "more", section: "platform", mobile: true },
 ];
 
 export type RankKey = "elite" | "diamond" | "plat" | "gold" | "silver" | "bronze";

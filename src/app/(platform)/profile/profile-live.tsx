@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { Card, CardHeader, EmptyState, MatchRow, RankBadge, StatCell, Tag } from "@/components/bscl/ui";
+import { ChevronRight, NavIcon } from "@/components/bscl/icons";
 import { useT } from "@/components/bscl/locale-provider";
 import { RANK_THRESHOLDS } from "@/lib/elo";
 import { interpolate } from "@/lib/i18n";
 import { formatMatchScore } from "@/lib/match-display";
 import { playerInitials, rankTierToKey } from "@/lib/ranks";
+import type { NavIconId } from "@/lib/nav-icons";
 import { RankTier } from "@/generated/prisma/client";
 
 type RecentMatch = {
@@ -170,22 +172,32 @@ export function ProfileLive({
 
       <Card>
         <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">{t.profile.account}</p>
-        {[
-          { href: "/tickets", icon: "🎫", label: t.profile.supportTickets },
-          { href: "/tournaments", icon: "🏆", label: t.profile.tournaments },
-          ...(isStaff
-            ? [{ href: "/admin", icon: "⚙️", label: t.profile.adminPanel, badge: t.profile.staff, variant: "red" as const }]
-            : []),
-        ].map((item, i, arr) => (
+        {(
+          [
+            { href: "/tickets", icon: "tickets" as NavIconId, label: t.profile.supportTickets },
+            { href: "/tournaments", icon: "tournaments" as NavIconId, label: t.profile.tournaments },
+            ...(isStaff
+              ? [
+                  {
+                    href: "/admin",
+                    icon: "admin" as NavIconId,
+                    label: t.profile.adminPanel,
+                    badge: t.profile.staff,
+                    variant: "red" as const,
+                  },
+                ]
+              : []),
+          ] as const
+        ).map((item, i, arr) => (
           <Link
             key={item.href}
             href={item.href}
             className={`flex cursor-pointer items-center gap-2.5 py-3 ${i < arr.length - 1 ? "border-b border-[#1E2D45]" : ""}`}
           >
-            <span className="text-base">{item.icon}</span>
+            <NavIcon name={item.icon} className="h-4 w-4 text-[#9CA3AF]" />
             <span className="flex-1 text-[13px] font-medium">{item.label}</span>
             {"badge" in item && item.badge && <Tag variant={item.variant ?? "muted"}>{item.badge}</Tag>}
-            <span className="text-xs text-[#6B7280]">›</span>
+            <ChevronRight className="h-4 w-4 text-[#6B7280]" aria-hidden strokeWidth={2} />
           </Link>
         ))}
       </Card>

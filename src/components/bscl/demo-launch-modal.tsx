@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import { useT } from "@/components/bscl/locale-provider";
+import { BulletIcon } from "@/components/bscl/icons";
 
 export function DemoLaunchModal({
   open,
@@ -52,7 +53,7 @@ export function DemoLaunchModal({
           <ul className="space-y-2 text-sm text-[#E5E7EB]">
             {t.demo.launchFeatures.map((line) => (
               <li key={line} className="flex gap-2">
-                <span className="text-[#F59E0B]">◆</span>
+                <BulletIcon className="mt-1.5 h-2 w-2 text-[#F59E0B]" />
                 <span>{line}</span>
               </li>
             ))}

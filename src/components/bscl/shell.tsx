@@ -5,10 +5,12 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LogoHex } from "@/components/bscl/ui";
 import { DemoExitButton } from "@/components/bscl/demo-exit-button";
+import { NavIcon, Play } from "@/components/bscl/icons";
 import { isMobileMorePath } from "@/components/bscl/more-menu";
 import { useDemoOptional } from "@/components/bscl/demo-provider";
 import { LanguageSwitcher, useT } from "@/components/bscl/locale-provider";
 import { NAV_ITEMS, type RankKey } from "@/lib/constants";
+import type { NavIconId } from "@/lib/nav-icons";
 import type { Translations } from "@/lib/i18n";
 
 export type ShellUser = {
@@ -42,7 +44,7 @@ function NavLink({
 }: {
   href: string;
   label: string;
-  icon: string;
+  icon: NavIconId;
   badge?: number;
   badgeRed?: boolean;
   active: boolean;
@@ -62,7 +64,7 @@ function NavLink({
             : "text-[#6B7280] hover:bg-[rgba(0,102,255,.1)] hover:text-[#E5E7EB]",
       )}
     >
-      <span className="w-[15px] shrink-0 text-center opacity-80">{icon}</span>
+      <NavIcon name={icon} className="h-[15px] w-[15px] opacity-80" />
       <span className="truncate">{label}</span>
       {badge !== undefined && (
         <span
@@ -177,7 +179,7 @@ export function Sidebar({ user, demoMode }: { user: ShellUser; demoMode?: boolea
               <NavLink
                 href="/demo"
                 label={t.nav.demo}
-                icon="◎"
+                icon="demo"
                 active={pathname === "/demo"}
                 demoMode={demoMode}
               />
@@ -256,9 +258,7 @@ export function Topbar({ demoMode }: { demoMode?: boolean }) {
               : "bg-[#0066FF] text-white shadow-[0_0_14px_rgba(0,102,255,.28)]",
           )}
         >
-          <span className="sm:hidden" aria-hidden>
-            ▶
-          </span>
+          <Play className="h-4 w-4 sm:hidden" aria-hidden strokeWidth={2} />
           <span className="hidden max-w-[9rem] truncate sm:inline">{t.common.joinQueue}</span>
         </Link>
       </div>
@@ -307,9 +307,10 @@ export function Tabbar({ demoMode }: { demoMode?: boolean }) {
                 )}
               />
             )}
-            <span className={cn("text-lg leading-none transition-transform sm:text-xl", active && "scale-110")}>
-              {tab.icon}
-            </span>
+            <NavIcon
+              name={tab.icon}
+              className={cn("h-5 w-5 transition-transform sm:h-[22px] sm:w-[22px]", active && "scale-110")}
+            />
             <span className="max-w-full truncate">{label}</span>
           </Link>
         );

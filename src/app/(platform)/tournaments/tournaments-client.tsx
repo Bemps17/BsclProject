@@ -1,10 +1,12 @@
 "use client";
 
 import { Tag } from "@/components/bscl/ui";
+import { AppIcon } from "@/components/bscl/icons";
 import { useT } from "@/components/bscl/locale-provider";
+import type { AppIconId } from "@/lib/nav-icons";
 
 type TournamentItem = {
-  icon: string;
+  icon: AppIconId;
   name: string;
   meta: string;
   statusKey: "statusOpen" | "statusCheckIn" | "statusEnded";
@@ -18,7 +20,7 @@ type TournamentItem = {
 
 const TOURNAMENTS: TournamentItem[] = [
   {
-    icon: "🏆",
+    icon: "tournaments",
     name: "BSCL Open #1",
     meta: "16 Teams · Single Elim · BO3",
     statusKey: "statusOpen",
@@ -29,7 +31,7 @@ const TOURNAMENTS: TournamentItem[] = [
     primary: true,
   },
   {
-    icon: "⚡",
+    icon: "zap",
     name: "Weekly Cup #3",
     meta: "8 Teams · Double Elim · BO1",
     statusKey: "statusCheckIn",
@@ -40,7 +42,7 @@ const TOURNAMENTS: TournamentItem[] = [
     primary: false,
   },
   {
-    icon: "📋",
+    icon: "clipboard",
     name: "Weekly Cup #2",
     meta: "8 Teams · Single Elim · BO1",
     statusKey: "statusEnded",
@@ -68,7 +70,7 @@ export function TournamentsClient() {
           return (
             <div key={item.name} className={`overflow-hidden rounded-xl border border-[#1E2D45] bg-[#111827] ${item.dim ? "opacity-65" : ""}`}>
               <div className={`flex items-center gap-3 border-b border-[#1E2D45] p-4 ${item.dim ? "bg-[#162032]" : "bg-gradient-to-br from-[#080F1E] to-[#0A1830]"}`}>
-                <span className="text-[28px]">{item.icon}</span>
+                <AppIcon name={item.icon} className="h-7 w-7 text-[#F59E0B]" />
                 <div>
                   <div className="font-[family-name:var(--font-rajdhani)] text-lg font-bold">{item.name}</div>
                   <div className="text-[11px] text-[#6B7280]">{item.meta}</div>

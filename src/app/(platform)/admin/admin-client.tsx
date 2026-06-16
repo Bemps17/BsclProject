@@ -1,9 +1,8 @@
 "use client";
 
 import { Card, StatCell, Tag } from "@/components/bscl/ui";
+import { AdminPanelIcon } from "@/components/bscl/icons";
 import { useT } from "@/components/bscl/locale-provider";
-
-const PANEL_ICONS = ["👥", "🏆", "📋", "📰", "🔔", "📊", "⚙️", "🤖"];
 
 export function AdminClient({
   stats,
@@ -32,7 +31,7 @@ export function AdminClient({
       <div className="grid grid-cols-2 gap-2.5">
         {t.admin.panels.map((panel, i) => (
           <Card key={panel.title} className="flex cursor-pointer items-center gap-2.5 p-3.5">
-            <span className="text-[22px]">{PANEL_ICONS[i]}</span>
+            <AdminPanelIcon index={i} className="h-[22px] w-[22px] text-[#0066FF]" />
             <div>
               <div className="text-[13px] font-semibold">{panel.title}</div>
               <div className="text-[11px] text-[#6B7280]">{panel.sub}</div>
