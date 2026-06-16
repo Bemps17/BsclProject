@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, EmptyState, RankBadge, StatCell } from "@/components/bscl/ui";
+import { Card, EmptyState, RankBadge, StatCell, TableScroll } from "@/components/bscl/ui";
 import { useLocale, useT } from "@/components/bscl/locale-provider";
 import type { LeaderboardEntry } from "@/lib/match-display";
 import { type RankKey } from "@/lib/constants";
@@ -70,7 +70,8 @@ export function RankingsClient({
         {rows.length === 0 ? (
           <EmptyState message={t.rankings.emptyBracket} />
         ) : (
-          <table className="w-full border-collapse">
+          <TableScroll minWidth={520}>
+            <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-[#1E2D45] text-left text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
                 <th className="px-2.5 py-2">#</th>
@@ -109,6 +110,7 @@ export function RankingsClient({
               ))}
             </tbody>
           </table>
+          </TableScroll>
         )}
       </Card>
     </>

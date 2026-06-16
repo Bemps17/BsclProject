@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, EmptyState, Tag } from "@/components/bscl/ui";
+import { Card, EmptyState, Tag, TableScroll } from "@/components/bscl/ui";
 import { useT } from "@/components/bscl/locale-provider";
 import { matchStatusVariant } from "@/lib/match-display";
 import type { MatchStatus } from "@/generated/prisma/client";
@@ -39,7 +39,8 @@ export function MatchesClient({
       {matches.length === 0 ? (
         <EmptyState message={t.matches.empty} />
       ) : (
-        <table className="w-full border-collapse">
+        <TableScroll minWidth={560}>
+          <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-[#1E2D45] text-left text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
               <th className="px-2.5 py-2">{t.matches.id}</th>
@@ -75,6 +76,7 @@ export function MatchesClient({
             ))}
           </tbody>
         </table>
+        </TableScroll>
       )}
     </Card>
   );

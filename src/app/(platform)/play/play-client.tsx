@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { MatchStatus } from "@/generated/prisma/client";
 import { useDemoOptional } from "@/components/bscl/demo-provider";
 import { useT } from "@/components/bscl/locale-provider";
-import { Card, CardHeader, EmptyState, StatCell, Tag } from "@/components/bscl/ui";
+import { Card, CardHeader, EmptyState, StatCell, TableScroll, Tag } from "@/components/bscl/ui";
 import { matchStatusVariant } from "@/lib/match-display";
 import type { Translations } from "@/lib/i18n";
 
@@ -251,7 +251,8 @@ export function PlayClient({
         {liveMatches.length === 0 ? (
           <EmptyState message={t.play.noActiveMatches} />
         ) : (
-          <table className="w-full border-collapse">
+          <TableScroll>
+            <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-[#1E2D45] text-left text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
                 <th className="px-2.5 py-2">{t.matches.id}</th>
@@ -275,6 +276,7 @@ export function PlayClient({
               ))}
             </tbody>
           </table>
+          </TableScroll>
         )}
       </Card>
     </>

@@ -8,6 +8,7 @@ import {
   MatchRow,
   RankBadge,
   StatCell,
+  TableScroll,
 } from "@/components/bscl/ui";
 import { DemoHomeStats } from "@/app/(platform)/demo-home-stats";
 import { useLocale, useT } from "@/components/bscl/locale-provider";
@@ -74,12 +75,12 @@ export function HomeClient({
 
   return (
     <>
-      <section className="relative overflow-hidden rounded-[14px] border border-[#1E2D45] bg-gradient-to-br from-[#080E1A] via-[#0B1628] to-[#050A14] p-5 md:p-8">
+      <section className="relative overflow-hidden rounded-[14px] border border-[#1E2D45] bg-gradient-to-br from-[#080E1A] via-[#0B1628] to-[#050A14] p-4 sm:p-5 md:p-8">
         <div className="pointer-events-none absolute -right-20 -top-16 h-[260px] w-[260px] rounded-full bg-[radial-gradient(circle,rgba(0,102,255,.14)_0%,transparent_65%)]" />
-        <p className="mb-2 text-[10px] font-bold uppercase tracking-[2px] text-[#0066FF]">
+        <p className="mb-2 text-[9px] font-bold uppercase tracking-[1.5px] text-[#0066FF] sm:text-[10px] sm:tracking-[2px]">
           Season {seasonNumber} — Week {seasonWeek} — {t.home.seasonLive}
         </p>
-        <h2 className="mb-2.5 font-[family-name:var(--font-rajdhani)] text-[30px] font-bold leading-tight tracking-wide md:text-4xl">
+        <h2 className="mb-2.5 font-[family-name:var(--font-rajdhani)] text-[26px] font-bold leading-tight tracking-wide sm:text-[30px] md:text-4xl">
           {t.home.heroLine1}
           <em className="block not-italic text-[#0066FF]">{t.home.heroLine2}</em>
         </h2>
@@ -113,7 +114,7 @@ export function HomeClient({
         </div>
       </section>
 
-      <div className="flex items-center gap-2.5 rounded-[10px] border border-[rgba(0,102,255,.28)] bg-gradient-to-r from-[rgba(0,102,255,.1)] to-transparent px-3.5 py-3">
+      <div className="flex flex-col gap-2.5 rounded-[10px] border border-[rgba(0,102,255,.28)] bg-gradient-to-r from-[rgba(0,102,255,.1)] to-transparent px-3.5 py-3 sm:flex-row sm:items-center">
         <div className="shrink-0 font-[family-name:var(--font-rajdhani)] text-[22px] font-bold text-[#0066FF]">
           S{seasonNumber}
         </div>
@@ -198,7 +199,8 @@ export function HomeClient({
         {topPlayers.length === 0 ? (
           <EmptyState message={t.home.noLeaderboard} />
         ) : (
-          <table className="w-full border-collapse">
+          <TableScroll>
+            <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-[#1E2D45] text-left text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
                 <th className="px-2.5 py-2">#</th>
@@ -226,6 +228,7 @@ export function HomeClient({
               ))}
             </tbody>
           </table>
+          </TableScroll>
         )}
       </Card>
     </>

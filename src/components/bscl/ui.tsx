@@ -191,3 +191,19 @@ export function EmptyState({ message }: { message: string }) {
     <p className="py-6 text-center text-[13px] text-[#6B7280]">{message}</p>
   );
 }
+
+export function TableScroll({
+  children,
+  minWidth = 480,
+  className,
+}: {
+  children: React.ReactNode;
+  minWidth?: number;
+  className?: string;
+}) {
+  return (
+    <div className={cn("-mx-1 overflow-x-auto overscroll-x-contain", className)}>
+      <div style={{ minWidth }}>{children}</div>
+    </div>
+  );
+}
