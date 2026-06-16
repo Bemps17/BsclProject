@@ -10,7 +10,7 @@
 | Item | Value |
 |------|--------|
 | Product | FACEIT-like competitive platform for Black Squad |
-| Primary language (UI + copy) | **English** |
+| Primary language (UI + copy) | **English** (default) · **French** via i18n toggle |
 | Domain | `bscl.gg` |
 | Stack | Next.js 16 · React · TypeScript · Tailwind v4 · shadcn/ui · Prisma 7 · PostgreSQL · Auth.js · Discord.js |
 | Layout | Mobile-first shell → sidebar on `≥768px` |
@@ -58,8 +58,8 @@ Use these values consistently. Prefer CSS variables in `globals.css` or Tailwind
 
 | Breakpoint | Shell |
 |------------|--------|
-| `<768px` | Topbar → scrollable main → **fixed bottom tab bar** (64px + safe-area) |
-| `≥768px` | Sidebar 228px + topbar 56px + scrollable main (no tab bar) |
+| `<768px` | Topbar (compact) → scrollable main → **fixed bottom tab bar** (64px + safe-area) |
+| `≥768px` | Sidebar 240px (`lg`: 252px), full viewport height, topbar 56px, scrollable main |
 
 | Constant | Value |
 |----------|-------|
@@ -68,7 +68,7 @@ Use these values consistently. Prefer CSS variables in `globals.css` or Tailwind
 | Card radius | `12px` (`rounded-xl`) |
 | Button radius | `8px` |
 | Min touch target | `44px` (WCAG) |
-| Max content width | `max-w-5xl` centered in main |
+| Max content width | `md:max-w-4xl` → `xl:max-w-6xl` → `2xl:max-w-7xl` centered in main |
 
 ### 2.4 Components — use existing primitives
 
@@ -77,9 +77,12 @@ Use these values consistently. Prefer CSS variables in `globals.css` or Tailwind
 | Component | Path | Use for |
 |-----------|------|---------|
 | `AppShell`, `Sidebar`, `Topbar`, `Tabbar` | `src/components/bscl/shell.tsx` | Page layout |
-| `Card`, `CardHeader`, `StatCell`, `RankBadge`, `Tag`, `MatchRow`, `LogoHex` | `src/components/bscl/ui.tsx` | Content blocks |
+| `LocaleProvider`, `LanguageSwitcher` | `src/components/bscl/locale-provider.tsx` | EN/FR i18n |
+| `DemoProvider` | `src/components/bscl/demo-provider.tsx` | Guest profile + local queue |
+| `Card`, `CardHeader`, `StatCell`, `RankBadge`, `Tag`, `MatchRow`, `TableScroll`, `LogoHex` | `src/components/bscl/ui.tsx` | Content blocks |
 | `Button` | `src/components/ui/button.tsx` | shadcn base (extend with BSCL tokens) |
-| Nav config | `src/lib/constants.ts` | `NAV_ITEMS`, `PAGE_TITLES`, `RANK_*` |
+| Nav config | `src/lib/constants.ts` | `NAV_ITEMS`, `RANK_*` |
+| Translations | `src/lib/i18n/en.ts`, `fr.ts` | All user-facing copy |
 
 **Component patterns:**
 - **Primary CTA:** `bg-[#0066FF]` + blue glow shadow
@@ -110,9 +113,9 @@ Use these values consistently. Prefer CSS variables in `globals.css` or Tailwind
 | Do | Don't |
 |----|-------|
 | Extend `src/components/bscl/ui.tsx` for shared patterns | Create one-off styled divs duplicated across pages |
-| Keep demo data in `constants.ts` until API wired | Hardcode player names inside page components |
+| Keep demo data out of pages — use API or demo provider | Hardcode player names inside page components |
+| Use `useT()` / `src/lib/i18n/` for user-facing strings | Add English-only strings without FR translation |
 | Match the HTML mockup / existing pages | Import generic light shadcn theme without BSCL tokens |
-| English copy for all user-facing strings | Mix French UI copy (unless i18n is explicitly scoped) |
 
 ---
 
@@ -408,9 +411,14 @@ Document all new variables in `.env.example`:
 
 | Phase | Gate |
 |-------|------|
-| 1–6 | Scaffold ✅ — follow design system + journeys in this doc |
-| 7 | All section 7 tests + security review required before `main` merge |
-| 8 | Production deploy only after Phase 7 green + monitoring configured |
+| 1–6 + M1–M4 | Scaffold + live reads + demo mode + i18n + responsive ✅ |
+| **7a–7b** | Queue → match → ELO works end-to-end on web (required before real players) |
+| **7c** | Bot commands use same queue/match APIs as web |
+| **7d–7f** | Auth guards, integration tests, security checklist (section 6) green |
+| **7g–7k** | Teams, tickets, admin CRUD, tournaments — incremental after core loop |
+| **8** | Production deploy only after 7a–7f green + monitoring configured |
+
+See **README.md → Development phases** for the detailed step table and recommended order.
 
 ---
 
