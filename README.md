@@ -39,6 +39,7 @@ npm run dev
 ## Project structure
 
 ```
+AGENTS.md             # Agent guide: design system, journeys, security & test gates
 src/
   app/
     (platform)/     # Main app (Home, Play, Rankings, Teams, Profile…)
