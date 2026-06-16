@@ -24,6 +24,7 @@ npm install
 npm run db:push
 npm run db:seed
 npm run dev
+npm test
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
@@ -82,6 +83,22 @@ bot/                  # BSCL Matchmaker Discord bot
 ## User roles
 
 `PLAYER` → `CAPTAIN` → `MODERATOR` → `ADMIN` → `OWNER`
+
+## Tests
+
+```bash
+npm test              # 46 unit/integration tests
+npm run test:coverage # coverage report (v8)
+```
+
+| Area | File |
+|------|------|
+| ELO & ranks | `src/lib/elo.test.ts` |
+| Match / draft / queue | `src/lib/match.test.ts` |
+| Auth & roles | `src/lib/auth.test.ts` |
+| Validators | `src/lib/validators/*.test.ts` |
+| Queue API | `src/app/api/queue/route.test.ts` |
+| Bot queue parity | `bot/src/lib/queue.test.ts` |
 
 ## License
 

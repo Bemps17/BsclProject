@@ -7,6 +7,7 @@ import {
   SlashCommandBuilder,
   ChatInputCommandInteraction,
 } from "discord.js";
+import { PUG_QUEUE_SIZE, queueSnapshot } from "./lib/queue.js";
 
 const token = process.env.DISCORD_BOT_TOKEN;
 const clientId = process.env.DISCORD_CLIENT_ID;
@@ -60,22 +61,26 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
   const { commandName } = interaction;
 
   switch (commandName) {
-    case "join":
+    case "join": {
       queue.add(interaction.user.id);
+      const snap = queueSnapshot(queue.size);
       await interaction.reply({
-        content: `✅ Joined queue (${queue.size}/10). ${Math.max(0, 10 - queue.size)} more needed.`,
+        content: `✅ Joined queue (${snap.count}/${PUG_QUEUE_SIZE}). ${snap.needed} more needed.`,
         ephemeral: true,
       });
       break;
+    }
     case "leave":
       queue.delete(interaction.user.id);
       await interaction.reply({ content: "Left the queue.", ephemeral: true });
       break;
-    case "queue":
+    case "queue": {
+      const snap = queueSnapshot(queue.size);
       await interaction.reply({
-        content: `Queue: **${queue.size}/10** players${queue.size >= 10 ? " — Draft starting!" : ""}`,
+        content: `Queue: **${snap.count}/${PUG_QUEUE_SIZE}** players${snap.ready ? " — Draft starting!" : ""}`,
       });
       break;
+    }
     case "result":
       await interaction.reply({
         content: `Result submitted: Alpha ${interaction.options.getString("alpha")} — Bravo ${interaction.options.getString("bravo")}. Awaiting /confirm.`,

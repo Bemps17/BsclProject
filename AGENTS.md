@@ -314,22 +314,24 @@ bot/                  # Separate package — excluded from Next tsconfig
 ### 7.1 Always run before push
 
 ```bash
+npm test               # Vitest — 46+ unit/integration tests
+npm run test:coverage  # Optional coverage report
 npm run build          # TypeScript + Next.js production build
 npm run lint           # ESLint
 ```
 
 ### 7.2 When touching ELO / matches
 
-- [ ] Unit tests for `calculateEloDelta`, `getRankFromElo`, `softResetElo`
-- [ ] Edge cases: placement protection, equal ELO, large ELO gap
-- [ ] Confirm → ELO update is idempotent (double confirm rejected)
+- [x] Unit tests in `src/lib/elo.test.ts` — delta, ranks, soft reset, placement protection
+- [x] Unit tests in `src/lib/match.test.ts` — snake draft, queue snapshot, confirm rules
+- [x] Validators in `src/lib/validators/match.test.ts`
+- [ ] Confirm → ELO update is idempotent (integration test, Phase 7)
 
 ### 7.3 When touching auth / API
 
-- [ ] Unauthenticated request → 401
-- [ ] Wrong role → 403
-- [ ] Duplicate queue join → 409
-- [ ] Invalid body → 400
+- [x] `src/lib/auth.test.ts` — role hierarchy, banned, forbidden
+- [x] `src/app/api/queue/route.test.ts` — 401, 409, 400, success paths
+- [x] `src/lib/validators/team.test.ts` — team name/tag validation
 
 ### 7.4 When touching UI
 
@@ -341,11 +343,9 @@ npm run lint           # ESLint
 ### 7.5 When touching bot
 
 ```bash
+npm test   # includes bot/src/lib/queue.test.ts
 cd bot && npm run build
 ```
-
-- [ ] Commands register without error
-- [ ] Queue state consistent with `/api/queue`
 
 ### 7.6 Pre-release (Phase 7+)
 
