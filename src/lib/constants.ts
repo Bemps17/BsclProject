@@ -34,28 +34,15 @@ export type NavPage = {
 
 export const NAV_ITEMS: NavPage[] = [
   { id: "home", href: "/", label: "Home", icon: "⬡", section: "platform", mobile: true },
-  { id: "play", href: "/play", label: "Play", icon: "▶", badge: 3, section: "platform", mobile: true },
+  { id: "play", href: "/play", label: "Play", icon: "▶", section: "platform", mobile: true },
   { id: "rankings", href: "/rankings", label: "Rankings", icon: "◈", section: "platform", mobile: true },
   { id: "teams", href: "/teams", label: "Teams", icon: "◆", section: "platform", mobile: true },
   { id: "tournaments", href: "/tournaments", label: "Tournaments", icon: "◉", section: "platform" },
   { id: "matches", href: "/matches", label: "Match History", icon: "▣", section: "platform" },
   { id: "profile", href: "/profile", label: "My Profile", icon: "○", section: "account", mobile: true },
-  { id: "tickets", href: "/tickets", label: "Support", icon: "□", badge: 1, badgeRed: true, section: "account" },
+  { id: "tickets", href: "/tickets", label: "Support", icon: "□", section: "account" },
   { id: "admin", href: "/admin", label: "Admin", icon: "⚙", section: "staff" },
 ];
-
-export const DEMO_LEADERBOARD = {
-  all: [
-    { pos: 1, name: "ShadowK1ng", rank: "elite" as const, elo: 2041, wr: "74%" },
-    { pos: 2, name: "NightCrawler", rank: "elite" as const, elo: 1964, wr: "68%" },
-    { pos: 3, name: "xGhost_BR", rank: "diamond" as const, elo: 1642, wr: "61%", me: true },
-    { pos: 4, name: "Specter99", rank: "diamond" as const, elo: 1621, wr: "56%" },
-    { pos: 5, name: "AcidReign", rank: "plat" as const, elo: 1542, wr: "52%" },
-    { pos: 6, name: "FrostByte", rank: "plat" as const, elo: 1487, wr: "50%" },
-    { pos: 7, name: "VoidRunner", rank: "gold" as const, elo: 1389, wr: "48%" },
-    { pos: 8, name: "RazorEdge", rank: "gold" as const, elo: 1312, wr: "46%" },
-  ],
-};
 
 export type RankKey = "elite" | "diamond" | "plat" | "gold" | "silver" | "bronze";
 

@@ -148,7 +148,7 @@ export function MatchRow({
   result: "win" | "loss";
   score: string;
   meta: string;
-  delta: number;
+  delta?: number;
 }) {
   const win = result === "win";
   return (
@@ -167,14 +167,22 @@ export function MatchRow({
         {score}
       </span>
       <span className="flex-1 pl-1 text-[11px] text-[#6B7280]">{meta}</span>
-      <span
-        className={cn(
-          "font-[family-name:var(--font-jetbrains)] text-[13px] font-bold",
-          delta >= 0 ? "text-[#22C55E]" : "text-[#EF4444]",
-        )}
-      >
-        {delta >= 0 ? `+${delta}` : delta}
-      </span>
+      {delta != null && (
+        <span
+          className={cn(
+            "font-[family-name:var(--font-jetbrains)] text-[13px] font-bold",
+            delta >= 0 ? "text-[#22C55E]" : "text-[#EF4444]",
+          )}
+        >
+          {delta >= 0 ? `+${delta}` : delta}
+        </span>
+      )}
     </div>
+  );
+}
+
+export function EmptyState({ message }: { message: string }) {
+  return (
+    <p className="py-6 text-center text-[13px] text-[#6B7280]">{message}</p>
   );
 }

@@ -1,4 +1,5 @@
 import { Card, StatCell, Tag } from "@/components/bscl/ui";
+import { getAdminStats } from "@/lib/data";
 
 const PANELS = [
   ["👥", "Players", "Manage, ban, roles"],
@@ -11,7 +12,9 @@ const PANELS = [
   ["🤖", "Bot Status", "Discord controls"],
 ];
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const stats = await getAdminStats();
+
   return (
     <>
       <div className="flex items-center gap-2">
@@ -19,10 +22,10 @@ export default function AdminPage() {
         <Tag variant="red">Staff Only</Tag>
       </div>
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
-        <StatCell label="Users" value="1,247" />
-        <StatCell label="Tickets" value="7" valueClassName="text-[#EF4444]" />
-        <StatCell label="Bans" value="3" />
-        <StatCell label="Pending" value="2" />
+        <StatCell label="Users" value={stats.users} />
+        <StatCell label="Tickets" value={stats.openTickets} valueClassName={stats.openTickets > 0 ? "text-[#EF4444]" : undefined} />
+        <StatCell label="Bans" value={stats.activeBans} />
+        <StatCell label="Pending" value={stats.pendingMatches} />
       </div>
       <div className="grid grid-cols-2 gap-2.5">
         {PANELS.map(([icon, title, sub]) => (

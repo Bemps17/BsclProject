@@ -1,29 +1,53 @@
 import Link from "next/link";
-import { Card, CardHeader, MatchRow, RankBadge, StatCell } from "@/components/bscl/ui";
-import { BSCL, type RankKey } from "@/lib/constants";
+import {
+  Card,
+  CardHeader,
+  EmptyState,
+  MatchRow,
+  RankBadge,
+  StatCell,
+} from "@/components/bscl/ui";
+import { BSCL } from "@/lib/constants";
+import {
+  formatMatchScore,
+  getCurrentPlayerProfile,
+  getLeaderboard,
+  getPlatformStats,
+} from "@/lib/data";
+import { rankTierToKey } from "@/lib/ranks";
 
-const TOP_PLAYERS: {
-  pos: number;
-  name: string;
-  rank: RankKey;
-  elo: number;
-  gold?: boolean;
-  me?: boolean;
-}[] = [
-  { pos: 1, name: "ShadowK1ng", rank: "elite", elo: 2041, gold: true },
-  { pos: 2, name: "NightCrawler", rank: "diamond", elo: 1804 },
-  { pos: 3, name: "xGhost_BR", rank: "diamond", elo: 1642, me: true },
-  { pos: 4, name: "Specter99", rank: "diamond", elo: 1621 },
-  { pos: 5, name: "AcidReign", rank: "plat", elo: 1542 },
-];
+function formatCount(n: number): string {
+  return n.toLocaleString("en-US");
+}
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [stats, topPlayers, profile] = await Promise.all([
+    getPlatformStats(),
+    getLeaderboard(5),
+    getCurrentPlayerProfile(),
+  ]);
+
+  const season = stats.season;
+  const seasonNumber = season?.number ?? BSCL.season.number;
+  const seasonWeek = season?.week ?? BSCL.season.week;
+  const daysLeft = season?.endsAt
+    ? Math.max(0, Math.ceil((season.endsAt.getTime() - Date.now()) / 86_400_000))
+    : BSCL.season.daysLeft;
+
+  const myPlayer = profile?.player;
+  const myWinRate =
+    myPlayer && myPlayer.wins + myPlayer.losses > 0
+      ? Math.round((myPlayer.wins / (myPlayer.wins + myPlayer.losses)) * 100)
+      : null;
+
+  const recentMatches = profile?.recentMatches ?? [];
+
   return (
     <>
       <section className="relative overflow-hidden rounded-[14px] border border-[#1E2D45] bg-gradient-to-br from-[#080E1A] via-[#0B1628] to-[#050A14] p-5 md:p-8">
         <div className="pointer-events-none absolute -right-20 -top-16 h-[260px] w-[260px] rounded-full bg-[radial-gradient(circle,rgba(0,102,255,.14)_0%,transparent_65%)]" />
         <p className="mb-2 text-[10px] font-bold uppercase tracking-[2px] text-[#0066FF]">
-          Season {BSCL.season.number} — Week {BSCL.season.week} — Live Now
+          Season {seasonNumber} — Week {seasonWeek} — Live Now
         </p>
         <h2 className="mb-2.5 font-[family-name:var(--font-rajdhani)] text-[30px] font-bold leading-tight tracking-wide md:text-4xl">
           Compete.
@@ -49,10 +73,10 @@ export default function HomePage() {
         </div>
         <div className="mt-4 grid grid-cols-2 gap-0 border-t border-[#1E2D45] pt-4 md:grid-cols-4">
           {[
-            ["1,247", "Players"],
-            ["438", "Matches"],
-            ["86", "Teams"],
-            ["S1", "Season"],
+            [formatCount(stats.playerCount), "Players"],
+            [formatCount(stats.matchCount), "Matches"],
+            [formatCount(stats.teamCount), "Teams"],
+            [`S${seasonNumber}`, "Season"],
           ].map(([n, l]) => (
             <div key={l} className="py-1.5">
               <div className="font-[family-name:var(--font-rajdhani)] text-[22px] font-bold">{n}</div>
@@ -64,14 +88,14 @@ export default function HomePage() {
 
       <div className="flex items-center gap-2.5 rounded-[10px] border border-[rgba(0,102,255,.28)] bg-gradient-to-r from-[rgba(0,102,255,.1)] to-transparent px-3.5 py-3">
         <div className="shrink-0 font-[family-name:var(--font-rajdhani)] text-[22px] font-bold text-[#0066FF]">
-          S{BSCL.season.number}
+          S{seasonNumber}
         </div>
         <div className="flex-1">
           <div className="text-[13px] font-semibold">
-            Season {BSCL.season.number} · Week {BSCL.season.week}
+            Season {seasonNumber} · Week {seasonWeek}
           </div>
           <div className="text-[11px] text-[#6B7280]">
-            Ends in {BSCL.season.daysLeft} days — Soft reset at season end
+            Ends in {daysLeft} days — Soft reset at season end
           </div>
         </div>
         <Link href="/rankings" className="rounded-lg border border-[#1E2D45] bg-[#162032] px-3 py-1.5 text-xs font-semibold">
@@ -80,10 +104,19 @@ export default function HomePage() {
       </div>
 
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
-        <StatCell label="Queue" value="3" sub="Active" subClassName="text-[#22C55E]" />
-        <StatCell label="Today" value="12" sub="Matches" />
-        <StatCell label="My ELO" value="1642" valueClassName="text-[#0066FF]" sub="+28 this wk" subClassName="text-[#22C55E]" />
-        <StatCell label="Win Rate" value="61%" sub="Last 20" />
+        <StatCell label="Queue" value={stats.queueCount} sub="Active" subClassName="text-[#22C55E]" />
+        <StatCell label="Today" value={stats.todayMatches} sub="Matches" />
+        <StatCell
+          label="My ELO"
+          value={myPlayer ? myPlayer.elo : "—"}
+          valueClassName={myPlayer ? "text-[#0066FF]" : undefined}
+          sub={myPlayer ? undefined : "Sign in"}
+        />
+        <StatCell
+          label="Win Rate"
+          value={myWinRate != null ? `${myWinRate}%` : "—"}
+          sub={myPlayer ? "Overall" : undefined}
+        />
       </div>
 
       <Card>
@@ -95,11 +128,32 @@ export default function HomePage() {
             </Link>
           }
         />
-        <div className="flex flex-col gap-1.5">
-          <MatchRow result="win" score="13–07" meta="#M-038 · 2h ago" delta={23} />
-          <MatchRow result="win" score="13–09" meta="#M-035 · 4h ago" delta={19} />
-          <MatchRow result="loss" score="07–13" meta="#M-034 · Yesterday" delta={-18} />
-        </div>
+        {recentMatches.length === 0 ? (
+          <EmptyState message="No matches yet. Join the queue to play your first game." />
+        ) : (
+          <div className="flex flex-col gap-1.5">
+            {recentMatches.map((mp) => {
+              const alpha = mp.match.teams.find((t) => t.side === "ALPHA");
+              const bravo = mp.match.teams.find((t) => t.side === "BRAVO");
+              const onAlpha = mp.side === "ALPHA";
+              const won =
+                mp.match.alphaScore != null &&
+                mp.match.bravoScore != null &&
+                (onAlpha
+                  ? mp.match.alphaScore > mp.match.bravoScore
+                  : mp.match.bravoScore > mp.match.alphaScore);
+              return (
+                <MatchRow
+                  key={mp.id}
+                  result={won ? "win" : "loss"}
+                  score={formatMatchScore(mp.match.alphaScore, mp.match.bravoScore)}
+                  meta={`#M-${String(mp.match.number).padStart(3, "0")} · ${alpha?.name ?? "?"} vs ${bravo?.name ?? "?"}`}
+                  delta={mp.eloDelta ?? undefined}
+                />
+              );
+            })}
+          </div>
+        )}
       </Card>
 
       <Card>
@@ -112,34 +166,38 @@ export default function HomePage() {
             </Link>
           }
         />
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="border-b border-[#1E2D45] text-left text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
-              <th className="px-2.5 py-2">#</th>
-              <th className="px-2.5 py-2">Player</th>
-              <th className="px-2.5 py-2">Rank</th>
-              <th className="px-2.5 py-2">ELO</th>
-            </tr>
-          </thead>
-          <tbody>
-            {TOP_PLAYERS.map(({ pos, name, rank, elo, gold, me }) => (
-              <tr key={name} className={me ? "bg-[rgba(0,102,255,.06)]" : ""}>
-                <td className={`border-b border-[#1E2D45] px-2.5 py-2.5 font-bold ${gold ? "text-[#F59E0B]" : "text-[#6B7280]"}`}>
-                  {pos}
-                </td>
-                <td className={`border-b border-[#1E2D45] px-2.5 py-2.5 ${me ? "font-bold text-[#0066FF]" : ""}`}>
-                  {name}
-                </td>
-                <td className="border-b border-[#1E2D45] px-2.5 py-2.5">
-                  <RankBadge rank={rank} />
-                </td>
-                <td className="border-b border-[#1E2D45] px-2.5 py-2.5 font-[family-name:var(--font-jetbrains)] font-bold text-[#0066FF]">
-                  {elo}
-                </td>
+        {topPlayers.length === 0 ? (
+          <EmptyState message="No players on the leaderboard yet." />
+        ) : (
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b border-[#1E2D45] text-left text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
+                <th className="px-2.5 py-2">#</th>
+                <th className="px-2.5 py-2">Player</th>
+                <th className="px-2.5 py-2">Rank</th>
+                <th className="px-2.5 py-2">ELO</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {topPlayers.map(({ position, name, rankKey, elo, me }) => (
+                <tr key={name} className={me ? "bg-[rgba(0,102,255,.06)]" : ""}>
+                  <td className={`border-b border-[#1E2D45] px-2.5 py-2.5 font-bold ${position === 1 ? "text-[#F59E0B]" : "text-[#6B7280]"}`}>
+                    {position}
+                  </td>
+                  <td className={`border-b border-[#1E2D45] px-2.5 py-2.5 ${me ? "font-bold text-[#0066FF]" : ""}`}>
+                    {name}
+                  </td>
+                  <td className="border-b border-[#1E2D45] px-2.5 py-2.5">
+                    <RankBadge rank={rankKey} />
+                  </td>
+                  <td className="border-b border-[#1E2D45] px-2.5 py-2.5 font-[family-name:var(--font-jetbrains)] font-bold text-[#0066FF]">
+                    {elo}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </Card>
     </>
   );
