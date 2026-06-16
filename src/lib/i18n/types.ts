@@ -161,6 +161,7 @@ export type Translations = {
     discord: string;
     localOnly: string;
     guestProfile: string;
+    discordSimProfile: string;
     clearProfile: string;
     tryQueue: string;
     noMatchesDemo: string;
@@ -174,6 +175,18 @@ export type Translations = {
     demoCta: string;
     nameRequired: string;
     saveFailed: string;
+    discordSim: {
+      title: string;
+      subtitle: string;
+      permissionsTitle: string;
+      permissions: [string, string];
+      loggedInAs: string;
+      switchAccount: string;
+      cancel: string;
+      authorize: string;
+      customUsername: string;
+      demoNote: string;
+    };
   };
   admin: {
     title: string;

@@ -19,6 +19,7 @@ import {
   type LocalState,
 } from "@/lib/local-store";
 import type { RankKey } from "@/lib/constants";
+import { discordTag } from "@/lib/discord-sim";
 import { playerInitials } from "@/lib/ranks";
 
 export type DemoShellUser = {
@@ -53,11 +54,21 @@ export function DemoProvider({ children }: { children: ReactNode }) {
 
   const shellUser = useMemo((): DemoShellUser => {
     if (!state.player) return null;
+    const { player } = state;
+    const name =
+      player.authMethod === "discord_sim" &&
+      player.discordUsername &&
+      player.discordDiscriminator
+        ? discordTag({
+            username: player.discordUsername,
+            discriminator: player.discordDiscriminator,
+          })
+        : player.displayName;
     return {
-      name: state.player.displayName,
-      initials: playerInitials(state.player.displayName),
-      rankKey: state.player.rankKey,
-      elo: state.player.elo,
+      name,
+      initials: playerInitials(player.displayName),
+      rankKey: player.rankKey,
+      elo: player.elo,
     };
   }, [state.player]);
 

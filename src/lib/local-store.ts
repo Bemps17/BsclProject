@@ -13,6 +13,10 @@ export type LocalPlayer = {
   wins: number;
   losses: number;
   peakElo: number;
+  authMethod?: "guest" | "discord_sim";
+  discordUsername?: string;
+  discordDiscriminator?: string;
+  avatarHue?: number;
 };
 
 export type LocalQueuePlayer = {
@@ -81,6 +85,35 @@ export function createGuestPlayer(displayName: string): LocalPlayer {
 
 export function saveGuestPlayer(displayName: string): LocalPlayer {
   const player = createGuestPlayer(displayName);
+  const state = readState();
+  writeState({ ...state, player: { ...player, authMethod: "guest" } });
+  return player;
+}
+
+export function saveSimulatedDiscordPlayer(account: {
+  username: string;
+  discriminator: string;
+  hue: number;
+}): LocalPlayer {
+  const trimmed = account.username.trim();
+  if (!trimmed) {
+    throw new Error("Username required");
+  }
+
+  const player: LocalPlayer = {
+    id: `discord_sim_${Date.now()}`,
+    displayName: trimmed,
+    elo: 1000,
+    rankKey: "silver",
+    wins: 0,
+    losses: 0,
+    peakElo: 1000,
+    authMethod: "discord_sim",
+    discordUsername: trimmed,
+    discordDiscriminator: account.discriminator,
+    avatarHue: account.hue,
+  };
+
   const state = readState();
   writeState({ ...state, player });
   return player;

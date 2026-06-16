@@ -166,6 +166,7 @@ export const fr: Translations = {
     discord: "Discord",
     localOnly: "Local uniquement",
     guestProfile: "Profil invité · stocké localement",
+    discordSimProfile: "Discord simulé · stocké localement",
     clearProfile: "Effacer le profil local",
     tryQueue: "Tester la file",
     noMatchesDemo: "Aucun match en mode démo. Rejoins la file pour tester le flux.",
@@ -174,12 +175,26 @@ export const fr: Translations = {
   login: {
     discordDesc: "Connecte-toi avec Discord pour rejoindre la ligue compétitive.",
     discordCta: "Continuer avec Discord",
-    demoDesc:
-      "Mode démo — crée un profil invité local. Les données restent dans ton navigateur.",
+    demoDesc: "Mode démo — connexion via Discord simulé. Les données restent dans ton navigateur.",
     displayName: "Nom affiché",
     demoCta: "Continuer en invité",
     nameRequired: "Le nom affiché est requis",
     saveFailed: "Impossible d'enregistrer le profil",
+    discordSim: {
+      title: "Discord",
+      subtitle: "BSCL.gg souhaite accéder à ton compte Discord",
+      permissionsTitle: "Cela permettra à BSCL.gg de :",
+      permissions: [
+        "Accéder à ton nom d'utilisateur et avatar",
+        "T'identifier dans la ligue compétitive",
+      ],
+      loggedInAs: "Connecté en tant que",
+      switchAccount: "Changer de compte",
+      cancel: "Annuler",
+      authorize: "Autoriser",
+      customUsername: "Nom personnalisé",
+      demoNote: "Simulation démo — aucune connexion Discord réelle.",
+    },
   },
   admin: {
     title: "Panneau admin",

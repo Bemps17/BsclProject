@@ -7,6 +7,7 @@ import { Card, CardHeader, EmptyState, RankBadge, StatCell, Tag } from "@/compon
 import { useDemo } from "@/components/bscl/demo-provider";
 import { useT } from "@/components/bscl/locale-provider";
 import { RANK_THRESHOLDS } from "@/lib/elo";
+import { discordTag } from "@/lib/discord-sim";
 import { clearGuestPlayer } from "@/lib/local-store";
 import { playerInitials } from "@/lib/ranks";
 
@@ -20,6 +21,18 @@ export function ProfileDemo() {
   }, [player, router]);
 
   if (!player) return null;
+
+  const isDiscordSim =
+    player.authMethod === "discord_sim" &&
+    player.discordUsername &&
+    player.discordDiscriminator;
+  const discordLabel = isDiscordSim
+    ? discordTag({
+        username: player.discordUsername!,
+        discriminator: player.discordDiscriminator!,
+      })
+    : null;
+  const avatarHue = isDiscordSim ? player.avatarHue : undefined;
 
   const totalMatches = player.wins + player.losses;
   const winRate = totalMatches > 0 ? Math.round((player.wins / totalMatches) * 100) : 0;
@@ -38,12 +51,25 @@ export function ProfileDemo() {
     <>
       <div className="rounded-[14px] border border-[#1E2D45] bg-[#111827] p-5">
         <div className="mb-4 flex items-center gap-3.5">
-          <div className="flex h-[72px] w-[72px] items-center justify-center rounded-full border-[3px] border-[#0066FF] bg-[#0066FF] font-[family-name:var(--font-rajdhani)] text-[28px] font-bold text-white shadow-[0_0_20px_rgba(0,102,255,.28)]">
+          <div
+            className="flex h-[72px] w-[72px] items-center justify-center rounded-full border-[3px] border-[#0066FF] bg-[#0066FF] font-[family-name:var(--font-rajdhani)] text-[28px] font-bold text-white shadow-[0_0_20px_rgba(0,102,255,.28)]"
+            style={
+              avatarHue != null
+                ? {
+                    backgroundColor: `hsl(${avatarHue} 65% 45%)`,
+                    borderColor: `hsl(${avatarHue} 65% 45%)`,
+                    boxShadow: `0 0 20px hsl(${avatarHue} 65% 45% / 0.35)`,
+                  }
+                : undefined
+            }
+          >
             {playerInitials(player.displayName)}
           </div>
           <div>
             <h2 className="font-[family-name:var(--font-rajdhani)] text-2xl font-bold">{player.displayName}</h2>
-            <p className="text-[11px] text-[#6B7280]">{t.profile.guestProfile}</p>
+            <p className="text-[11px] text-[#6B7280]">
+              {isDiscordSim ? `${discordLabel} · ${t.profile.discordSimProfile}` : t.profile.guestProfile}
+            </p>
             <div className="mt-2 flex flex-wrap gap-1.5">
               <RankBadge rank={player.rankKey} />
               <Tag variant="gold">{t.common.demo}</Tag>
