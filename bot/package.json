@@ -1,0 +1,21 @@
+{
+  "name": "bscl-matchmaker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BSCL Discord bot — queue, draft, match validation",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "discord.js": "^14.19.3",
+    "dotenv": "^16.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4.19.4",
+    "typescript": "^5"
+  }
+}
