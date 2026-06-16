@@ -4,6 +4,7 @@ import { MatchStatus } from "@/generated/prisma/client";
 import { useDemo } from "@/components/bscl/demo-provider";
 import { MatchesClient } from "@/app/(platform)/matches/matches-client";
 import { formatMatchScore } from "@/lib/match-display";
+import { matchSideLabel } from "@/lib/local-matchmaker";
 
 export function MatchesDemo() {
   const demo = useDemo();
@@ -20,8 +21,8 @@ export function MatchesDemo() {
         return {
           id: m.id,
           number: m.number,
-          alphaName: "Alpha",
-          bravoName: "Bravo",
+          alphaName: matchSideLabel(m, "ALPHA"),
+          bravoName: matchSideLabel(m, "BRAVO"),
           alphaScore: m.alphaScore ?? null,
           bravoScore: m.bravoScore ?? null,
           status: m.status as MatchStatus,

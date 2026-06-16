@@ -6,7 +6,8 @@ import { useT } from "@/components/bscl/locale-provider";
 import type { AppIconId } from "@/lib/nav-icons";
 import { cn } from "@/lib/utils";
 
-type TournamentItem = {
+export type TournamentRow = {
+  id: string;
   icon: AppIconId;
   name: string;
   meta: string;
@@ -17,10 +18,12 @@ type TournamentItem = {
   ctaKey: "register" | "bracket" | "results";
   primary: boolean;
   dim?: boolean;
+  registered?: boolean;
 };
 
-const TOURNAMENTS: TournamentItem[] = [
+const DEFAULT_TOURNAMENTS: TournamentRow[] = [
   {
+    id: "tour_open_1",
     icon: "tournaments",
     name: "BSCL Open #1",
     meta: "16 Teams · Single Elim · BO3",
@@ -32,6 +35,7 @@ const TOURNAMENTS: TournamentItem[] = [
     primary: true,
   },
   {
+    id: "tour_weekly_3",
     icon: "zap",
     name: "Weekly Cup #3",
     meta: "8 Teams · Double Elim · BO1",
@@ -43,6 +47,7 @@ const TOURNAMENTS: TournamentItem[] = [
     primary: false,
   },
   {
+    id: "tour_weekly_2",
     icon: "clipboard",
     name: "Weekly Cup #2",
     meta: "8 Teams · Single Elim · BO1",
@@ -56,20 +61,31 @@ const TOURNAMENTS: TournamentItem[] = [
   },
 ];
 
-export function TournamentsClient() {
+export function TournamentsClient({
+  tournaments = DEFAULT_TOURNAMENTS,
+  interactive = false,
+  onRegister,
+  error,
+}: {
+  tournaments?: TournamentRow[];
+  interactive?: boolean;
+  onRegister?: (id: string) => void;
+  error?: string | null;
+}) {
   const t = useT();
 
   return (
     <>
       <h2 className="font-[family-name:var(--font-rajdhani)] text-[22px] font-bold">{t.tournaments.title}</h2>
+      {error && <p className="text-xs text-destructive">{error}</p>}
       <div className="flex flex-col gap-2.5">
-        {TOURNAMENTS.map((item) => {
+        {tournaments.map((item) => {
           const status = t.tournaments[item.statusKey];
-          const cta = t.tournaments[item.ctaKey];
+          const cta = item.registered ? t.tournaments.registered : t.tournaments[item.ctaKey];
           const prizeLabel = item.statusKey === "statusEnded" ? t.tournaments.winner : t.tournaments.prizePool;
 
           return (
-            <div key={item.name} className={cn("overflow-hidden rounded-xl border border-border bg-card", item.dim && "opacity-65")}>
+            <div key={item.id} className={cn("overflow-hidden rounded-xl border border-border bg-card", item.dim && "opacity-65")}>
               <div className={cn("flex items-center gap-3 border-b border-border p-4", item.dim ? "bg-secondary" : "bg-gradient-to-br from-background to-secondary")}>
                 <AppIcon name={item.icon} className="h-7 w-7 text-chart-3" />
                 <div>
@@ -86,7 +102,13 @@ export function TournamentsClient() {
                   </div>
                 </div>
                 <div className="text-right text-xs text-muted-foreground">{item.date}</div>
-                <Button type="button" size="sm" variant={item.primary ? "default" : "secondary"}>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={item.primary && !item.registered ? "default" : "secondary"}
+                  disabled={item.statusKey === "statusEnded" || Boolean(item.registered)}
+                  onClick={() => interactive && onRegister?.(item.id)}
+                >
                   {cta}
                 </Button>
               </div>

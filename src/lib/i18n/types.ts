@@ -133,6 +133,11 @@ export type Translations = {
     empty: string;
     members: string;
     captain: string;
+    tagLabel: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    joinTeam: string;
+    myTeam: string;
   };
   matches: {
     title: string;
@@ -171,6 +176,7 @@ export type Translations = {
     tryQueue: string;
     noMatchesDemo: string;
     savedBrowser: string;
+    leaveTeam: string;
   };
   login: {
     welcomeSubtitle: string;
@@ -183,6 +189,7 @@ export type Translations = {
     demoCardDesc: string;
     demoCtaCard: string;
     backToModeChoice: string;
+    backendUnavailable: string;
     discordDesc: string;
     discordCta: string;
     demoDesc: string;
@@ -248,6 +255,8 @@ export type Translations = {
     youAreAlphaCaptain: string;
     youAreBravoCaptain: string;
     matchComplete: string;
+    disputeScore: string;
+    disputeOpened: string;
     stats: {
       queue: string;
       live: string;
@@ -259,7 +268,12 @@ export type Translations = {
       draft: string;
       match: string;
       elo: string;
+      team: string;
+      tournament: string;
+      ticket: string;
+      admin: string;
     };
+    exploreTitle: string;
   };
   admin: {
     title: string;
@@ -267,6 +281,8 @@ export type Translations = {
     tickets: string;
     bans: string;
     pending: string;
+    demoPreview: string;
+    demoPreviewDesc: string;
     panels: { title: string; sub: string }[];
   };
   tournaments: {
@@ -274,6 +290,7 @@ export type Translations = {
     prizePool: string;
     winner: string;
     register: string;
+    registered: string;
     bracket: string;
     results: string;
     statusOpen: string;
@@ -284,6 +301,8 @@ export type Translations = {
     title: string;
     new: string;
     myTickets: string;
+    subjectLabel: string;
+    subjectPlaceholder: string;
     statusOpen: string;
     statusAnswered: string;
     statusClosed: string;

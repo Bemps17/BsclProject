@@ -3,18 +3,31 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Button, Card, CardHeader, EmptyState, MatchRow, RankBadge, StatCell, Tag } from "@/components/bscl/ui";
+import {
+  Button,
+  Card,
+  CardHeader,
+  EmptyState,
+  MatchRow,
+  RankBadge,
+  StatCell,
+  Tag,
+} from "@/components/bscl/ui";
+import { ChevronRight, NavIcon } from "@/components/bscl/icons";
 import { useDemo } from "@/components/bscl/demo-provider";
 import { useT } from "@/components/bscl/locale-provider";
 import { RANK_THRESHOLDS } from "@/lib/elo";
-import { formatMatchScore } from "@/lib/match-display";
 import { discordTag } from "@/lib/discord-sim";
+import { interpolate } from "@/lib/i18n";
+import { formatMatchScore } from "@/lib/match-display";
 import { clearGuestPlayer } from "@/lib/local-store";
 import { playerInitials } from "@/lib/ranks";
+import type { NavIconId } from "@/lib/nav-icons";
 
 export function ProfileDemo() {
   const router = useRouter();
-  const { player, myMatches } = useDemo();
+  const demo = useDemo();
+  const { player, myMatches, leaderboard, playerTeamId, teams } = demo;
   const t = useT();
 
   useEffect(() => {
@@ -39,8 +52,14 @@ export function ProfileDemo() {
   const winRate = totalMatches > 0 ? Math.round((player.wins / totalMatches) * 100) : 0;
   const progressToElite = Math.min(
     100,
-    Math.max(0, ((player.elo - RANK_THRESHOLDS.DIAMOND) / (RANK_THRESHOLDS.ELITE - RANK_THRESHOLDS.DIAMOND)) * 100),
+    Math.max(
+      0,
+      ((player.elo - RANK_THRESHOLDS.DIAMOND) / (RANK_THRESHOLDS.ELITE - RANK_THRESHOLDS.DIAMOND)) * 100,
+    ),
   );
+  const rankRow = leaderboard.find((row) => row.me);
+  const rankPosition = rankRow?.position ?? leaderboard.length + 1;
+  const myTeam = playerTeamId ? teams.find((team) => team.id === playerTeamId) : null;
 
   function signOutLocal() {
     clearGuestPlayer();
@@ -79,12 +98,20 @@ export function ProfileDemo() {
         </div>
         <div className="flex items-end justify-between border-t border-border pt-3.5">
           <div>
-            <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">{t.profile.currentElo}</div>
-            <div className="font-[family-name:var(--font-jetbrains)] text-4xl font-bold leading-none text-primary">{player.elo}</div>
+            <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              {t.profile.currentElo}
+            </div>
+            <div className="font-[family-name:var(--font-jetbrains)] text-4xl font-bold leading-none text-primary">
+              {player.elo}
+            </div>
           </div>
           <div className="text-right text-[11px] text-muted-foreground">
-            <div className="text-sm font-semibold text-foreground">{t.profile.localOnly}</div>
-            <div>{t.profile.peak}: <span className="text-primary">{player.peakElo}</span></div>
+            <div className="text-sm font-semibold text-foreground">
+              {interpolate(t.profile.rankPosition, { n: rankPosition })}
+            </div>
+            <div>
+              {t.profile.peak}: <span className="text-primary">{player.peakElo}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -110,11 +137,21 @@ export function ProfileDemo() {
               style={{ width: `${progressToElite}%` }}
             />
           </div>
+          <p className="text-[11px] text-muted-foreground">
+            {interpolate(t.profile.toElite, { n: Math.max(0, RANK_THRESHOLDS.ELITE - player.elo) })}
+          </p>
         </div>
       </Card>
 
       <Card>
-        <CardHeader title={t.profile.matchHistory} />
+        <CardHeader
+          title={t.profile.matchHistory}
+          action={
+            <Button variant="secondary" size="sm" render={<Link href="/matches" />}>
+              {t.common.all} →
+            </Button>
+          }
+        />
         {myMatches.filter((m) => m.status === "CONFIRMED").length === 0 ? (
           <EmptyState message={t.profile.noMatchesDemo} />
         ) : (
@@ -145,12 +182,80 @@ export function ProfileDemo() {
       </Card>
 
       <Card>
+        <CardHeader
+          title={t.profile.myTeam}
+          action={
+            <Button variant="secondary" size="sm" render={<Link href="/teams" />}>
+              {t.profile.manage}
+            </Button>
+          }
+        />
+        {myTeam ? (
+          <div className="flex items-center justify-between gap-2.5 py-1.5">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-[38px] w-[38px] items-center justify-center rounded-lg border border-border bg-primary/6 text-[13px] font-bold text-primary">
+                {myTeam.tag}
+              </div>
+              <div>
+                <p className="text-[13px] font-semibold">{myTeam.name}</p>
+                <p className="text-[11px] text-muted-foreground">
+                  {myTeam.memberIds.length} {t.teams.members} · {myTeam.wins}W / {myTeam.losses}L
+                </p>
+              </div>
+            </div>
+            <Button type="button" variant="outline" size="sm" onClick={() => demo.leaveTeam()}>
+              {t.profile.leaveTeam}
+            </Button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2.5 py-1.5">
+            <div className="flex h-[38px] w-[38px] items-center justify-center rounded-lg border border-border bg-primary/6 text-[13px] font-bold text-primary">
+              —
+            </div>
+            <p className="text-[13px] text-muted-foreground">
+              {t.profile.notInTeam} ·{" "}
+              <Button size="sm" className="inline-flex h-auto px-3 py-1" render={<Link href="/teams" />}>
+                {t.profile.createOrJoin}
+              </Button>
+            </p>
+          </div>
+        )}
+      </Card>
+
+      <Card>
         <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{t.profile.account}</p>
-        <Button type="button" variant="destructive" className="w-full" onClick={signOutLocal}>
+        {(
+          [
+            { href: "/tickets", icon: "tickets" as NavIconId, label: t.profile.supportTickets },
+            { href: "/tournaments", icon: "tournaments" as NavIconId, label: t.profile.tournaments },
+            {
+              href: "/admin",
+              icon: "admin" as NavIconId,
+              label: t.profile.adminPanel,
+              badge: t.profile.staff,
+              variant: "red" as const,
+            },
+          ] as const
+        ).map((item, i, arr) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`flex cursor-pointer items-center gap-2.5 py-3 ${i < arr.length - 1 ? "border-b border-border" : ""}`}
+          >
+            <NavIcon name={item.icon} className="h-4 w-4 text-muted-foreground" />
+            <span className="flex-1 text-[13px] font-medium">{item.label}</span>
+            {"badge" in item && item.badge && <Tag variant={item.variant ?? "muted"}>{item.badge}</Tag>}
+            <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden strokeWidth={2} />
+          </Link>
+        ))}
+        <Button type="button" variant="destructive" className="mt-3 w-full" onClick={signOutLocal}>
           {t.profile.clearProfile}
         </Button>
         <p className="mt-2 text-center text-[11px] text-muted-foreground">
-          <Link href="/play" className="text-primary">{t.profile.tryQueue}</Link> — {t.profile.savedBrowser}
+          <Link href="/play" className="text-primary">
+            {t.profile.tryQueue}
+          </Link>{" "}
+          — {t.profile.savedBrowser}
         </p>
       </Card>
     </>

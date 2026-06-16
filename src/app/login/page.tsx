@@ -1,12 +1,5 @@
-import { cookies } from "next/headers";
-import { isDemoMode } from "@/lib/backend";
-import { LoginDemo } from "./login-demo";
-import { LoginDiscord } from "./login-discord";
+import { LoginEntry } from "./login-entry";
 
-export default async function LoginPage() {
-  const cookieStore = await cookies();
-  if (isDemoMode(cookieStore.get("bscl_demo")?.value)) {
-    return <LoginDemo />;
-  }
-  return <LoginDiscord />;
+export default function LoginPage() {
+  return <LoginEntry />;
 }

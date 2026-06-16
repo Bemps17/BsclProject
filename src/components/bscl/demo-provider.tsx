@@ -15,18 +15,27 @@ import {
   buildDemoLeaderboard,
   type LocalMatch,
 } from "@/lib/local-matchmaker";
+import type { LocalTeam, LocalTicket, LocalTournament } from "@/lib/local-demo-data";
+import { SEED_TEAMS, SEED_TICKETS, SEED_TOURNAMENTS } from "@/lib/local-demo-data";
 import {
   acceptDemoSession,
   advanceLocalDraft,
   confirmLocalMatchResult,
+  createLocalTeam,
+  createLocalTicket,
+  disputeLocalMatchResult,
   fillBotsAndStartMatch,
   fillQueueWithBots,
   getLocalState,
   joinLocalQueue,
+  joinLocalTeam,
   leaveLocalQueue,
+  leaveLocalTeam,
+  localAdminStats,
   localDemoStats,
   localPlayerMatches,
   localQueueSnapshot,
+  registerLocalTournament,
   resetDemoData,
   submitLocalMatchResult,
   subscribeLocalState,
@@ -51,8 +60,13 @@ type DemoContextValue = {
   shellUser: DemoShellUser;
   queue: ReturnType<typeof localQueueSnapshot>;
   stats: ReturnType<typeof localDemoStats>;
+  adminStats: ReturnType<typeof localAdminStats>;
   matches: LocalMatch[];
   myMatches: LocalMatch[];
+  teams: LocalTeam[];
+  tournaments: LocalTournament[];
+  tickets: LocalTicket[];
+  playerTeamId: string | null;
   leaderboard: ReturnType<typeof buildDemoLeaderboard>;
   refresh: () => void;
   acceptSession: () => void;
@@ -65,6 +79,12 @@ type DemoContextValue = {
   advanceDraft: (matchId: string) => void;
   submitMatch: (matchId: string, alphaScore: number, bravoScore: number) => void;
   confirmMatch: (matchId: string, asPlayerId?: string) => void;
+  disputeMatch: (matchId: string) => void;
+  createTeam: (tag: string, name: string) => void;
+  joinTeam: (teamId: string) => void;
+  leaveTeam: () => void;
+  registerTournament: (tournamentId: string) => void;
+  openTicket: (subject: string, matchId?: string) => void;
   resetAll: () => void;
 };
 
@@ -76,6 +96,11 @@ const EMPTY_STATE: LocalState = {
   inQueue: false,
   matches: [],
   matchCounter: 0,
+  teams: SEED_TEAMS,
+  tournaments: SEED_TOURNAMENTS,
+  tickets: SEED_TICKETS,
+  ticketCounter: SEED_TICKETS.length,
+  playerTeamId: null,
   sessionAccepted: false,
 };
 
@@ -112,6 +137,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
 
   const queue = useMemo(() => localQueueSnapshot(), [state]);
   const stats = useMemo(() => localDemoStats(), [state]);
+  const adminStats = useMemo(() => localAdminStats(), [state]);
   const myMatches = useMemo(
     () => (state.player ? localPlayerMatches(state.player.id) : []),
     [state.player, state.matches],
@@ -141,8 +167,13 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       shellUser,
       queue,
       stats,
+      adminStats,
       matches: state.matches,
       myMatches,
+      teams: state.teams,
+      tournaments: state.tournaments,
+      tickets: state.tickets,
+      playerTeamId: state.playerTeamId,
       leaderboard,
       refresh,
       acceptSession: () => {
@@ -185,12 +216,36 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         confirmLocalMatchResult(matchId, asPlayerId);
         refresh();
       },
+      disputeMatch: (matchId) => {
+        disputeLocalMatchResult(matchId);
+        refresh();
+      },
+      createTeam: (tag, name) => {
+        createLocalTeam(tag, name);
+        refresh();
+      },
+      joinTeam: (teamId) => {
+        joinLocalTeam(teamId);
+        refresh();
+      },
+      leaveTeam: () => {
+        leaveLocalTeam();
+        refresh();
+      },
+      registerTournament: (tournamentId) => {
+        registerLocalTournament(tournamentId);
+        refresh();
+      },
+      openTicket: (subject, matchId) => {
+        createLocalTicket(subject, matchId);
+        refresh();
+      },
       resetAll: () => {
         resetDemoData();
         refresh();
       },
     }),
-    [state, shellUser, queue, stats, myMatches, leaderboard, refresh],
+    [state, shellUser, queue, stats, adminStats, myMatches, leaderboard, refresh],
   );
 
   return (

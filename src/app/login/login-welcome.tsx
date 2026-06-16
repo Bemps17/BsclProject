@@ -10,13 +10,16 @@ import { LoginShell } from "./login-shell";
 
 export function LoginWelcome({
   signInAction,
+  backendEnabled = true,
 }: {
-  signInAction: () => Promise<void>;
+  signInAction?: () => Promise<void>;
+  backendEnabled?: boolean;
 }) {
   const router = useRouter();
   const t = useT();
   const [step, setStep] = useState<"choose" | "standard">("choose");
   const [loadingDemo, setLoadingDemo] = useState(false);
+  const [loadingStandard, setLoadingStandard] = useState(false);
 
   async function enterDemo() {
     setLoadingDemo(true);
@@ -29,16 +32,33 @@ export function LoginWelcome({
     }
   }
 
+  async function chooseStandard() {
+    setLoadingStandard(true);
+    try {
+      await fetch("/api/demo/exit", { method: "DELETE" });
+      setStep("standard");
+      router.refresh();
+    } finally {
+      setLoadingStandard(false);
+    }
+  }
+
   if (step === "standard") {
     return (
       <LoginShell description={t.login.discordDesc}>
         <div className="flex flex-col gap-3">
-          <form action={signInAction}>
-            <Button type="submit" className="w-full bg-[#5865F2] text-white hover:bg-[#4752C4]">
-              <DiscordIcon data-icon="inline-start" />
-              {t.login.discordCta}
-            </Button>
-          </form>
+          {backendEnabled && signInAction ? (
+            <form action={signInAction}>
+              <Button type="submit" className="w-full bg-[#5865F2] text-white hover:bg-[#4752C4]">
+                <DiscordIcon data-icon="inline-start" />
+                {t.login.discordCta}
+              </Button>
+            </form>
+          ) : (
+            <p className="rounded-lg border border-border bg-secondary px-3 py-2.5 text-sm text-muted-foreground">
+              {t.login.backendUnavailable}
+            </p>
+          )}
           <Button type="button" variant="outline" onClick={() => setStep("choose")}>
             {t.login.backToModeChoice}
           </Button>
@@ -65,7 +85,8 @@ export function LoginWelcome({
         <Button
           type="button"
           variant="outline"
-          onClick={() => setStep("standard")}
+          onClick={chooseStandard}
+          disabled={loadingStandard}
           className="group h-auto flex-col items-start gap-0 rounded-2xl border-2 border-primary/35 bg-gradient-to-br from-primary/8 to-card p-5 text-left hover:border-primary sm:p-6"
         >
           <span className="mb-3 inline-flex w-fit rounded-full border border-primary/35 bg-primary/12 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary">
@@ -78,7 +99,7 @@ export function LoginWelcome({
             {t.login.standardDesc}
           </span>
           <span className="mt-4 text-sm font-bold text-primary group-hover:underline">
-            {t.login.standardCta} →
+            {loadingStandard ? "…" : `${t.login.standardCta} →`}
           </span>
         </Button>
 

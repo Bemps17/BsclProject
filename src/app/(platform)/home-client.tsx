@@ -10,8 +10,8 @@ import {
   RankBadge,
   StatCell,
   TableScroll,
+  Tag,
 } from "@/components/bscl/ui";
-import { DemoHomeStats } from "@/app/(platform)/demo-home-stats";
 import { useLocale, useT } from "@/components/bscl/locale-provider";
 import { formatCount, interpolate } from "@/lib/i18n";
 import { formatMatchScore } from "@/lib/match-display";
@@ -144,8 +144,6 @@ export function HomeClient({
           sub={myPlayer ? t.home.overall : undefined}
         />
       </div>
-
-      <DemoHomeStats />
 
       <Card>
         <CardHeader

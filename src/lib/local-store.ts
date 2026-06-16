@@ -2,11 +2,20 @@
 
 import type { RankKey } from "@/lib/constants";
 import {
+  SEED_TEAMS,
+  SEED_TICKETS,
+  SEED_TOURNAMENTS,
+  type LocalTeam,
+  type LocalTicket,
+  type LocalTournament,
+} from "@/lib/local-demo-data";
+import {
   LOCAL_BOT_POOL,
   advanceDraftReveal,
   botQueueEntry,
   confirmLocalMatch,
   createMatchFromQueue,
+  disputeLocalMatch,
   resolveSubmitCaptainId,
   submitLocalScores,
   type LocalMatch,
@@ -42,6 +51,11 @@ export type LocalState = {
   inQueue: boolean;
   matches: LocalMatch[];
   matchCounter: number;
+  teams: LocalTeam[];
+  tournaments: LocalTournament[];
+  tickets: LocalTicket[];
+  ticketCounter: number;
+  playerTeamId: string | null;
   /** User accepted the demo launch modal */
   sessionAccepted: boolean;
 };
@@ -52,6 +66,11 @@ const DEFAULT_STATE: LocalState = {
   inQueue: false,
   matches: [],
   matchCounter: 0,
+  teams: SEED_TEAMS,
+  tournaments: SEED_TOURNAMENTS,
+  tickets: SEED_TICKETS,
+  ticketCounter: SEED_TICKETS.length,
+  playerTeamId: null,
   sessionAccepted: false,
 };
 
@@ -66,6 +85,11 @@ function readState(): LocalState {
       ...parsed,
       matches: (parsed.matches ?? []).map(normalizeLocalMatch),
       matchCounter: parsed.matchCounter ?? 0,
+      teams: parsed.teams?.length ? parsed.teams : SEED_TEAMS,
+      tournaments: parsed.tournaments?.length ? parsed.tournaments : SEED_TOURNAMENTS,
+      tickets: parsed.tickets?.length ? parsed.tickets : SEED_TICKETS,
+      ticketCounter: parsed.ticketCounter ?? SEED_TICKETS.length,
+      playerTeamId: parsed.playerTeamId ?? null,
       sessionAccepted: parsed.sessionAccepted ?? false,
     };
   } catch {
@@ -350,11 +374,192 @@ export function localDemoStats() {
     todayMatches,
     matchCount: state.matches.length,
     playerCount: state.player ? LOCAL_BOT_POOL.length + 1 : LOCAL_BOT_POOL.length,
+    teamCount: state.teams.length,
   };
+}
+
+export function localAdminStats() {
+  const state = readState();
+  return {
+    users: localDemoStats().playerCount,
+    openTickets: state.tickets.filter((t) => t.status === "OPEN").length,
+    activeBans: 0,
+    pendingMatches: state.matches.filter((m) => m.status === "SUBMITTED").length,
+  };
+}
+
+export function createLocalTeam(tag: string, name: string): LocalState {
+  const state = readState();
+  if (!state.player) throw new Error("No local player");
+
+  const trimmedTag = tag.trim().toUpperCase().slice(0, 4);
+  const trimmedName = name.trim();
+  if (!trimmedTag || !trimmedName) throw new Error("Team tag and name required");
+  if (state.playerTeamId) throw new Error("Already in a team");
+
+  const team: LocalTeam = {
+    id: `team_${Date.now()}`,
+    tag: trimmedTag,
+    name: trimmedName,
+    wins: 0,
+    losses: 0,
+    recruiting: true,
+    captainId: state.player.id,
+    captainName: state.player.displayName,
+    memberIds: [state.player.id],
+  };
+
+  const next = {
+    ...state,
+    teams: [team, ...state.teams],
+    playerTeamId: team.id,
+  };
+  writeState(next);
+  return next;
+}
+
+export function joinLocalTeam(teamId: string): LocalState {
+  const state = readState();
+  if (!state.player) throw new Error("No local player");
+  if (state.playerTeamId) throw new Error("Already in a team");
+
+  const index = state.teams.findIndex((t) => t.id === teamId);
+  if (index === -1) throw new Error("Team not found");
+
+  const team = state.teams[index];
+  if (!team.recruiting) throw new Error("Team is not recruiting");
+  if (team.memberIds.includes(state.player.id)) throw new Error("Already a member");
+
+  const updatedTeam: LocalTeam = {
+    ...team,
+    memberIds: [...team.memberIds, state.player.id],
+  };
+  const teams = [...state.teams];
+  teams[index] = updatedTeam;
+
+  const next = { ...state, teams, playerTeamId: teamId };
+  writeState(next);
+  return next;
+}
+
+export function leaveLocalTeam(): LocalState {
+  const state = readState();
+  if (!state.player || !state.playerTeamId) return state;
+
+  const teamIndex = state.teams.findIndex((t) => t.id === state.playerTeamId);
+  if (teamIndex === -1) {
+    const next = { ...state, playerTeamId: null };
+    writeState(next);
+    return next;
+  }
+
+  const team = state.teams[teamIndex];
+  const memberIds = team.memberIds.filter((id) => id !== state.player!.id);
+  let teams = [...state.teams];
+
+  if (memberIds.length === 0) {
+    teams = teams.filter((t) => t.id !== team.id);
+  } else {
+    const newCaptainId = memberIds[0];
+    const captainName =
+      newCaptainId === state.player!.id
+        ? state.player!.displayName
+        : LOCAL_BOT_POOL.find((b) => b.id === newCaptainId)?.name ?? team.captainName;
+    teams[teamIndex] = {
+      ...team,
+      memberIds,
+      captainId: newCaptainId,
+      captainName,
+    };
+  }
+
+  const next = { ...state, teams, playerTeamId: null };
+  writeState(next);
+  return next;
+}
+
+export function registerLocalTournament(tournamentId: string): LocalState {
+  const state = readState();
+  if (!state.player) throw new Error("No local player");
+
+  const index = state.tournaments.findIndex((t) => t.id === tournamentId);
+  if (index === -1) throw new Error("Tournament not found");
+
+  const tournament = state.tournaments[index];
+  if (tournament.status === "ENDED") throw new Error("Tournament has ended");
+  if (tournament.registered) throw new Error("Already registered");
+
+  const tournaments = [...state.tournaments];
+  tournaments[index] = { ...tournament, registered: true };
+
+  const next = { ...state, tournaments };
+  writeState(next);
+  return next;
+}
+
+export function createLocalTicket(subject: string, matchId?: string): LocalState {
+  const state = readState();
+  const trimmed = subject.trim();
+  if (!trimmed) throw new Error("Subject required");
+
+  const ticketNumber = state.ticketCounter + 1;
+  const ticket: LocalTicket = {
+    id: `ticket_${Date.now()}`,
+    number: ticketNumber,
+    subject: trimmed,
+    status: "OPEN",
+    matchId,
+    createdAt: new Date().toISOString(),
+  };
+
+  const next = {
+    ...state,
+    tickets: [ticket, ...state.tickets],
+    ticketCounter: ticketNumber,
+  };
+  writeState(next);
+  return next;
+}
+
+export function disputeLocalMatchResult(matchId: string): LocalState {
+  const state = readState();
+  if (!state.player) throw new Error("No local player");
+
+  const index = state.matches.findIndex((m) => m.id === matchId);
+  if (index === -1) throw new Error("Match not found");
+
+  const disputed = disputeLocalMatch(state.matches[index], state.player.id);
+  const matches = [...state.matches];
+  matches[index] = disputed;
+
+  const ticketNumber = state.ticketCounter + 1;
+  const ticket: LocalTicket = {
+    id: `ticket_${Date.now()}`,
+    number: ticketNumber,
+    subject: `Match Dispute — #${String(disputed.number).padStart(3, "0")}`,
+    status: "OPEN",
+    matchId,
+    createdAt: new Date().toISOString(),
+  };
+
+  const next = {
+    ...state,
+    matches,
+    tickets: [ticket, ...state.tickets],
+    ticketCounter: ticketNumber,
+  };
+  writeState(next);
+  return next;
+}
+
+export function getLocalPlayerTeam(): LocalTeam | null {
+  const state = readState();
+  if (!state.playerTeamId) return null;
+  return state.teams.find((t) => t.id === state.playerTeamId) ?? null;
 }
 
 export function localPlayerMatches(playerId: string): LocalMatch[] {
   return readState().matches.filter((m) => m.players.some((p) => p.playerId === playerId));
 }
 
-export { LOCAL_BOT_POOL, type LocalMatch };
+export { LOCAL_BOT_POOL, type LocalMatch, type LocalTeam, type LocalTicket, type LocalTournament };

@@ -46,6 +46,10 @@ export function DemoHub() {
     (m) => m.status === "LIVE" || m.status === "SUBMITTED" || m.status === "CONFIRMED",
   );
   const hasMatches = demo.matches.some((m) => m.status === "CONFIRMED");
+  const hasTeam = Boolean(demo.playerTeamId);
+  const hasTournament = demo.tournaments.some((tour) => tour.registered);
+  const hasPlayerTicket = demo.tickets.some((ticket) => /ticket_\d{13}/.test(ticket.id));
+  const hasDispute = demo.matches.some((m) => m.status === "DISPUTED");
 
   function handleDiscordAuthorize(account: MockDiscordAccount) {
     try {
@@ -68,12 +72,19 @@ export function DemoHub() {
     }
   }
 
-  const steps = [
+  const coreSteps = [
     { done: signedIn, label: t.demo.steps.signIn },
     { done: inQueue || Boolean(activeMatch) || hasMatches, label: t.demo.steps.queue },
     { done: draftDone || hasMatches, label: t.demo.steps.draft },
-    { done: hasMatches, label: t.demo.steps.match },
+    { done: hasMatches || hasDispute, label: t.demo.steps.match },
     { done: hasMatches, label: t.demo.steps.elo },
+  ];
+
+  const exploreSteps = [
+    { done: hasTeam, label: t.demo.steps.team, href: "/teams" },
+    { done: hasTournament, label: t.demo.steps.tournament, href: "/tournaments" },
+    { done: hasPlayerTicket, label: t.demo.steps.ticket, href: "/tickets" },
+    { done: signedIn, label: t.demo.steps.admin, href: "/admin" },
   ];
 
   return (
@@ -100,7 +111,7 @@ export function DemoHub() {
       <Card>
         <CardHeader title={t.demo.journeyTitle} />
         <ol className="flex flex-col gap-2">
-          {steps.map((step, i) => (
+          {coreSteps.map((step, i) => (
             <li
               key={step.label}
               className="flex items-center gap-3 rounded-lg border border-primary/25 bg-secondary px-3 py-2.5 text-sm"
@@ -116,6 +127,35 @@ export function DemoHub() {
                 {step.done ? "✓" : i + 1}
               </span>
               <span className={step.done ? "text-foreground" : "text-muted-foreground"}>{step.label}</span>
+            </li>
+          ))}
+        </ol>
+      </Card>
+
+      <Card>
+        <CardHeader title={t.demo.exploreTitle} />
+        <ol className="flex flex-col gap-2">
+          {exploreSteps.map((step, i) => (
+            <li
+              key={step.label}
+              className="flex items-center gap-3 rounded-lg border border-border bg-card px-3 py-2.5 text-sm"
+            >
+              <span
+                className={cn(
+                  "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold",
+                  step.done
+                    ? "bg-chart-2 text-primary-foreground"
+                    : "bg-muted text-muted-foreground",
+                )}
+              >
+                {step.done ? "✓" : i + 1}
+              </span>
+              <span className={cn("flex-1", step.done ? "text-foreground" : "text-muted-foreground")}>
+                {step.label}
+              </span>
+              <Button variant="link" className="h-auto p-0 text-xs" render={<Link href={step.href} />}>
+                →
+              </Button>
             </li>
           ))}
         </ol>

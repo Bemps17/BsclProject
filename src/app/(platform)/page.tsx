@@ -1,5 +1,8 @@
+import { cookies } from "next/headers";
+import { HomeDemo } from "@/app/(platform)/home-demo";
 import { HomeClient } from "@/app/(platform)/home-client";
 import { BSCL } from "@/lib/constants";
+import { isDemoMode } from "@/lib/backend";
 import {
   getCurrentPlayerProfile,
   getLeaderboard,
@@ -7,6 +10,11 @@ import {
 } from "@/lib/data";
 
 export default async function HomePage() {
+  const cookieStore = await cookies();
+  if (isDemoMode(cookieStore.get("bscl_demo")?.value)) {
+    return <HomeDemo />;
+  }
+
   const [stats, topPlayers, profile] = await Promise.all([
     getPlatformStats(),
     getLeaderboard(5),

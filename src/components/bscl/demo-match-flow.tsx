@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useDemoOptional } from "@/components/bscl/demo-provider";
+import { useT } from "@/components/bscl/locale-provider";
 import {
   Button,
   Card,
@@ -9,7 +10,6 @@ import {
   Input,
   Tag,
 } from "@/components/bscl/ui";
-import { useT } from "@/components/bscl/locale-provider";
 import { draftRevealTotalSteps } from "@/lib/local-matchmaker";
 import { matchStatusVariant } from "@/lib/match-display";
 import { cn } from "@/lib/utils";
@@ -46,8 +46,19 @@ function DemoMatchFlowPanel({ match }: { match: LocalMatch }) {
     match.submittedBy != null &&
     match.submittedBy !== playerId &&
     isCaptain;
-
   const totalDraftSteps = draftRevealTotalSteps(match);
+
+  function handleDispute() {
+    setError(null);
+    try {
+      demo!.disputeMatch(match.id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.demo.actionFailed);
+    }
+  }
+
+  const canDispute =
+    (match.status === "SUBMITTED" || match.status === "LIVE") && isCaptain;
   const draftDone = match.draftRevealStep >= totalDraftSteps;
   const currentPick =
     match.draftRevealStep > 0 && match.draftRevealStep <= match.draftPicks.length
@@ -235,7 +246,18 @@ function DemoMatchFlowPanel({ match }: { match: LocalMatch }) {
             {t.demo.simulateConfirm}
           </Button>
         )}
+        {canDispute && match.status !== "DISPUTED" && (
+          <Button type="button" variant="destructive" onClick={handleDispute}>
+            {t.demo.disputeScore}
+          </Button>
+        )}
       </div>
+
+      {match.status === "DISPUTED" && (
+        <p className="mt-3 rounded-lg border border-destructive/35 bg-destructive/8 px-3 py-2 text-center text-sm text-destructive">
+          {t.demo.disputeOpened}
+        </p>
+      )}
 
       {confirmedToast != null && (
         <p className="mt-3 rounded-lg border border-chart-2/35 bg-chart-2/8 px-3 py-2 text-center text-sm font-semibold text-chart-2">

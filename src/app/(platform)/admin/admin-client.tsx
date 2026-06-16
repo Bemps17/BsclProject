@@ -6,6 +6,7 @@ import { useT } from "@/components/bscl/locale-provider";
 
 export function AdminClient({
   stats,
+  demoMode = false,
 }: {
   stats: {
     users: number;
@@ -13,15 +14,23 @@ export function AdminClient({
     activeBans: number;
     pendingMatches: number;
   };
+  demoMode?: boolean;
 }) {
   const t = useT();
 
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <h2 className="font-[family-name:var(--font-rajdhani)] text-[22px] font-bold">{t.admin.title}</h2>
-        <Tag variant="red">{t.common.staffOnly}</Tag>
+        {demoMode ? (
+          <Tag variant="gold">{t.admin.demoPreview}</Tag>
+        ) : (
+          <Tag variant="red">{t.common.staffOnly}</Tag>
+        )}
       </div>
+      {demoMode && (
+        <p className="text-sm text-muted-foreground">{t.admin.demoPreviewDesc}</p>
+      )}
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
         <StatCell label={t.admin.users} value={stats.users} />
         <StatCell label={t.admin.tickets} value={stats.openTickets} valueClassName={stats.openTickets > 0 ? "text-destructive" : undefined} />

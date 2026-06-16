@@ -266,6 +266,26 @@ export function resolveSubmitCaptainId(match: LocalMatch, humanId: string): stri
   return match.captainAlpha;
 }
 
+export function disputeLocalMatch(
+  match: LocalMatch,
+  reporterId: string,
+): LocalMatch {
+  if (match.status !== "SUBMITTED" && match.status !== "LIVE") {
+    throw new Error("Match cannot be disputed");
+  }
+  return {
+    ...match,
+    status: "DISPUTED",
+    submittedBy: reporterId,
+  };
+}
+
+export function matchSideLabel(match: LocalMatch, side: "ALPHA" | "BRAVO"): string {
+  const captainId = side === "ALPHA" ? match.captainAlpha : match.captainBravo;
+  const captain = match.players.find((p) => p.playerId === captainId);
+  return captain ? `${captain.name} Squad` : side === "ALPHA" ? "Alpha" : "Bravo";
+}
+
 export function buildDemoLeaderboard(
   localPlayer: {
     id: string;

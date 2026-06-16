@@ -138,6 +138,11 @@ export const fr: Translations = {
     empty: "Aucune équipe pour l'instant. Crée la première escouade de la Saison 1.",
     members: "membres",
     captain: "Capitaine",
+    tagLabel: "Tag",
+    nameLabel: "Nom d'équipe",
+    namePlaceholder: "Apex Gaming",
+    joinTeam: "Rejoindre",
+    myTeam: "Mon équipe",
   },
   matches: {
     title: "Historique des matchs",
@@ -176,6 +181,7 @@ export const fr: Translations = {
     tryQueue: "Tester la file",
     noMatchesDemo: "Aucun match en mode démo. Rejoins la file pour tester le flux.",
     savedBrowser: "enregistré dans ce navigateur uniquement.",
+    leaveTeam: "Quitter l'équipe",
   },
   login: {
     welcomeSubtitle: "Choisis comment utiliser BSCL — ligue compétitive ou prototype local.",
@@ -188,6 +194,8 @@ export const fr: Translations = {
     demoCardDesc: "Bac à sable orange dans ton navigateur — auth simulée, bots, draft et ELO.",
     demoCtaCard: "Lancer la démo",
     backToModeChoice: "Retour au choix du mode",
+    backendUnavailable:
+      "Le mode compétitif nécessite DATABASE_URL et AUTH_SECRET. Configure le backend ou utilise le mode démo.",
     discordDesc: "Connecte-toi avec Discord pour rejoindre la ligue compétitive.",
     discordCta: "Continuer avec Discord",
     demoDesc: "Mode démo — connexion via Discord simulé. Les données restent dans ton navigateur.",
@@ -263,6 +271,8 @@ export const fr: Translations = {
     youAreAlphaCaptain: "Tu es capitaine Alpha — soumets le score à la fin du match.",
     youAreBravoCaptain: "Tu es capitaine Bravo — soumets ou confirme le score.",
     matchComplete: "Match confirmé !",
+    disputeScore: "Contester le score",
+    disputeOpened: "Litige ouvert — un ticket support a été créé.",
     stats: {
       queue: "En file",
       live: "Matchs live",
@@ -274,7 +284,12 @@ export const fr: Translations = {
       draft: "Capitaines & snake draft",
       match: "Soumettre & confirmer le score",
       elo: "ELO mis à jour sur le profil",
+      team: "Créer ou rejoindre une équipe",
+      tournament: "S'inscrire à un tournoi",
+      ticket: "Ouvrir un ticket (ou contester un match)",
+      admin: "Aperçu du panneau admin",
     },
+    exploreTitle: "Explorer toute la plateforme",
   },
   admin: {
     title: "Panneau admin",
@@ -282,6 +297,9 @@ export const fr: Translations = {
     tickets: "Tickets",
     bans: "Bans",
     pending: "En attente",
+    demoPreview: "Aperçu démo",
+    demoPreviewDesc:
+      "Aperçu lecture seule des outils staff — les stats reflètent ta session démo locale.",
     panels: [
       { title: "Joueurs", sub: "Gérer, bannir, rôles" },
       { title: "Tournois", sub: "Brackets, résultats" },
@@ -298,6 +316,7 @@ export const fr: Translations = {
     prizePool: "Cagnotte",
     winner: "Vainqueur",
     register: "S'inscrire",
+    registered: "Inscrit",
     bracket: "Bracket",
     results: "Résultats",
     statusOpen: "Ouvert",
@@ -308,6 +327,8 @@ export const fr: Translations = {
     title: "Support",
     new: "Nouveau",
     myTickets: "Mes tickets",
+    subjectLabel: "Sujet",
+    subjectPlaceholder: "Décris ton problème…",
     statusOpen: "Ouvert",
     statusAnswered: "Répondu",
     statusClosed: "Fermé",
