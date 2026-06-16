@@ -36,6 +36,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  interactiveWidget: "resizes-content",
 };
 
 export default function RootLayout({
@@ -46,7 +47,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${inter.variable} ${rajdhani.variable} ${jetbrains.variable} min-h-svh`}
+        className={`${inter.variable} ${rajdhani.variable} ${jetbrains.variable} min-h-dvh min-h-svh`}
       >
         <LocaleProvider>{children}</LocaleProvider>
       </body>

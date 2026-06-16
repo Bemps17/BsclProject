@@ -25,11 +25,12 @@ describe("isDemoMode", () => {
     vi.unstubAllEnvs();
   });
 
-  it("returns true when backend is disabled", async () => {
+  it("returns false when backend is disabled and no demo cookie", async () => {
     vi.stubEnv("DATABASE_URL", "");
     vi.stubEnv("AUTH_SECRET", "");
     const { isDemoMode } = await import("./backend");
-    expect(isDemoMode()).toBe(true);
+    expect(isDemoMode()).toBe(false);
+    expect(isDemoMode("1")).toBe(true);
   });
 
   it("returns true when demo cookie is set and backend enabled", async () => {
@@ -46,5 +47,37 @@ describe("isDemoMode", () => {
     vi.stubEnv("BSCL_DEMO", "1");
     const { isDemoMode } = await import("./backend");
     expect(isDemoMode()).toBe(true);
+  });
+});
+
+describe("hasPlatformAccess", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("allows authenticated session", async () => {
+    vi.stubEnv("DATABASE_URL", "postgresql://localhost/test");
+    vi.stubEnv("AUTH_SECRET", "secret");
+    const { hasPlatformAccess } = await import("./backend");
+    expect(
+      hasPlatformAccess({
+        getSessionCookie: (name) =>
+          name === "authjs.session-token" ? "abc" : undefined,
+      }),
+    ).toBe(true);
+  });
+
+  it("allows demo cookie without session", async () => {
+    vi.stubEnv("DATABASE_URL", "postgresql://localhost/test");
+    vi.stubEnv("AUTH_SECRET", "secret");
+    const { hasPlatformAccess } = await import("./backend");
+    expect(hasPlatformAccess({ demoCookie: "1" })).toBe(true);
+  });
+
+  it("denies access without session or demo cookie", async () => {
+    vi.stubEnv("DATABASE_URL", "postgresql://localhost/test");
+    vi.stubEnv("AUTH_SECRET", "secret");
+    const { hasPlatformAccess } = await import("./backend");
+    expect(hasPlatformAccess({})).toBe(false);
   });
 });

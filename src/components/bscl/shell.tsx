@@ -272,7 +272,7 @@ export function AppShell({
     <div
       data-demo-mode={demoMode ? "true" : undefined}
       className={cn(
-        "flex min-h-svh flex-col md:grid md:h-svh md:min-h-0 md:grid-cols-[240px_minmax(0,1fr)] md:grid-rows-[56px_minmax(0,1fr)] md:overflow-hidden lg:grid-cols-[252px_minmax(0,1fr)]",
+        "flex min-h-dvh min-h-svh flex-col md:grid md:h-dvh md:min-h-0 md:grid-cols-[240px_minmax(0,1fr)] md:grid-rows-[56px_minmax(0,1fr)] md:overflow-hidden lg:grid-cols-[252px_minmax(0,1fr)]",
         demoMode && "demo-mode-root",
       )}
     >
