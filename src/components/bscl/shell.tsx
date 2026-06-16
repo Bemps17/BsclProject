@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LogoHex } from "@/components/bscl/ui";
 import { useDemoOptional } from "@/components/bscl/demo-provider";
-import { NAV_ITEMS, PAGE_TITLES, RANK_LABELS, type RankKey } from "@/lib/constants";
+import { LanguageSwitcher, useT } from "@/components/bscl/locale-provider";
+import { NAV_ITEMS, type RankKey } from "@/lib/constants";
+import type { Translations } from "@/lib/i18n";
 
 export type ShellUser = {
   name: string;
@@ -13,6 +15,18 @@ export type ShellUser = {
   rankKey: RankKey;
   elo: number;
 } | null;
+
+const NAV_LABEL_KEYS: Record<string, keyof Translations["nav"]> = {
+  home: "home",
+  play: "play",
+  rankings: "rankings",
+  teams: "teams",
+  tournaments: "tournaments",
+  matches: "matches",
+  profile: "profile",
+  tickets: "tickets",
+  admin: "admin",
+};
 
 function NavLink({
   href,
@@ -56,13 +70,15 @@ function NavLink({
 }
 
 function UserTile({ user, demoMode }: { user: ShellUser; demoMode?: boolean }) {
+  const t = useT();
+
   if (!user) {
     return (
       <Link
         href="/login"
         className="flex items-center justify-center rounded-lg border border-[#1E2D45] bg-[#162032] p-2.5 text-xs font-semibold text-[#0066FF] transition hover:border-[#0066FF]"
       >
-        {demoMode ? "Guest sign-in" : "Sign in with Discord"}
+        {demoMode ? t.common.guestSignIn : t.common.signInDiscord}
       </Link>
     );
   }
@@ -78,7 +94,7 @@ function UserTile({ user, demoMode }: { user: ShellUser; demoMode?: boolean }) {
       <div className="min-w-0">
         <div className="truncate text-[13px] font-semibold">{user.name}</div>
         <div className="text-[11px] font-semibold text-[#F59E0B]">
-          ◆ {RANK_LABELS[user.rankKey]} · {user.elo} ELO
+          ◆ {t.ranks[user.rankKey]} · {user.elo} {t.common.elo}
         </div>
       </div>
     </Link>
@@ -87,8 +103,8 @@ function UserTile({ user, demoMode }: { user: ShellUser; demoMode?: boolean }) {
 
 export function Sidebar({ user, demoMode }: { user: ShellUser; demoMode?: boolean }) {
   const pathname = usePathname();
+  const t = useT();
   const sections = ["platform", "account", "staff"] as const;
-  const labels = { platform: "Platform", account: "Account", staff: "Staff" };
 
   return (
     <aside className="hidden md:flex md:flex-col md:overflow-y-auto md:border-r md:border-[#1E2D45] md:bg-[#111827]">
@@ -105,19 +121,23 @@ export function Sidebar({ user, demoMode }: { user: ShellUser; demoMode?: boolea
         return (
           <div key={section} className="px-2.5 pt-4">
             <div className="mb-1 px-2 text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
-              {labels[section]}
+              {t.sections[section]}
             </div>
-            {items.map((item) => (
-              <NavLink
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                icon={item.icon}
-                badge={item.badge}
-                badgeRed={item.badgeRed}
-                active={pathname === item.href}
-              />
-            ))}
+            {items.map((item) => {
+              const labelKey = NAV_LABEL_KEYS[item.id];
+              const label = labelKey ? t.nav[labelKey] : item.label;
+              return (
+                <NavLink
+                  key={item.href}
+                  href={item.href}
+                  label={label}
+                  icon={item.icon}
+                  badge={item.badge}
+                  badgeRed={item.badgeRed}
+                  active={pathname === item.href}
+                />
+              );
+            })}
           </div>
         );
       })}
@@ -131,7 +151,9 @@ export function Sidebar({ user, demoMode }: { user: ShellUser; demoMode?: boolea
 
 export function Topbar({ demoMode }: { demoMode?: boolean }) {
   const pathname = usePathname();
-  const title = PAGE_TITLES[pathname] ?? "BSCL";
+  const t = useT();
+  const pageKey = pathname as keyof Translations["pages"];
+  const title = t.pages[pageKey] ?? "BSCL";
 
   return (
     <header className="sticky top-0 z-[100] flex h-14 shrink-0 items-center gap-3 border-b border-[#1E2D45] bg-[#111827] px-4 md:static md:px-6">
@@ -145,20 +167,21 @@ export function Topbar({ demoMode }: { demoMode?: boolean }) {
         {title}
       </h1>
       <div className="flex-1" />
+      <LanguageSwitcher />
       {demoMode && (
         <span className="hidden rounded-full border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.12)] px-2 py-0.5 text-[10px] font-semibold text-[#F59E0B] sm:inline">
-          Demo · local
+          {t.common.demoBadge}
         </span>
       )}
       <div className="flex items-center gap-2 rounded-full border border-[#1E2D45] bg-[#162032] px-2 py-1 text-[11px] text-[#6B7280]">
         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#22C55E] shadow-[0_0_5px_#22C55E]" />
-        Online
+        {t.common.online}
       </div>
       <Link
         href="/play"
         className="inline-flex items-center justify-center rounded-lg bg-[#0066FF] px-3.5 py-1.5 text-xs font-semibold text-white shadow-[0_0_14px_rgba(0,102,255,.28)] transition active:scale-[.97]"
       >
-        Join Queue
+        {t.common.joinQueue}
       </Link>
     </header>
   );
@@ -166,12 +189,16 @@ export function Topbar({ demoMode }: { demoMode?: boolean }) {
 
 export function Tabbar() {
   const pathname = usePathname();
+  const t = useT();
   const tabs = NAV_ITEMS.filter((n) => n.mobile);
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-[200] flex h-16 border-t border-[#1E2D45] bg-[#111827] pb-[env(safe-area-inset-bottom,0px)] md:hidden">
       {tabs.map((tab) => {
         const active = pathname === tab.href;
+        const labelKey = NAV_LABEL_KEYS[tab.id];
+        const label =
+          tab.id === "profile" ? t.nav.me : labelKey ? t.nav[labelKey] : tab.label;
         return (
           <Link
             key={tab.href}
@@ -187,7 +214,7 @@ export function Tabbar() {
             <span className={cn("text-xl leading-none transition-transform", active && "scale-110")}>
               {tab.icon}
             </span>
-            {tab.label === "My Profile" ? "Me" : tab.label}
+            {label}
             {tab.badge !== undefined && (
               <span className="absolute right-[calc(50%-16px)] top-2 min-w-[14px] rounded-full bg-[#EF4444] px-1 text-center text-[9px] font-bold leading-[14px] text-white">
                 {tab.badge}

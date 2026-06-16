@@ -2,23 +2,13 @@
 
 import { useState } from "react";
 import { Card, EmptyState, RankBadge, StatCell } from "@/components/bscl/ui";
+import { useLocale, useT } from "@/components/bscl/locale-provider";
 import type { LeaderboardEntry } from "@/lib/match-display";
 import { type RankKey } from "@/lib/constants";
+import { formatCount } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 type LbTab = "all" | RankKey;
-
-const TABS: { key: LbTab; label: string }[] = [
-  { key: "all", label: "All" },
-  { key: "elite", label: "Elite" },
-  { key: "diamond", label: "Diamond" },
-  { key: "plat", label: "Plat" },
-  { key: "gold", label: "Gold" },
-];
-
-function formatCount(n: number): string {
-  return n.toLocaleString("en-US");
-}
 
 export function RankingsClient({
   initialLeaderboard,
@@ -32,7 +22,17 @@ export function RankingsClient({
     yourRank: number | null;
   };
 }) {
+  const t = useT();
+  const { locale } = useLocale();
   const [tab, setTab] = useState<LbTab>("all");
+
+  const TABS: { key: LbTab; label: string }[] = [
+    { key: "all", label: t.rankings.all },
+    { key: "elite", label: t.rankings.elite },
+    { key: "diamond", label: t.rankings.diamond },
+    { key: "plat", label: t.rankings.plat },
+    { key: "gold", label: t.rankings.gold },
+  ];
 
   const rows =
     tab === "all"
@@ -42,42 +42,42 @@ export function RankingsClient({
   return (
     <>
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
-        <StatCell label="Players" value={formatCount(stats.playerCount)} />
-        <StatCell label="Top ELO" value={stats.topElo || "—"} valueClassName="text-[#0066FF]" />
-        <StatCell label="Your ELO" value={stats.yourElo ?? "—"} />
-        <StatCell label="Your Rank" value={stats.yourRank ? `#${stats.yourRank}` : "—"} />
+        <StatCell label={t.rankings.players} value={formatCount(stats.playerCount, locale)} />
+        <StatCell label={t.rankings.topElo} value={stats.topElo || "—"} valueClassName="text-[#0066FF]" />
+        <StatCell label={t.rankings.yourElo} value={stats.yourElo ?? "—"} />
+        <StatCell label={t.rankings.yourRank} value={stats.yourRank ? `#${stats.yourRank}` : "—"} />
       </div>
 
       <div className="flex rounded-lg border border-[#1E2D45] bg-[#162032] p-0.5">
-        {TABS.map((t) => (
+        {TABS.map((item) => (
           <button
-            key={t.key}
+            key={item.key}
             type="button"
-            onClick={() => setTab(t.key)}
+            onClick={() => setTab(item.key)}
             className={cn(
               "flex-1 rounded-md px-1 py-1.5 text-xs font-semibold transition-all",
-              tab === t.key
+              tab === item.key
                 ? "bg-[#0066FF] text-white shadow-[0_0_10px_rgba(0,102,255,.28)]"
                 : "text-[#6B7280]",
             )}
           >
-            {t.label}
+            {item.label}
           </button>
         ))}
       </div>
 
       <Card>
         {rows.length === 0 ? (
-          <EmptyState message="No players in this rank bracket yet." />
+          <EmptyState message={t.rankings.emptyBracket} />
         ) : (
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-[#1E2D45] text-left text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
                 <th className="px-2.5 py-2">#</th>
-                <th className="px-2.5 py-2">Player</th>
-                <th className="px-2.5 py-2">Rank</th>
-                <th className="px-2.5 py-2">ELO</th>
-                <th className="px-2.5 py-2">W%</th>
+                <th className="px-2.5 py-2">{t.common.player}</th>
+                <th className="px-2.5 py-2">{t.common.rank}</th>
+                <th className="px-2.5 py-2">{t.common.elo}</th>
+                <th className="px-2.5 py-2">{t.rankings.winPct}</th>
               </tr>
             </thead>
             <tbody>

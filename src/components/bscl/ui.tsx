@@ -1,5 +1,8 @@
+"use client";
+
 import { cn } from "@/lib/utils";
-import { RANK_LABELS, RANK_STYLES, type RankKey } from "@/lib/constants";
+import { useT } from "@/components/bscl/locale-provider";
+import { RANK_STYLES, type RankKey } from "@/lib/constants";
 
 export function RankBadge({
   rank,
@@ -8,6 +11,7 @@ export function RankBadge({
   rank: RankKey;
   className?: string;
 }) {
+  const t = useT();
   return (
     <span
       className={cn(
@@ -16,7 +20,7 @@ export function RankBadge({
         className,
       )}
     >
-      {RANK_LABELS[rank]}
+      {t.ranks[rank]}
     </span>
   );
 }
@@ -150,6 +154,7 @@ export function MatchRow({
   meta: string;
   delta?: number;
 }) {
+  const t = useT();
   const win = result === "win";
   return (
     <div className="flex items-center gap-2.5 rounded-lg border border-[#1E2D45] bg-[#162032] px-3 py-2.5">
@@ -161,7 +166,7 @@ export function MatchRow({
             : "border border-[rgba(239,68,68,.25)] bg-[rgba(239,68,68,.12)] text-[#EF4444]",
         )}
       >
-        {win ? "WIN" : "LOSS"}
+        {win ? t.common.win : t.common.loss}
       </span>
       <span className="font-[family-name:var(--font-jetbrains)] text-sm font-bold tracking-widest">
         {score}
