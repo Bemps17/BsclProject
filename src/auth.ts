@@ -6,6 +6,7 @@ import { getRankFromElo, STARTING_ELO } from "@/lib/elo";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  trustHost: true,
   providers: [
     Discord({
       clientId: process.env.DISCORD_CLIENT_ID!,
