@@ -13,6 +13,7 @@ export type Translations = {
     admin: string;
     me: string;
     demo: string;
+    more: string;
   };
   sections: {
     platform: string;
@@ -29,7 +30,8 @@ export type Translations = {
     | "/tournaments"
     | "/tickets"
     | "/admin"
-    | "/demo",
+    | "/demo"
+    | "/more",
     string
   >;
   ranks: {
@@ -171,6 +173,16 @@ export type Translations = {
     savedBrowser: string;
   };
   login: {
+    welcomeSubtitle: string;
+    standardBadge: string;
+    standardTitle: string;
+    standardDesc: string;
+    standardCta: string;
+    demoBadge: string;
+    demoTitle: string;
+    demoCardDesc: string;
+    demoCtaCard: string;
+    backToModeChoice: string;
     discordDesc: string;
     discordCta: string;
     demoDesc: string;
@@ -190,6 +202,10 @@ export type Translations = {
       customUsername: string;
       demoNote: string;
     };
+  };
+  more: {
+    demoHint: string;
+    footerHint: string;
   };
   demo: {
     modeLabel: string;

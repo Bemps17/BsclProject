@@ -13,6 +13,7 @@ export const fr: Translations = {
     admin: "Admin",
     me: "Moi",
     demo: "Démo",
+    more: "Plus",
   },
   sections: {
     platform: "Plateforme",
@@ -30,6 +31,7 @@ export const fr: Translations = {
     "/tickets": "Support",
     "/admin": "Panneau admin",
     "/demo": "Mode démo",
+    "/more": "Plus",
   },
   ranks: {
     elite: "ÉLITE",
@@ -176,6 +178,16 @@ export const fr: Translations = {
     savedBrowser: "enregistré dans ce navigateur uniquement.",
   },
   login: {
+    welcomeSubtitle: "Choisis comment utiliser BSCL — ligue compétitive ou prototype local.",
+    standardBadge: "Production",
+    standardTitle: "Mode compétitif",
+    standardDesc: "Connexion Discord, file réelle, classements et progression de saison.",
+    standardCta: "Continuer avec Discord",
+    demoBadge: "Prototype",
+    demoTitle: "Mode démo",
+    demoCardDesc: "Bac à sable orange dans ton navigateur — auth simulée, bots, draft et ELO.",
+    demoCtaCard: "Lancer la démo",
+    backToModeChoice: "Retour au choix du mode",
     discordDesc: "Connecte-toi avec Discord pour rejoindre la ligue compétitive.",
     discordCta: "Continuer avec Discord",
     demoDesc: "Mode démo — connexion via Discord simulé. Les données restent dans ton navigateur.",
@@ -198,6 +210,10 @@ export const fr: Translations = {
       customUsername: "Nom personnalisé",
       demoNote: "Simulation démo — aucune connexion Discord réelle.",
     },
+  },
+  more: {
+    demoHint: "Tu es dans le prototype local. Quitte à tout moment pour revenir au choix du mode.",
+    footerHint: "Toutes les sections de la plateforme sont accessibles ici sur mobile.",
   },
   demo: {
     modeLabel: "Mode démo",

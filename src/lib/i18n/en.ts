@@ -13,6 +13,7 @@ export const en: Translations = {
     admin: "Admin",
     me: "Me",
     demo: "Demo",
+    more: "More",
   },
   sections: {
     platform: "Platform",
@@ -30,6 +31,7 @@ export const en: Translations = {
     "/tickets": "Support",
     "/admin": "Admin Panel",
     "/demo": "Demo Mode",
+    "/more": "More",
   },
   ranks: {
     elite: "ELITE",
@@ -176,6 +178,16 @@ export const en: Translations = {
     savedBrowser: "saved in this browser only.",
   },
   login: {
+    welcomeSubtitle: "Choose how you want to use BSCL — competitive league or local prototype.",
+    standardBadge: "Production",
+    standardTitle: "Competitive mode",
+    standardDesc: "Sign in with Discord, join the real queue, rankings, and season progression.",
+    standardCta: "Continue with Discord",
+    demoBadge: "Prototype",
+    demoTitle: "Demo mode",
+    demoCardDesc: "Orange-themed sandbox in your browser — simulated auth, bots, draft, and ELO.",
+    demoCtaCard: "Launch demo",
+    backToModeChoice: "Back to mode selection",
     discordDesc: "Sign in with Discord to join the competitive league.",
     discordCta: "Continue with Discord",
     demoDesc: "Demo mode — sign in via simulated Discord. Data stays in your browser only.",
@@ -198,6 +210,10 @@ export const en: Translations = {
       customUsername: "Custom username",
       demoNote: "Demo simulation — no real Discord connection.",
     },
+  },
+  more: {
+    demoHint: "You are in the local prototype. Exit anytime to return to mode selection.",
+    footerHint: "All platform sections are available here on mobile.",
   },
   demo: {
     modeLabel: "Demo mode",

@@ -8,6 +8,7 @@ import { useT } from "@/components/bscl/locale-provider";
 import type { MockDiscordAccount } from "@/lib/discord-sim";
 import { saveGuestPlayer, saveSimulatedDiscordPlayer } from "@/lib/local-store";
 import { LoginShell } from "./login-shell";
+import { SwitchModeLink } from "./switch-mode-link";
 
 export function LoginDemo() {
   const router = useRouter();
@@ -76,9 +77,11 @@ export function LoginDemo() {
             </button>
           </form>
 
+          <SwitchModeLink />
+
           <Link
             href="/demo"
-            className="block text-center text-xs font-semibold text-[#0066FF] hover:underline"
+            className="block text-center text-xs font-semibold text-[#9CA3AF] hover:text-[#E5E7EB] hover:underline"
           >
             {t.demo.openHub} →
           </Link>

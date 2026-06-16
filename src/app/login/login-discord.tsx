@@ -1,9 +1,9 @@
 import { signIn } from "@/auth";
-import { LoginDiscordClient } from "./login-discord-client";
+import { LoginWelcome } from "./login-welcome";
 
 export function LoginDiscord() {
   return (
-    <LoginDiscordClient
+    <LoginWelcome
       signInAction={async () => {
         "use server";
         await signIn("discord", { redirectTo: "/" });

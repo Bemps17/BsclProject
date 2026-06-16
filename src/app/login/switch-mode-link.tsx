@@ -4,16 +4,16 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useT } from "@/components/bscl/locale-provider";
 
-export function TryDemoLink() {
+export function SwitchModeLink() {
   const router = useRouter();
   const t = useT();
   const [loading, setLoading] = useState(false);
 
-  async function enterDemo() {
+  async function handleClick() {
     setLoading(true);
     try {
-      await fetch("/api/demo/enter", { method: "POST" });
-      router.push("/demo");
+      await fetch("/api/demo/exit", { method: "DELETE" });
+      router.push("/login");
       router.refresh();
     } finally {
       setLoading(false);
@@ -23,11 +23,11 @@ export function TryDemoLink() {
   return (
     <button
       type="button"
-      onClick={enterDemo}
+      onClick={handleClick}
       disabled={loading}
-      className="w-full rounded-lg border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.08)] px-4 py-2.5 text-sm font-semibold text-[#F59E0B] disabled:opacity-50"
+      className="block w-full text-center text-xs font-semibold text-[#F59E0B] hover:underline disabled:opacity-50"
     >
-      {loading ? "…" : t.demo.enterPrototype}
+      {loading ? "…" : `${t.login.backToModeChoice} →`}
     </button>
   );
 }

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LogoHex } from "@/components/bscl/ui";
 import { DemoExitButton } from "@/components/bscl/demo-exit-button";
+import { isMobileMorePath } from "@/components/bscl/more-menu";
 import { useDemoOptional } from "@/components/bscl/demo-provider";
 import { LanguageSwitcher, useT } from "@/components/bscl/locale-provider";
 import { NAV_ITEMS, type RankKey } from "@/lib/constants";
@@ -27,6 +28,7 @@ const NAV_LABEL_KEYS: Record<string, keyof Translations["nav"]> = {
   profile: "profile",
   tickets: "tickets",
   admin: "admin",
+  more: "more",
 };
 
 function NavLink({
@@ -227,7 +229,7 @@ export function Topbar({ demoMode }: { demoMode?: boolean }) {
         {demoMode && (
           <>
             <span
-              className="hidden rounded-full border border-[rgba(245,158,11,.45)] bg-[rgba(245,158,11,.15)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#F59E0B] md:inline"
+              className="rounded-full border border-[rgba(245,158,11,.45)] bg-[rgba(245,158,11,.15)] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#F59E0B] sm:px-2 sm:text-[10px]"
               title={t.demo.modeLabel}
             >
               {t.demo.modeLabel}
@@ -277,7 +279,8 @@ export function Tabbar({ demoMode }: { demoMode?: boolean }) {
       )}
     >
       {tabs.map((tab) => {
-        const active = pathname === tab.href;
+        const active =
+          tab.id === "more" ? isMobileMorePath(pathname) : pathname === tab.href;
         const labelKey = NAV_LABEL_KEYS[tab.id];
         const label =
           tab.id === "profile" ? t.nav.me : labelKey ? t.nav[labelKey] : tab.label;

@@ -19,7 +19,19 @@ export const PAGE_TITLES: Record<string, string> = {
   "/rules": "Rules",
   "/faq": "FAQ",
   "/status": "Server Status",
+  "/more": "More",
 };
+
+/** Mobile tab bar highlights "More" when on these routes. */
+export const MOBILE_MORE_PATHS = [
+  "/more",
+  "/teams",
+  "/tournaments",
+  "/matches",
+  "/tickets",
+  "/admin",
+  "/demo",
+] as const;
 
 export type NavPage = {
   id: string;
@@ -36,12 +48,13 @@ export const NAV_ITEMS: NavPage[] = [
   { id: "home", href: "/", label: "Home", icon: "⬡", section: "platform", mobile: true },
   { id: "play", href: "/play", label: "Play", icon: "▶", section: "platform", mobile: true },
   { id: "rankings", href: "/rankings", label: "Rankings", icon: "◈", section: "platform", mobile: true },
-  { id: "teams", href: "/teams", label: "Teams", icon: "◆", section: "platform", mobile: true },
+  { id: "teams", href: "/teams", label: "Teams", icon: "◆", section: "platform" },
   { id: "tournaments", href: "/tournaments", label: "Tournaments", icon: "◉", section: "platform" },
   { id: "matches", href: "/matches", label: "Match History", icon: "▣", section: "platform" },
   { id: "profile", href: "/profile", label: "My Profile", icon: "○", section: "account", mobile: true },
   { id: "tickets", href: "/tickets", label: "Support", icon: "□", section: "account" },
   { id: "admin", href: "/admin", label: "Admin", icon: "⚙", section: "staff" },
+  { id: "more", href: "/more", label: "More", icon: "☰", section: "platform", mobile: true },
 ];
 
 export type RankKey = "elite" | "diamond" | "plat" | "gold" | "silver" | "bronze";
