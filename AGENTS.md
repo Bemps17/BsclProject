@@ -411,11 +411,11 @@ Document all new variables in `.env.example`:
 
 | Phase | Gate |
 |-------|------|
-| 1–6 + M1–M4 | Scaffold + live reads + demo mode + i18n + responsive ✅ |
-| **7a–7b** | Queue → match → ELO works end-to-end on web (required before real players) |
+| 1–6 + M1–M7 | Scaffold + live reads + full demo sim + shadcn + i18n + responsive + nav ✅ |
+| **7a–7b** | Queue → match → ELO works end-to-end on web ✅ (live API); demo sim in M6 ✅ |
 | **7c** | Bot commands use same queue/match APIs as web |
-| **7d–7f** | Auth guards, integration tests, security checklist (section 6) green |
-| **7g–7k** | Teams, tickets, admin CRUD, tournaments — incremental after core loop |
+| **7d–7f** | Auth guards (middleware partial ✅), integration tests, security checklist (section 6) green |
+| **7g–7k** | Live APIs for teams/tickets/admin/tournaments — demo UX done; wire to DB next |
 | **8** | Production deploy only after 7a–7f green + monitoring configured |
 
 See **README.md → Development phases** for the detailed step table and recommended order.

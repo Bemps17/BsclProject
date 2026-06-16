@@ -67,9 +67,12 @@ bot/                  # BSCL Matchmaker Discord bot
 ### Milestones — done
 
 - [x] **M1 — Live data** — Neon PostgreSQL, Prisma read layer, pages wired to DB (`src/lib/data.ts`)
-- [x] **M2 — Demo mode** — Guest login + local queue via `localStorage` when `DATABASE_URL` / `AUTH_SECRET` are missing (`src/lib/backend.ts`, `src/lib/local-store.ts`)
+- [x] **M2 — Demo mode** — Explicit choice (Demo vs Standard), cookie `bscl_demo`, localStorage journey (`src/lib/backend.ts`, `src/lib/local-store.ts`, `src/middleware.ts`)
 - [x] **M3 — i18n** — English + French, ENG/FR switcher in header (`src/lib/i18n/`, `LocaleProvider`)
-- [x] **M4 — Responsive** — Compact mobile header, full-height desktop sidebar, adaptive content width, table scroll on small screens
+- [x] **M4 — Responsive** — `dvh`/safe-area login, mobile tab bar, adaptive content width, scrollable tables
+- [x] **M5 — Design system** — shadcn/ui (`base-nova`), semantic tokens, BSCL layer on `src/components/ui/`
+- [x] **M6 — Demo platform sim** — Full local prototype: queue → draft → match → ELO, teams, tournaments, tickets, disputes, admin preview (`DemoProvider`, page wrappers)
+- [x] **M7 — Navigation** — `ButtonLink` for internal routes; demo sign-in routes to `/demo` hub (not `/login`)
 
 ### Core loop — next (Phase 7)
 
@@ -80,19 +83,19 @@ The schema and UI exist; **orchestration** is the main gap.
 | **7a** | **Matchmaker** — pop queue at 10 players, snake draft, create `Match` + `MatchPlayer` rows | Done |
 | **7b** | **Results pipeline** — submit → confirm → `EloHistory` + player ELO update (transactional) | Done |
 | **7c** | **Bot sync** — replace in-memory bot queue; wire `/result`, `/confirm`, `/dispute` to API/DB | Not started |
-| **7d** | **Auth guards** — middleware, `/admin` role check, banned users on mutating routes | Partial (`/admin` server guard) |
+| **7d** | **Auth guards** — middleware platform gate, `/admin` role check, banned users on mutating routes | Partial (middleware + `/admin` server guard) |
 | **7e** | **Integration tests** — OAuth → queue → match → ELO; confirm idempotency | Not started |
 | **7f** | **Security review** — rate limits, error sanitization, audit log on admin actions | Not started |
 
 ### Features — after core loop
 
-| Step | Scope | Status |
-|------|--------|--------|
-| **7g** | **Teams** — create / invite / manage (API + UI) | UI read-only |
-| **7h** | **Tickets** — create, staff workflow, link to `DISPUTED` matches | Static demo list |
-| **7i** | **Admin CRUD** — users, sanctions, pending matches, news, seasons | Cards only |
-| **7j** | **Tournaments** — registration, check-in, brackets | Static demo list |
-| **7k** | **Public pages** — `/status`, `/rules`, `/faq`, `/news` | Not built |
+| Step | Scope | Live status | Demo sim |
+|------|--------|-------------|----------|
+| **7g** | **Teams** — create / invite / manage (API + UI) | UI read-only | Interactive (local) |
+| **7h** | **Tickets** — create, staff workflow, link to `DISPUTED` matches | Static list | Interactive (local) |
+| **7i** | **Admin CRUD** — users, sanctions, pending matches, news, seasons | Cards only | Preview + local stats |
+| **7j** | **Tournaments** — registration, check-in, brackets | Static list | Register (local) |
+| **7k** | **Public pages** — `/status`, `/rules`, `/faq`, `/news` | Not built | Not built |
 
 ### Production — Phase 8
 
@@ -103,10 +106,10 @@ The schema and UI exist; **orchestration** is the main gap.
 
 ### Recommended order
 
-1. **7a → 7b** — End-to-end PUG match (highest product value)
+1. ~~**7a → 7b**~~ — End-to-end PUG match on web ✅
 2. **7c** — Discord bot parity with web queue/match flow
 3. **7d → 7e → 7f** — Harden before opening to real players
-4. **7g → 7h → 7i** — Staff & community features
+4. **7g → 7h → 7i** — Wire live APIs (demo UX already validated in M6)
 5. **7j → 7k** — Tournaments & content pages
 6. **Phase 8** — Production deploy once 7a–7f are green
 
@@ -114,8 +117,10 @@ The schema and UI exist; **orchestration** is the main gap.
 
 | Mode | Trigger | Auth | Data |
 |------|---------|------|------|
-| **Demo** | Missing `DATABASE_URL` or `AUTH_SECRET` | Guest profile in browser | Empty server data + local queue |
-| **Live** | Both env vars set | Discord OAuth | PostgreSQL via Prisma |
+| **Demo** | User chooses « Demo » on `/login` → cookie `bscl_demo=1` (or `BSCL_DEMO=1`) | Guest or simulated Discord in browser | `localStorage` — full platform sim (queue, draft, ELO, teams, tickets…) |
+| **Live** | User chooses « Standard » → Discord OAuth session | Discord OAuth | PostgreSQL via Prisma |
+
+Unauthenticated visitors are redirected to `/login` until they pick a mode or sign in (`src/middleware.ts`).
 
 See `src/lib/backend.ts` and `.env.example` for required variables.
 
@@ -146,7 +151,7 @@ See `src/lib/backend.ts` and `.env.example` for required variables.
 ## Tests
 
 ```bash
-npm test              # 55 unit/integration tests
+npm test              # 67 unit/integration tests
 npm run test:coverage # coverage report (v8)
 ```
 
