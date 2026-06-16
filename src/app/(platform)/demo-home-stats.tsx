@@ -1,10 +1,12 @@
 "use client";
 
 import { useDemoOptional } from "@/components/bscl/demo-provider";
+import { useT } from "@/components/bscl/locale-provider";
 import { StatCell } from "@/components/bscl/ui";
 
 export function DemoHomeStats() {
   const demo = useDemoOptional();
+  const t = useT();
   if (!demo?.player) return null;
 
   const { player } = demo;
@@ -13,8 +15,8 @@ export function DemoHomeStats() {
 
   return (
     <div className="grid grid-cols-2 gap-2.5 md:grid-cols-2">
-      <StatCell label="My ELO" value={player.elo} valueClassName="text-[#0066FF]" sub="Local guest" />
-      <StatCell label="Win Rate" value={`${winRate}%`} sub="Demo profile" />
+      <StatCell label={t.home.myElo} value={player.elo} valueClassName="text-[#0066FF]" sub={t.home.localGuest} />
+      <StatCell label={t.home.winRate} value={`${winRate}%`} sub={t.home.demoProfile} />
     </div>
   );
 }

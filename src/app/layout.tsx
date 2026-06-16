@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Rajdhani } from "next/font/google";
+import { LocaleProvider } from "@/components/bscl/locale-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -47,7 +48,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${rajdhani.variable} ${jetbrains.variable} min-h-svh`}
       >
-        {children}
+        <LocaleProvider>{children}</LocaleProvider>
       </body>
     </html>
   );

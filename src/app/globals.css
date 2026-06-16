@@ -92,7 +92,7 @@
     -webkit-tap-highlight-color: transparent;
   }
   body {
-    @apply min-h-full bg-[#0B0B0B] text-[#E5E7EB] text-sm;
+    @apply min-h-full overflow-x-hidden bg-[#0B0B0B] text-[#E5E7EB] text-sm;
   }
 }
 

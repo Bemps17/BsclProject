@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Card, CardHeader, EmptyState, RankBadge, StatCell, Tag } from "@/components/bscl/ui";
 import { useDemo } from "@/components/bscl/demo-provider";
+import { useT } from "@/components/bscl/locale-provider";
 import { RANK_THRESHOLDS } from "@/lib/elo";
 import { clearGuestPlayer } from "@/lib/local-store";
 import { playerInitials } from "@/lib/ranks";
@@ -12,6 +13,7 @@ import { playerInitials } from "@/lib/ranks";
 export function ProfileDemo() {
   const router = useRouter();
   const { player } = useDemo();
+  const t = useT();
 
   useEffect(() => {
     if (!player) router.replace("/login");
@@ -41,34 +43,34 @@ export function ProfileDemo() {
           </div>
           <div>
             <h2 className="font-[family-name:var(--font-rajdhani)] text-2xl font-bold">{player.displayName}</h2>
-            <p className="text-[11px] text-[#6B7280]">Guest profile · stored locally</p>
+            <p className="text-[11px] text-[#6B7280]">{t.profile.guestProfile}</p>
             <div className="mt-2 flex flex-wrap gap-1.5">
               <RankBadge rank={player.rankKey} />
-              <Tag variant="gold">Demo</Tag>
+              <Tag variant="gold">{t.common.demo}</Tag>
             </div>
           </div>
         </div>
         <div className="flex items-end justify-between border-t border-[#1E2D45] pt-3.5">
           <div>
-            <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-widest text-[#6B7280]">Current ELO</div>
+            <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-widest text-[#6B7280]">{t.profile.currentElo}</div>
             <div className="font-[family-name:var(--font-jetbrains)] text-4xl font-bold leading-none text-[#0066FF]">{player.elo}</div>
           </div>
           <div className="text-right text-[11px] text-[#6B7280]">
-            <div className="text-sm font-semibold text-white">Local only</div>
-            <div>Peak: <span className="text-[#0066FF]">{player.peakElo}</span></div>
+            <div className="text-sm font-semibold text-white">{t.profile.localOnly}</div>
+            <div>{t.profile.peak}: <span className="text-[#0066FF]">{player.peakElo}</span></div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
-        <StatCell label="Matches" value={totalMatches} />
-        <StatCell label="Wins" value={player.wins} valueClassName="text-[#22C55E]" />
-        <StatCell label="Win Rate" value={`${winRate}%`} />
-        <StatCell label="Losses" value={player.losses} valueClassName="text-[#EF4444]" />
+        <StatCell label={t.profile.matches} value={totalMatches} />
+        <StatCell label={t.profile.wins} value={player.wins} valueClassName="text-[#22C55E]" />
+        <StatCell label={t.home.winRate} value={`${winRate}%`} />
+        <StatCell label={t.profile.losses} value={player.losses} valueClassName="text-[#EF4444]" />
       </div>
 
       <Card>
-        <h2 className="mb-3.5 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold">Rank Progress</h2>
+        <h2 className="mb-3.5 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold">{t.profile.rankProgress}</h2>
         <div className="flex flex-col gap-1.5">
           <div className="flex justify-between text-[10px] text-[#6B7280]">
             <span>{RANK_THRESHOLDS.DIAMOND}</span>
@@ -85,21 +87,21 @@ export function ProfileDemo() {
       </Card>
 
       <Card>
-        <CardHeader title="Match History" />
-        <EmptyState message="No matches in demo mode yet. Join the queue to test the flow." />
+        <CardHeader title={t.profile.matchHistory} />
+        <EmptyState message={t.profile.noMatchesDemo} />
       </Card>
 
       <Card>
-        <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">Account</p>
+        <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">{t.profile.account}</p>
         <button
           type="button"
           onClick={signOutLocal}
           className="w-full rounded-lg border border-[#1E2D45] bg-[#162032] px-3 py-2 text-sm font-semibold text-[#EF4444]"
         >
-          Clear local profile
+          {t.profile.clearProfile}
         </button>
         <p className="mt-2 text-center text-[11px] text-[#6B7280]">
-          <Link href="/play" className="text-[#0066FF]">Try the queue</Link> — saved in this browser only.
+          <Link href="/play" className="text-[#0066FF]">{t.profile.tryQueue}</Link> — {t.profile.savedBrowser}
         </p>
       </Card>
     </>
