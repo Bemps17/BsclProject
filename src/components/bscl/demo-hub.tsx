@@ -5,11 +5,23 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DiscordSimModal } from "@/components/bscl/discord-sim-modal";
 import { useDemo } from "@/components/bscl/demo-provider";
-import { Card, CardHeader, StatCell, Tag } from "@/components/bscl/ui";
+import { DiscordIcon } from "@/components/bscl/icons";
+import {
+  Button,
+  Card,
+  CardHeader,
+  Field,
+  FieldGroup,
+  FieldLabel,
+  Input,
+  StatCell,
+  Tag,
+} from "@/components/bscl/ui";
 import { useT } from "@/components/bscl/locale-provider";
 import type { MockDiscordAccount } from "@/lib/discord-sim";
 import { saveGuestPlayer, saveSimulatedDiscordPlayer } from "@/lib/local-store";
 import { matchStatusVariant } from "@/lib/match-display";
+import { cn } from "@/lib/utils";
 import type { Translations } from "@/lib/i18n";
 
 function statusLabel(t: Translations, status: string): string {
@@ -66,12 +78,12 @@ export function DemoHub() {
 
   return (
     <>
-      <section className="rounded-[14px] border border-[rgba(245,158,11,.35)] bg-gradient-to-br from-[rgba(245,158,11,.08)] to-transparent p-5">
+      <section className="rounded-[14px] border border-primary/35 bg-gradient-to-br from-primary/8 to-transparent p-5">
         <Tag variant="gold" className="mb-2">
           {t.common.demoBadge}
         </Tag>
         <h2 className="font-[family-name:var(--font-rajdhani)] text-2xl font-bold">{t.demo.title}</h2>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#6B7280]">{t.demo.subtitle}</p>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">{t.demo.subtitle}</p>
       </section>
 
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
@@ -81,28 +93,29 @@ export function DemoHub() {
         <StatCell
           label={t.home.myElo}
           value={demo.player?.elo ?? "—"}
-          valueClassName={demo.player ? "text-[#F59E0B]" : undefined}
+          valueClassName={demo.player ? "text-primary" : undefined}
         />
       </div>
 
       <Card>
         <CardHeader title={t.demo.journeyTitle} />
-        <ol className="space-y-2">
+        <ol className="flex flex-col gap-2">
           {steps.map((step, i) => (
             <li
               key={step.label}
-              className="flex items-center gap-3 rounded-lg border border-[rgba(245,158,11,.25)] bg-[#162032] px-3 py-2.5 text-sm"
+              className="flex items-center gap-3 rounded-lg border border-primary/25 bg-secondary px-3 py-2.5 text-sm"
             >
               <span
-                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                className={cn(
+                  "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold",
                   step.done
-                    ? "bg-[#22C55E] text-white"
-                    : "bg-[rgba(245,158,11,.15)] text-[#F59E0B]"
-                }`}
+                    ? "bg-chart-2 text-primary-foreground"
+                    : "bg-primary/15 text-primary",
+                )}
               >
                 {step.done ? "✓" : i + 1}
               </span>
-              <span className={step.done ? "text-[#E5E7EB]" : "text-[#6B7280]"}>{step.label}</span>
+              <span className={step.done ? "text-foreground" : "text-muted-foreground"}>{step.label}</span>
             </li>
           ))}
         </ol>
@@ -111,46 +124,49 @@ export function DemoHub() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader title={t.demo.authTitle} />
-          <p className="mb-3 text-xs text-[#6B7280]">{t.demo.authDesc}</p>
-          <div className="space-y-2">
-            <button
+          <p className="mb-3 text-xs text-muted-foreground">{t.demo.authDesc}</p>
+          <FieldGroup className="gap-2">
+            <Button
               type="button"
+              className="w-full bg-[#5865F2] text-white hover:bg-[#4752C4]"
               onClick={() => setModalOpen(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#5865F2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4752C4]"
             >
+              <DiscordIcon data-icon="inline-start" />
               {t.login.discordCta}
-            </button>
-            <form onSubmit={handleGuestSignIn} className="flex gap-2">
-              <input
-                type="text"
-                value={guestName}
-                onChange={(e) => setGuestName(e.target.value)}
-                placeholder={t.login.displayName}
-                maxLength={24}
-                className="min-w-0 flex-1 rounded-lg border border-[#1E2D45] bg-[#0B1628] px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
-              />
-              <button
-                type="submit"
-                className="shrink-0 rounded-lg border border-[#1E2D45] bg-[#162032] px-3 py-2 text-sm font-semibold"
-              >
-                {t.login.demoCta}
-              </button>
+            </Button>
+            <form onSubmit={handleGuestSignIn}>
+              <FieldGroup className="flex-row gap-2">
+                <Field className="min-w-0 flex-1">
+                  <FieldLabel htmlFor="demo-guest" className="sr-only">
+                    {t.login.displayName}
+                  </FieldLabel>
+                  <Input
+                    id="demo-guest"
+                    type="text"
+                    value={guestName}
+                    onChange={(e) => setGuestName(e.target.value)}
+                    placeholder={t.login.displayName}
+                    maxLength={24}
+                  />
+                </Field>
+                <Button type="submit" variant="secondary">
+                  {t.login.demoCta}
+                </Button>
+              </FieldGroup>
             </form>
-            {error && <p className="text-xs text-[#EF4444]">{error}</p>}
-          </div>
+            {error && <p className="text-xs text-destructive">{error}</p>}
+          </FieldGroup>
         </Card>
 
         <Card>
           <CardHeader title={t.demo.actionsTitle} />
           <div className="flex flex-col gap-2">
-            <Link
-              href="/play"
-              className="rounded-lg bg-[#F59E0B] px-4 py-2.5 text-center text-sm font-bold text-[#0B0B0B] shadow-[0_0_14px_rgba(245,158,11,.28)]"
-            >
+            <Button render={<Link href="/play" />} className="w-full shadow-[0_0_14px_color-mix(in_oklch,var(--primary),transparent_72%)]">
               {t.demo.goPlay}
-            </Link>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="outline"
               disabled={!signedIn}
               onClick={() => {
                 try {
@@ -159,20 +175,19 @@ export function DemoHub() {
                   setError(err instanceof Error ? err.message : t.demo.actionFailed);
                 }
               }}
-              className="rounded-lg border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.08)] px-4 py-2.5 text-sm font-semibold text-[#F59E0B] disabled:opacity-50"
             >
               {t.demo.fillBotsMatch}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="destructive"
               onClick={() => {
                 demo.resetAll();
                 router.push("/login");
               }}
-              className="rounded-lg border border-[rgba(239,68,68,.35)] px-4 py-2.5 text-sm font-semibold text-[#EF4444]"
             >
               {t.demo.resetAll}
-            </button>
+            </Button>
           </div>
         </Card>
       </div>
@@ -187,12 +202,12 @@ export function DemoHub() {
               </Tag>
             }
           />
-          <p className="mb-3 text-xs text-[#6B7280]">
+          <p className="mb-3 text-xs text-muted-foreground">
             #{String(activeMatch.number).padStart(3, "0")} · {t.demo.continueOnPlay}
           </p>
-          <Link href="/play" className="text-sm font-semibold text-[#F59E0B]">
+          <Button variant="link" className="h-auto p-0" render={<Link href="/play" />}>
             {t.demo.goPlay} →
-          </Link>
+          </Button>
         </Card>
       )}
 

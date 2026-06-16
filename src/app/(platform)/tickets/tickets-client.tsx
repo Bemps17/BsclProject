@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Tag } from "@/components/bscl/ui";
+import { Button, Card, Tag } from "@/components/bscl/ui";
 import { useT } from "@/components/bscl/locale-provider";
 
 const TICKETS = [
@@ -16,16 +16,14 @@ export function TicketsClient() {
     <>
       <div className="flex items-center justify-between">
         <h2 className="font-[family-name:var(--font-rajdhani)] text-[22px] font-bold">{t.tickets.title}</h2>
-        <button type="button" className="rounded-lg bg-[#0066FF] px-3.5 py-1.5 text-xs font-semibold text-white">
-          + {t.tickets.new}
-        </button>
+        <Button size="sm">+ {t.tickets.new}</Button>
       </div>
       <Card>
         <h2 className="mb-3.5 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold">{t.tickets.myTickets}</h2>
         <div className="flex flex-col gap-2">
           {TICKETS.map((ticket) => (
-            <div key={ticket.id} className="flex items-center gap-2.5 rounded-lg border border-[#1E2D45] bg-[#162032] p-3">
-              <div className="min-w-12 font-[family-name:var(--font-jetbrains)] text-[11px] text-[#6B7280]">{ticket.id}</div>
+            <div key={ticket.id} className="flex items-center gap-2.5 rounded-lg border border-border bg-secondary p-3">
+              <div className="min-w-12 font-[family-name:var(--font-jetbrains)] text-[11px] text-muted-foreground">{ticket.id}</div>
               <div className="flex-1 text-[13px] font-medium">{ticket.subject}</div>
               <Tag variant={ticket.variant}>{t.tickets[ticket.statusKey]}</Tag>
             </div>

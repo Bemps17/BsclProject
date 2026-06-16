@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { useT } from "@/components/bscl/locale-provider";
 
 export function SwitchModeLink() {
@@ -21,13 +22,14 @@ export function SwitchModeLink() {
   }
 
   return (
-    <button
+    <Button
       type="button"
-      onClick={handleClick}
+      variant="link"
       disabled={loading}
-      className="block w-full text-center text-xs font-semibold text-[#F59E0B] hover:underline disabled:opacity-50"
+      onClick={handleClick}
+      className="h-auto w-full p-0 text-xs text-chart-3"
     >
       {loading ? "…" : `${t.login.backToModeChoice} →`}
-    </button>
+    </Button>
   );
 }

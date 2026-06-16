@@ -2,10 +2,17 @@
 
 import { useState } from "react";
 import { useDemoOptional } from "@/components/bscl/demo-provider";
-import { Card, CardHeader, Tag } from "@/components/bscl/ui";
+import {
+  Button,
+  Card,
+  CardHeader,
+  Input,
+  Tag,
+} from "@/components/bscl/ui";
 import { useT } from "@/components/bscl/locale-provider";
 import { draftRevealTotalSteps } from "@/lib/local-matchmaker";
 import { matchStatusVariant } from "@/lib/match-display";
+import { cn } from "@/lib/utils";
 import type { Translations } from "@/lib/i18n";
 import type { LocalMatch } from "@/lib/local-store";
 
@@ -83,7 +90,7 @@ function DemoMatchFlowPanel({ match }: { match: LocalMatch }) {
   }
 
   return (
-    <Card className="border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.04)]">
+    <Card className="border-primary/35 bg-primary/5">
       <CardHeader
         title={`${t.demo.activeMatch} #${String(match.number).padStart(3, "0")}`}
         action={
@@ -94,80 +101,76 @@ function DemoMatchFlowPanel({ match }: { match: LocalMatch }) {
       />
 
       {match.status === "DRAFT" && !draftDone && (
-        <div className="mb-4 space-y-3">
+        <div className="mb-4 flex flex-col gap-3">
           {match.draftRevealStep === 0 && (
-            <div className="rounded-lg border border-[rgba(245,158,11,.3)] bg-[rgba(245,158,11,.08)] p-4">
-              <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-[#F59E0B]">
+            <div className="rounded-lg border border-primary/30 bg-primary/8 p-4">
+              <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-primary">
                 {t.demo.captainSelection}
               </p>
-              <p className="mb-3 text-xs text-[#9CA3AF]">{t.demo.captainRule}</p>
+              <p className="mb-3 text-xs text-muted-foreground">{t.demo.captainRule}</p>
               <div className="grid gap-2 sm:grid-cols-2">
-                <div className="rounded-lg border border-[rgba(245,158,11,.25)] bg-[#162032] p-3">
-                  <p className="text-[10px] font-bold uppercase text-[#F59E0B]">Alpha {t.demo.captain}</p>
-                  <p className="mt-1 font-semibold text-white">
+                <div className="rounded-lg border border-primary/25 bg-secondary p-3">
+                  <p className="text-[10px] font-bold uppercase text-primary">Alpha {t.demo.captain}</p>
+                  <p className="mt-1 font-semibold text-foreground">
                     {playerName(match, match.captainAlpha)}
                     {match.captainAlpha === playerId && (
-                      <span className="ml-1 text-xs text-[#F59E0B]">({t.demo.you})</span>
+                      <span className="ml-1 text-xs text-primary">({t.demo.you})</span>
                     )}
                   </p>
                 </div>
-                <div className="rounded-lg border border-[#1E2D45] bg-[#162032] p-3">
-                  <p className="text-[10px] font-bold uppercase text-[#9CA3AF]">Bravo {t.demo.captain}</p>
-                  <p className="mt-1 font-semibold text-white">{playerName(match, match.captainBravo)}</p>
+                <div className="rounded-lg border border-border bg-secondary p-3">
+                  <p className="text-[10px] font-bold uppercase text-muted-foreground">Bravo {t.demo.captain}</p>
+                  <p className="mt-1 font-semibold text-foreground">{playerName(match, match.captainBravo)}</p>
                 </div>
               </div>
             </div>
           )}
 
           {currentPick && (
-            <div className="rounded-lg border border-[#1E2D45] bg-[#162032] p-4 text-center">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
+            <div className="rounded-lg border border-border bg-secondary p-4 text-center">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                 {t.demo.draftPick} {currentPick.pickNumber}/8
               </p>
-              <p className="mt-2 text-sm text-[#E5E7EB]">
-                <span className="font-bold text-[#F59E0B]">{currentPick.name}</span>
+              <p className="mt-2 text-sm text-foreground">
+                <span className="font-bold text-primary">{currentPick.name}</span>
                 {" → "}
                 <span className="font-semibold">{currentPick.side === "ALPHA" ? "Alpha" : "Bravo"}</span>
               </p>
             </div>
           )}
 
-          <button
-            type="button"
-            onClick={handleAdvanceDraft}
-            className="w-full rounded-lg bg-[#F59E0B] px-4 py-2.5 text-sm font-bold text-[#0B0B0B]"
-          >
+          <Button type="button" onClick={handleAdvanceDraft} className="w-full">
             {match.draftRevealStep === 0 ? t.demo.startDraft : t.demo.nextDraftPick}
-          </button>
+          </Button>
         </div>
       )}
 
       {(match.status === "LIVE" || match.status === "SUBMITTED" || match.status === "CONFIRMED") && (
         <div className="mb-3 grid gap-3 md:grid-cols-2">
-          <div className="rounded-lg border border-[rgba(245,158,11,.25)] bg-[#162032] p-3">
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-[#F59E0B]">Alpha</p>
-            <ul className="space-y-1 text-xs text-[#E5E7EB]">
+          <div className="rounded-lg border border-primary/25 bg-secondary p-3">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-primary">Alpha</p>
+            <ul className="flex flex-col gap-1 text-xs text-foreground">
               {alphaRoster.map((p) => (
                 <li key={p.playerId}>
                   {p.name}
                   {p.playerId === match.captainAlpha && (
-                    <span className="ml-1 text-[#F59E0B]">({t.demo.captain})</span>
+                    <span className="ml-1 text-primary">({t.demo.captain})</span>
                   )}
                   {p.playerId === playerId && (
-                    <span className="ml-1 text-[#F59E0B]">({t.demo.you})</span>
+                    <span className="ml-1 text-primary">({t.demo.you})</span>
                   )}
                 </li>
               ))}
             </ul>
           </div>
-          <div className="rounded-lg border border-[#1E2D45] bg-[#162032] p-3">
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-[#9CA3AF]">Bravo</p>
-            <ul className="space-y-1 text-xs text-[#E5E7EB]">
+          <div className="rounded-lg border border-border bg-secondary p-3">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Bravo</p>
+            <ul className="flex flex-col gap-1 text-xs text-foreground">
               {bravoRoster.map((p) => (
                 <li key={p.playerId}>
                   {p.name}
                   {p.playerId === match.captainBravo && (
-                    <span className="ml-1 text-[#9CA3AF]">({t.demo.captain})</span>
+                    <span className="ml-1 text-muted-foreground">({t.demo.captain})</span>
                   )}
                 </li>
               ))}
@@ -177,7 +180,7 @@ function DemoMatchFlowPanel({ match }: { match: LocalMatch }) {
       )}
 
       {match.status === "LIVE" && isCaptain && (
-        <p className="mb-2 text-xs text-[#F59E0B]">
+        <p className="mb-2 text-xs text-primary">
           {isAlphaCaptain ? t.demo.youAreAlphaCaptain : t.demo.youAreBravoCaptain}
         </p>
       )}
@@ -190,23 +193,23 @@ function DemoMatchFlowPanel({ match }: { match: LocalMatch }) {
 
       {canSubmit && (
         <div className="mb-3 flex items-center justify-center gap-2">
-          <input
+          <Input
             type="number"
             min={0}
             max={16}
             value={alphaScore}
             onChange={(e) => setAlphaScore(e.target.value)}
-            className="w-16 rounded-lg border border-[rgba(245,158,11,.35)] bg-[#0B1628] px-2 py-2 text-center text-sm"
+            className="w-16 text-center"
             aria-label="Alpha score"
           />
-          <span className="text-[#6B7280]">:</span>
-          <input
+          <span className="text-muted-foreground">:</span>
+          <Input
             type="number"
             min={0}
             max={16}
             value={bravoScore}
             onChange={(e) => setBravoScore(e.target.value)}
-            className="w-16 rounded-lg border border-[rgba(245,158,11,.35)] bg-[#0B1628] px-2 py-2 text-center text-sm"
+            className="w-16 text-center"
             aria-label="Bravo score"
           />
         </div>
@@ -214,42 +217,34 @@ function DemoMatchFlowPanel({ match }: { match: LocalMatch }) {
 
       <div className="flex flex-wrap gap-2">
         {canSubmit && (
-          <button
-            type="button"
-            onClick={handleSubmit}
-            className="rounded-lg bg-[#F59E0B] px-4 py-2 text-sm font-bold text-[#0B0B0B]"
-          >
+          <Button type="button" onClick={handleSubmit}>
             {t.demo.submitScore}
-          </button>
+          </Button>
         )}
         {canConfirm && (
-          <button
+          <Button
             type="button"
             onClick={handleConfirm}
-            className="rounded-lg bg-[#22C55E] px-4 py-2 text-sm font-semibold text-white"
+            className="bg-chart-2 text-primary-foreground hover:bg-chart-2/90"
           >
             {t.demo.confirmScore}
-          </button>
+          </Button>
         )}
         {match.status === "SUBMITTED" && !canConfirm && (
-          <button
-            type="button"
-            onClick={handleConfirm}
-            className="rounded-lg border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.08)] px-4 py-2 text-sm font-semibold text-[#F59E0B]"
-          >
+          <Button type="button" variant="outline" onClick={handleConfirm}>
             {t.demo.simulateConfirm}
-          </button>
+          </Button>
         )}
       </div>
 
       {confirmedToast != null && (
-        <p className="mt-3 rounded-lg border border-[rgba(34,197,94,.35)] bg-[rgba(34,197,94,.08)] px-3 py-2 text-center text-sm font-semibold text-[#22C55E]">
+        <p className="mt-3 rounded-lg border border-chart-2/35 bg-chart-2/8 px-3 py-2 text-center text-sm font-semibold text-chart-2">
           {confirmedToast >= 0 ? "+" : ""}
           {confirmedToast} ELO — {t.demo.matchComplete}
         </p>
       )}
 
-      {error && <p className="mt-2 text-xs text-[#EF4444]">{error}</p>}
+      {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
     </Card>
   );
 }

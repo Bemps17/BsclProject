@@ -1,9 +1,10 @@
 "use client";
 
-import { Tag } from "@/components/bscl/ui";
+import { Button, Tag } from "@/components/bscl/ui";
 import { AppIcon } from "@/components/bscl/icons";
 import { useT } from "@/components/bscl/locale-provider";
 import type { AppIconId } from "@/lib/nav-icons";
+import { cn } from "@/lib/utils";
 
 type TournamentItem = {
   icon: AppIconId;
@@ -68,33 +69,26 @@ export function TournamentsClient() {
           const prizeLabel = item.statusKey === "statusEnded" ? t.tournaments.winner : t.tournaments.prizePool;
 
           return (
-            <div key={item.name} className={`overflow-hidden rounded-xl border border-[#1E2D45] bg-[#111827] ${item.dim ? "opacity-65" : ""}`}>
-              <div className={`flex items-center gap-3 border-b border-[#1E2D45] p-4 ${item.dim ? "bg-[#162032]" : "bg-gradient-to-br from-[#080F1E] to-[#0A1830]"}`}>
-                <AppIcon name={item.icon} className="h-7 w-7 text-[#F59E0B]" />
+            <div key={item.name} className={cn("overflow-hidden rounded-xl border border-border bg-card", item.dim && "opacity-65")}>
+              <div className={cn("flex items-center gap-3 border-b border-border p-4", item.dim ? "bg-secondary" : "bg-gradient-to-br from-background to-secondary")}>
+                <AppIcon name={item.icon} className="h-7 w-7 text-chart-3" />
                 <div>
                   <div className="font-[family-name:var(--font-rajdhani)] text-lg font-bold">{item.name}</div>
-                  <div className="text-[11px] text-[#6B7280]">{item.meta}</div>
+                  <div className="text-[11px] text-muted-foreground">{item.meta}</div>
                 </div>
                 <Tag variant={item.variant} className="ml-auto">{status}</Tag>
               </div>
               <div className="flex items-center justify-between gap-3 p-3.5">
                 <div>
-                  <div className="text-[10px] uppercase tracking-widest text-[#6B7280]">{prizeLabel}</div>
-                  <div className={`font-[family-name:var(--font-rajdhani)] font-bold ${item.statusKey === "statusEnded" ? "text-base" : "text-[22px] text-[#F59E0B]"}`}>
+                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{prizeLabel}</div>
+                  <div className={cn("font-[family-name:var(--font-rajdhani)] font-bold", item.statusKey === "statusEnded" ? "text-base" : "text-[22px] text-chart-3")}>
                     {item.prize}
                   </div>
                 </div>
-                <div className="text-right text-xs text-[#6B7280]">{item.date}</div>
-                <button
-                  type="button"
-                  className={
-                    item.primary
-                      ? "rounded-lg bg-[#0066FF] px-3.5 py-1.5 text-xs font-semibold text-white"
-                      : "rounded-lg border border-[#1E2D45] bg-[#162032] px-3.5 py-1.5 text-xs font-semibold"
-                  }
-                >
+                <div className="text-right text-xs text-muted-foreground">{item.date}</div>
+                <Button type="button" size="sm" variant={item.primary ? "default" : "secondary"}>
                   {cta}
-                </button>
+                </Button>
               </div>
             </div>
           );

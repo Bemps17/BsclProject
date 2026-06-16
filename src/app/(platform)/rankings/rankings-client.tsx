@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, EmptyState, RankBadge, StatCell, TableScroll } from "@/components/bscl/ui";
+import { Button, Card, EmptyState, RankBadge, StatCell, TableScroll } from "@/components/bscl/ui";
 import { useLocale, useT } from "@/components/bscl/locale-provider";
 import type { LeaderboardEntry } from "@/lib/match-display";
 import { type RankKey } from "@/lib/constants";
@@ -43,26 +43,26 @@ export function RankingsClient({
     <>
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
         <StatCell label={t.rankings.players} value={formatCount(stats.playerCount, locale)} />
-        <StatCell label={t.rankings.topElo} value={stats.topElo || "—"} valueClassName="text-[#0066FF]" />
+        <StatCell label={t.rankings.topElo} value={stats.topElo || "—"} valueClassName="text-primary" />
         <StatCell label={t.rankings.yourElo} value={stats.yourElo ?? "—"} />
         <StatCell label={t.rankings.yourRank} value={stats.yourRank ? `#${stats.yourRank}` : "—"} />
       </div>
 
-      <div className="flex rounded-lg border border-[#1E2D45] bg-[#162032] p-0.5">
+      <div className="flex rounded-lg border border-border bg-secondary p-0.5">
         {TABS.map((item) => (
-          <button
+          <Button
             key={item.key}
             type="button"
+            variant={tab === item.key ? "default" : "ghost"}
+            size="sm"
             onClick={() => setTab(item.key)}
             className={cn(
-              "flex-1 rounded-md px-1 py-1.5 text-xs font-semibold transition-all",
-              tab === item.key
-                ? "bg-[#0066FF] text-white shadow-[0_0_10px_rgba(0,102,255,.28)]"
-                : "text-[#6B7280]",
+              "flex-1",
+              tab === item.key && "shadow-[0_0_10px_color-mix(in_oklch,var(--primary),transparent_72%)]",
             )}
           >
             {item.label}
-          </button>
+          </Button>
         ))}
       </div>
 
@@ -73,7 +73,7 @@ export function RankingsClient({
           <TableScroll minWidth={520}>
             <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b border-[#1E2D45] text-left text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
+              <tr className="border-b border-border text-left text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                 <th className="px-2.5 py-2">#</th>
                 <th className="px-2.5 py-2">{t.common.player}</th>
                 <th className="px-2.5 py-2">{t.common.rank}</th>
@@ -83,25 +83,25 @@ export function RankingsClient({
             </thead>
             <tbody>
               {rows.map((p) => (
-                <tr key={p.id} className={p.me ? "bg-[rgba(0,102,255,.06)]" : ""}>
-                  <td className={`border-b border-[#1E2D45] px-2.5 py-2.5 font-bold ${p.position === 1 ? "text-[#F59E0B]" : "text-[#6B7280]"}`}>
+                <tr key={p.id} className={p.me ? "bg-primary/6" : ""}>
+                  <td className={`border-b border-border px-2.5 py-2.5 font-bold ${p.position === 1 ? "text-chart-3" : "text-muted-foreground"}`}>
                     {p.position}
                   </td>
-                  <td className={`border-b border-[#1E2D45] px-2.5 py-2.5 ${p.me ? "font-bold text-[#0066FF]" : ""}`}>
+                  <td className={`border-b border-border px-2.5 py-2.5 ${p.me ? "font-bold text-primary" : ""}`}>
                     {p.name}
                     {p.me ? " ★" : ""}
                   </td>
-                  <td className="border-b border-[#1E2D45] px-2.5 py-2.5">
+                  <td className="border-b border-border px-2.5 py-2.5">
                     <RankBadge rank={p.rankKey} />
                   </td>
-                  <td className={`border-b border-[#1E2D45] px-2.5 py-2.5 font-[family-name:var(--font-jetbrains)] font-bold ${p.me ? "text-[#0066FF]" : ""}`}>
+                  <td className={`border-b border-border px-2.5 py-2.5 font-[family-name:var(--font-jetbrains)] font-bold ${p.me ? "text-primary" : ""}`}>
                     {p.elo}
                   </td>
                   <td
                     className={cn(
-                      "border-b border-[#1E2D45] px-2.5 py-2.5",
-                      p.winRate >= 60 && "text-[#22C55E]",
-                      p.winRate < 48 && p.winRate > 0 && "text-[#EF4444]",
+                      "border-b border-border px-2.5 py-2.5",
+                      p.winRate >= 60 && "text-chart-2",
+                      p.winRate < 48 && p.winRate > 0 && "text-destructive",
                     )}
                   >
                     {p.winRate}%

@@ -1,8 +1,34 @@
 "use client";
 
+import {
+  Card as ShadcnCard,
+  CardAction,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useT } from "@/components/bscl/locale-provider";
 import { RANK_STYLES, type RankKey } from "@/lib/constants";
+
+export { Button, buttonVariants } from "@/components/ui/button";
+export { Input } from "@/components/ui/input";
+export { Label } from "@/components/ui/label";
+export {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+
+const TAG_VARIANTS = {
+  blue: "border-primary/25 bg-primary/10 text-primary",
+  green: "border-chart-2/30 bg-chart-2/10 text-chart-2",
+  gold: "border-chart-3/30 bg-chart-3/10 text-chart-3",
+  muted: "border-border bg-secondary text-muted-foreground",
+  red: "border-destructive/30 bg-destructive/10 text-destructive",
+} as const;
 
 export function RankBadge({
   rank,
@@ -15,7 +41,7 @@ export function RankBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wide font-[family-name:var(--font-rajdhani)]",
+        "inline-flex items-center rounded px-1.5 py-0.5 font-[family-name:var(--font-rajdhani)] text-[10px] font-bold tracking-wide",
         RANK_STYLES[rank],
         className,
       )}
@@ -31,27 +57,13 @@ export function Tag({
   className,
 }: {
   children: React.ReactNode;
-  variant?: "blue" | "green" | "gold" | "muted" | "red";
+  variant?: keyof typeof TAG_VARIANTS;
   className?: string;
 }) {
-  const styles = {
-    blue: "bg-[rgba(0,102,255,.1)] text-[#0066FF] border-[rgba(0,102,255,.22)]",
-    green: "bg-[rgba(34,197,94,.1)] text-[#22C55E] border-[rgba(34,197,94,.25)]",
-    gold: "bg-[rgba(245,158,11,.1)] text-[#F59E0B] border-[rgba(245,158,11,.25)]",
-    muted: "bg-[#162032] text-[#6B7280] border-[#1E2D45]",
-    red: "bg-[rgba(239,68,68,.1)] text-[#EF4444] border-[rgba(239,68,68,.25)]",
-  };
-
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold border",
-        styles[variant],
-        className,
-      )}
-    >
+    <Badge variant="outline" className={cn("rounded-md text-[10px]", TAG_VARIANTS[variant], className)}>
       {children}
-    </span>
+    </Badge>
   );
 }
 
@@ -69,23 +81,25 @@ export function StatCell({
   valueClassName?: string;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-[10px] border border-[#1E2D45] bg-[#111827] p-3.5">
-      <div className="absolute inset-x-0 top-0 h-0.5 bg-[#0066FF]" />
-      <div className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-[#6B7280]">
-        {label}
-      </div>
-      <div
-        className={cn(
-          "font-[family-name:var(--font-rajdhani)] text-[28px] font-bold leading-none text-white",
-          valueClassName,
+    <ShadcnCard size="sm" className="relative overflow-hidden ring-border/60">
+      <div className="absolute inset-x-0 top-0 h-0.5 bg-primary" />
+      <div className="flex flex-col gap-1 px-3 py-3.5">
+        <div className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+          {label}
+        </div>
+        <div
+          className={cn(
+            "font-[family-name:var(--font-rajdhani)] text-[28px] font-bold leading-none text-foreground",
+            valueClassName,
+          )}
+        >
+          {value}
+        </div>
+        {sub && (
+          <div className={cn("text-[11px] text-muted-foreground", subClassName)}>{sub}</div>
         )}
-      >
-        {value}
       </div>
-      {sub && (
-        <div className={cn("mt-0.5 text-[11px] text-[#6B7280]", subClassName)}>{sub}</div>
-      )}
-    </div>
+    </ShadcnCard>
   );
 }
 
@@ -97,14 +111,9 @@ export function Card({
   className?: string;
 }) {
   return (
-    <div
-      className={cn(
-        "rounded-xl border border-[#1E2D45] bg-[#111827] p-4",
-        className,
-      )}
-    >
-      {children}
-    </div>
+    <ShadcnCard className={cn("gap-3 ring-border/60", className)}>
+      <div className="flex flex-col gap-3 px-4">{children}</div>
+    </ShadcnCard>
   );
 }
 
@@ -118,27 +127,27 @@ export function CardHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-3.5 flex items-center justify-between">
-      <h2 className="flex items-center gap-1.5 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold tracking-wide">
+    <div className="flex items-center justify-between gap-2">
+      <CardTitle className="flex items-center gap-1.5 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold tracking-wide">
         {title}
-        {accent && <span className="text-[#0066FF]">{accent}</span>}
-      </h2>
-      {action}
+        {accent && <span className="text-primary">{accent}</span>}
+      </CardTitle>
+      {action && <CardAction className="static col-auto row-auto self-auto justify-self-auto">{action}</CardAction>}
     </div>
   );
 }
 
 export function LogoHex({ size = "md" }: { size?: "sm" | "md" }) {
-  const s = size === "sm" ? "h-[30px] w-[30px] text-[11px]" : "h-9 w-9 text-xs";
+  const s = size === "sm" ? "size-[30px] text-[11px]" : "size-9 text-xs";
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center bg-[#0066FF] shadow-[0_0_12px_rgba(0,102,255,.28)]",
+        "flex shrink-0 items-center justify-center bg-primary shadow-[0_0_12px_color-mix(in_oklch,var(--primary),transparent_72%)]",
         s,
       )}
       style={{ clipPath: "polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)" }}
     >
-      <span className="font-[family-name:var(--font-rajdhani)] font-bold text-white">BS</span>
+      <span className="font-[family-name:var(--font-rajdhani)] font-bold text-primary-foreground">BS</span>
     </div>
   );
 }
@@ -157,26 +166,27 @@ export function MatchRow({
   const t = useT();
   const win = result === "win";
   return (
-    <div className="flex items-center gap-2.5 rounded-lg border border-[#1E2D45] bg-[#162032] px-3 py-2.5">
-      <span
+    <div className="flex items-center gap-2.5 rounded-lg border border-border bg-secondary px-3 py-2.5">
+      <Badge
+        variant="outline"
         className={cn(
-          "min-w-[38px] rounded px-2 py-0.5 text-center font-[family-name:var(--font-rajdhani)] text-[11px] font-bold",
+          "min-w-[38px] justify-center rounded px-2 font-[family-name:var(--font-rajdhani)] text-[11px] font-bold",
           win
-            ? "border border-[rgba(34,197,94,.28)] bg-[rgba(34,197,94,.14)] text-[#22C55E]"
-            : "border border-[rgba(239,68,68,.25)] bg-[rgba(239,68,68,.12)] text-[#EF4444]",
+            ? "border-chart-2/30 bg-chart-2/10 text-chart-2"
+            : "border-destructive/30 bg-destructive/10 text-destructive",
         )}
       >
         {win ? t.common.win : t.common.loss}
-      </span>
+      </Badge>
       <span className="font-[family-name:var(--font-jetbrains)] text-sm font-bold tracking-widest">
         {score}
       </span>
-      <span className="flex-1 pl-1 text-[11px] text-[#6B7280]">{meta}</span>
+      <span className="flex-1 pl-1 text-[11px] text-muted-foreground">{meta}</span>
       {delta != null && (
         <span
           className={cn(
             "font-[family-name:var(--font-jetbrains)] text-[13px] font-bold",
-            delta >= 0 ? "text-[#22C55E]" : "text-[#EF4444]",
+            delta >= 0 ? "text-chart-2" : "text-destructive",
           )}
         >
           {delta >= 0 ? `+${delta}` : delta}
@@ -188,7 +198,9 @@ export function MatchRow({
 
 export function EmptyState({ message }: { message: string }) {
   return (
-    <p className="py-6 text-center text-[13px] text-[#6B7280]">{message}</p>
+    <Empty className="border-border bg-transparent py-6">
+      <EmptyDescription className="text-[13px]">{message}</EmptyDescription>
+    </Empty>
   );
 }
 
@@ -202,8 +214,9 @@ export function TableScroll({
   className?: string;
 }) {
   return (
-    <div className={cn("-mx-1 overflow-x-auto overscroll-x-contain", className)}>
+    <ScrollArea className={cn("-mx-1 w-full", className)}>
       <div style={{ minWidth }}>{children}</div>
-    </div>
+      <ScrollBar orientation="horizontal" />
+    </ScrollArea>
   );
 }

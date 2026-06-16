@@ -5,6 +5,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { DiscordSimModal } from "@/components/bscl/discord-sim-modal";
 import { DiscordIcon } from "@/components/bscl/icons";
+import {
+  Button,
+  Field,
+  FieldGroup,
+  FieldLabel,
+  Input,
+} from "@/components/bscl/ui";
 import { useT } from "@/components/bscl/locale-provider";
 import type { MockDiscordAccount } from "@/lib/discord-sim";
 import { saveGuestPlayer, saveSimulatedDiscordPlayer } from "@/lib/local-store";
@@ -43,47 +50,48 @@ export function LoginDemo() {
   return (
     <>
       <LoginShell description={t.login.demoDesc}>
-        <div className="space-y-3">
-          <button
+        <FieldGroup className="gap-3">
+          <Button
             type="button"
+            className="w-full bg-[#5865F2] text-white hover:bg-[#4752C4]"
             onClick={() => {
               setError(null);
               setModalOpen(true);
             }}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#5865F2] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#4752C4]"
           >
-            <DiscordIcon className="h-5 w-5" />
+            <DiscordIcon data-icon="inline-start" />
             {t.login.discordCta}
-          </button>
+          </Button>
 
-          <form onSubmit={handleGuest} className="flex gap-2">
-            <input
-              type="text"
-              value={guestName}
-              onChange={(e) => setGuestName(e.target.value)}
-              placeholder={t.login.displayName}
-              maxLength={24}
-              className="min-w-0 flex-1 rounded-lg border border-[#1E2D45] bg-[#0B1628] px-3 py-2.5 text-sm outline-none focus:border-[#0066FF]"
-            />
-            <button
-              type="submit"
-              className="shrink-0 rounded-lg border border-[#1E2D45] bg-[#162032] px-3 py-2.5 text-sm font-semibold"
-            >
-              {t.login.demoCta}
-            </button>
+          <form onSubmit={handleGuest}>
+            <FieldGroup className="flex-row gap-2">
+              <Field className="min-w-0 flex-1">
+                <FieldLabel htmlFor="guest-name" className="sr-only">
+                  {t.login.displayName}
+                </FieldLabel>
+                <Input
+                  id="guest-name"
+                  type="text"
+                  value={guestName}
+                  onChange={(e) => setGuestName(e.target.value)}
+                  placeholder={t.login.displayName}
+                  maxLength={24}
+                />
+              </Field>
+              <Button type="submit" variant="secondary">
+                {t.login.demoCta}
+              </Button>
+            </FieldGroup>
           </form>
 
           <SwitchModeLink />
 
-          <Link
-            href="/demo"
-            className="block text-center text-xs font-semibold text-[#9CA3AF] hover:text-[#E5E7EB] hover:underline"
-          >
+          <Button variant="link" className="h-auto p-0 text-xs text-muted-foreground" render={<Link href="/demo" />}>
             {t.demo.openHub} →
-          </Link>
+          </Button>
 
-          {error && <p className="text-xs text-[#EF4444]">{error}</p>}
-        </div>
+          {error && <p className="text-xs text-destructive">{error}</p>}
+        </FieldGroup>
       </LoginShell>
 
       <DiscordSimModal

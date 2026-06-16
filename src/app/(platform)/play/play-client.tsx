@@ -7,7 +7,15 @@ import { MatchStatus } from "@/generated/prisma/client";
 import { DemoMatchFlow } from "@/components/bscl/demo-match-flow";
 import { useDemoOptional } from "@/components/bscl/demo-provider";
 import { useT } from "@/components/bscl/locale-provider";
-import { Card, CardHeader, EmptyState, StatCell, TableScroll, Tag } from "@/components/bscl/ui";
+import {
+  Button,
+  Card,
+  CardHeader,
+  EmptyState,
+  StatCell,
+  TableScroll,
+  Tag,
+} from "@/components/bscl/ui";
 import { matchStatusVariant } from "@/lib/match-display";
 import type { Translations } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -196,61 +204,54 @@ export function PlayClient({
         <StatCell label={t.home.today} value={demoTodayCount} sub={t.common.matches} />
       </div>
 
-      <div className="rounded-xl border border-[#1E2D45] bg-[#162032] p-4 md:p-5">
+      <div className="rounded-xl border border-border bg-secondary p-4 md:p-5">
         <div className="mb-3.5 flex items-start justify-between gap-2.5">
           <div>
             <h2 className="font-[family-name:var(--font-rajdhani)] text-lg font-bold">{t.play.pugTitle}</h2>
-            <p className="mt-0.5 text-xs text-[#6B7280]">
+            <p className="mt-0.5 text-xs text-muted-foreground">
               {queue.count} / {SLOT_COUNT} ·{" "}
               {queue.count < SLOT_COUNT ? t.play.filling : t.play.readyDraft}
             </p>
           </div>
-          <button
+          <Button
             type="button"
             onClick={toggleQueue}
             disabled={loading}
-            className={
-              queueActive
-                ? "rounded-lg border border-[#1E2D45] bg-[#162032] px-4 py-2 text-[13px] font-semibold disabled:opacity-50"
-                : isDemo
-                  ? "rounded-lg bg-[#F59E0B] px-4 py-2 text-[13px] font-bold text-[#0B0B0B] shadow-[0_0_14px_rgba(245,158,11,.28)] disabled:opacity-50"
-                  : "rounded-lg bg-[#0066FF] px-4 py-2 text-[13px] font-semibold text-white shadow-[0_0_14px_rgba(0,102,255,.28)] disabled:opacity-50"
-            }
+            variant={queueActive ? "secondary" : "default"}
+            className={cn(
+              !queueActive && "shadow-[0_0_14px_color-mix(in_oklch,var(--primary),transparent_72%)]",
+            )}
           >
             {loading ? "…" : queueActive ? t.play.leave : t.play.join}
-          </button>
+          </Button>
         </div>
 
         {isDemo && queue.count < SLOT_COUNT && (
           <div className="mb-3 flex justify-end">
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="sm"
               onClick={handleFillBots}
               disabled={!demo?.player}
-              className="rounded-lg border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.08)] px-3 py-1.5 text-xs font-semibold text-[#F59E0B] disabled:opacity-50"
             >
               {t.play.fillBots}
-            </button>
+            </Button>
           </div>
         )}
 
-        {error && <p className="mb-3 text-center text-xs text-[#EF4444]">{error}</p>}
+        {error && <p className="mb-3 text-center text-xs text-destructive">{error}</p>}
 
         <div className="mb-3">
-          <div className="mb-1.5 flex justify-between text-[11px] text-[#6B7280]">
+          <div className="mb-1.5 flex justify-between text-[11px] text-muted-foreground">
             <span>
               {queue.count}/{SLOT_COUNT}
             </span>
-            <span className={cn("font-semibold", isDemo ? "text-[#F59E0B]" : "text-[#0066FF]")}>5v5 PUG</span>
+            <span className="font-semibold text-primary">5v5 PUG</span>
           </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-[#1E2D45]">
+          <div className="h-1.5 overflow-hidden rounded-full bg-border">
             <div
-              className={cn(
-                "h-full rounded-full transition-all duration-400",
-                isDemo
-                  ? "bg-[#F59E0B] shadow-[0_0_8px_rgba(245,158,11,.35)]"
-                  : "bg-[#0066FF] shadow-[0_0_8px_rgba(0,102,255,.28)]",
-              )}
+              className="h-full rounded-full bg-primary transition-all duration-400 shadow-[0_0_8px_color-mix(in_oklch,var(--primary),transparent_65%)]"
               style={{ width: `${pct}%` }}
             />
           </div>
@@ -261,19 +262,9 @@ export function PlayClient({
             player ? (
               <div
                 key={player.id}
-                className={cn(
-                  "flex aspect-square flex-col items-center justify-center gap-0.5 rounded-lg border",
-                  isDemo
-                    ? "border-[#F59E0B] bg-[rgba(245,158,11,.12)]"
-                    : "border-[#0066FF] bg-[rgba(0,102,255,.1)]",
-                )}
+                className="flex aspect-square flex-col items-center justify-center gap-0.5 rounded-lg border border-primary bg-primary/12"
               >
-                <div
-                  className={cn(
-                    "flex h-[26px] w-[26px] items-center justify-center rounded-full font-[family-name:var(--font-rajdhani)] text-[10px] font-bold",
-                    isDemo ? "bg-[#F59E0B] text-[#0B0B0B]" : "bg-[#0066FF]",
-                  )}
-                >
+                <div className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-primary font-[family-name:var(--font-rajdhani)] text-[10px] font-bold text-primary-foreground">
                   {player.initials}
                 </div>
                 <span className="max-w-full truncate px-0.5 text-[9px]">{player.name}</span>
@@ -281,7 +272,7 @@ export function PlayClient({
             ) : (
               <div
                 key={`empty-${i}`}
-                className="flex aspect-square flex-col items-center justify-center rounded-lg border border-dashed border-[#1E2D45] text-[9px] text-[#6B7280]"
+                className="flex aspect-square flex-col items-center justify-center rounded-lg border border-dashed border-border text-[9px] text-muted-foreground"
               >
                 <span className="text-base opacity-30">+</span>
               </div>
@@ -289,7 +280,7 @@ export function PlayClient({
           )}
         </div>
 
-        <p className="text-center text-[11px] leading-relaxed text-[#6B7280]">
+        <p className="text-center text-[11px] leading-relaxed text-muted-foreground">
           {isDemo ? t.play.footerDemo : t.play.footerLive}
         </p>
       </div>
@@ -298,17 +289,12 @@ export function PlayClient({
         <h2 className="mb-3.5 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold">{t.play.howItWorks}</h2>
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
           {t.play.steps.map(([n, title, desc]) => (
-            <div key={n} className="rounded-lg border border-[#1E2D45] bg-[#162032] p-3">
-              <div
-                className={cn(
-                  "mb-0.5 font-[family-name:var(--font-rajdhani)] text-xs font-bold",
-                  isDemo ? "text-[#F59E0B]" : "text-[#0066FF]",
-                )}
-              >
+            <div key={n} className="rounded-lg border border-border bg-secondary p-3">
+              <div className="mb-0.5 font-[family-name:var(--font-rajdhani)] text-xs font-bold text-primary">
                 {n}
               </div>
               <div className="mb-0.5 text-xs font-semibold">{title}</div>
-              <div className="text-[11px] leading-snug text-[#6B7280]">{desc}</div>
+              <div className="text-[11px] leading-snug text-muted-foreground">{desc}</div>
             </div>
           ))}
         </div>
@@ -318,9 +304,9 @@ export function PlayClient({
         <CardHeader
           title={t.play.activeMatches}
           action={
-            <Link href="/matches" className="rounded-lg border border-[#1E2D45] bg-[#162032] px-3 py-1.5 text-xs font-semibold">
+            <Button variant="secondary" size="sm" render={<Link href="/matches" />}>
               {t.common.all} →
-            </Link>
+            </Button>
           }
         />
         {liveMatches.length === 0 ? (
@@ -329,7 +315,7 @@ export function PlayClient({
           <TableScroll>
             <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b border-[#1E2D45] text-left text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
+              <tr className="border-b border-border text-left text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                 <th className="px-2.5 py-2">{t.matches.id}</th>
                 <th className="px-2.5 py-2">{t.matches.alpha}</th>
                 <th className="px-2.5 py-2">{t.matches.bravo}</th>
@@ -339,10 +325,10 @@ export function PlayClient({
             <tbody>
               {liveMatches.map((m) => (
                 <tr key={m.id}>
-                  <td className="border-b border-[#1E2D45] px-2.5 py-2.5 font-[family-name:var(--font-jetbrains)] text-[11px] text-[#6B7280]">{m.id}</td>
-                  <td className="border-b border-[#1E2D45] px-2.5 py-2.5 text-[13px]">{m.alpha}</td>
-                  <td className="border-b border-[#1E2D45] px-2.5 py-2.5 text-[13px]">{m.bravo}</td>
-                  <td className="border-b border-[#1E2D45] px-2.5 py-2.5">
+                  <td className="border-b border-border px-2.5 py-2.5 font-[family-name:var(--font-jetbrains)] text-[11px] text-muted-foreground">{m.id}</td>
+                  <td className="border-b border-border px-2.5 py-2.5 text-[13px]">{m.alpha}</td>
+                  <td className="border-b border-border px-2.5 py-2.5 text-[13px]">{m.bravo}</td>
+                  <td className="border-b border-border px-2.5 py-2.5">
                     <Tag variant={matchStatusVariant(m.status as MatchStatus)}>
                       {statusLabel(t, m.status)}
                     </Tag>
