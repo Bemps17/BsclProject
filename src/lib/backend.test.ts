@@ -19,3 +19,32 @@ describe("isBackendEnabled", () => {
     expect(isBackendEnabled()).toBe(true);
   });
 });
+
+describe("isDemoMode", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("returns true when backend is disabled", async () => {
+    vi.stubEnv("DATABASE_URL", "");
+    vi.stubEnv("AUTH_SECRET", "");
+    const { isDemoMode } = await import("./backend");
+    expect(isDemoMode()).toBe(true);
+  });
+
+  it("returns true when demo cookie is set and backend enabled", async () => {
+    vi.stubEnv("DATABASE_URL", "postgresql://localhost/test");
+    vi.stubEnv("AUTH_SECRET", "secret");
+    const { isDemoMode } = await import("./backend");
+    expect(isDemoMode("1")).toBe(true);
+    expect(isDemoMode()).toBe(false);
+  });
+
+  it("returns true when BSCL_DEMO is set", async () => {
+    vi.stubEnv("DATABASE_URL", "postgresql://localhost/test");
+    vi.stubEnv("AUTH_SECRET", "secret");
+    vi.stubEnv("BSCL_DEMO", "1");
+    const { isDemoMode } = await import("./backend");
+    expect(isDemoMode()).toBe(true);
+  });
+});

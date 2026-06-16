@@ -9,17 +9,29 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { discordTag } from "@/lib/discord-sim";
 import {
+  buildDemoLeaderboard,
+  type LocalMatch,
+} from "@/lib/local-matchmaker";
+import {
+  confirmLocalMatchResult,
+  fillBotsAndStartMatch,
+  fillQueueWithBots,
   getLocalState,
   joinLocalQueue,
   leaveLocalQueue,
+  localDemoStats,
+  localPlayerMatches,
   localQueueSnapshot,
+  resetDemoData,
+  submitLocalMatchResult,
   subscribeLocalState,
+  tryCreateLocalMatch,
   type LocalPlayer,
   type LocalState,
 } from "@/lib/local-store";
 import type { RankKey } from "@/lib/constants";
-import { discordTag } from "@/lib/discord-sim";
 import { playerInitials } from "@/lib/ranks";
 
 export type DemoShellUser = {
@@ -34,16 +46,26 @@ type DemoContextValue = {
   player: LocalPlayer | null;
   shellUser: DemoShellUser;
   queue: ReturnType<typeof localQueueSnapshot>;
+  stats: ReturnType<typeof localDemoStats>;
+  matches: LocalMatch[];
+  myMatches: LocalMatch[];
+  leaderboard: ReturnType<typeof buildDemoLeaderboard>;
   refresh: () => void;
   joinQueue: () => void;
   leaveQueue: () => void;
+  fillBots: () => void;
+  startMatch: () => void;
+  fillBotsAndMatch: () => void;
+  submitMatch: (matchId: string, alphaScore: number, bravoScore: number) => void;
+  confirmMatch: (matchId: string, asPlayerId?: string) => void;
+  resetAll: () => void;
 };
 
 const DemoContext = createContext<DemoContextValue | null>(null);
 
 export function DemoProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<LocalState>(() =>
-    typeof window === "undefined" ? { player: null, queue: [], inQueue: false } : getLocalState(),
+    typeof window === "undefined" ? { player: null, queue: [], inQueue: false, matches: [], matchCounter: 0 } : getLocalState(),
   );
 
   const refresh = useCallback(() => {
@@ -73,6 +95,27 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   }, [state.player]);
 
   const queue = useMemo(() => localQueueSnapshot(), [state]);
+  const stats = useMemo(() => localDemoStats(), [state]);
+  const myMatches = useMemo(
+    () => (state.player ? localPlayerMatches(state.player.id) : []),
+    [state.player, state.matches],
+  );
+  const leaderboard = useMemo(
+    () =>
+      buildDemoLeaderboard(
+        state.player
+          ? {
+              id: state.player.id,
+              displayName: state.player.displayName,
+              elo: state.player.elo,
+              rankKey: state.player.rankKey,
+              wins: state.player.wins,
+              losses: state.player.losses,
+            }
+          : null,
+      ),
+    [state.player],
+  );
 
   const value = useMemo(
     (): DemoContextValue => ({
@@ -80,6 +123,10 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       player: state.player,
       shellUser,
       queue,
+      stats,
+      matches: state.matches,
+      myMatches,
+      leaderboard,
       refresh,
       joinQueue: () => {
         joinLocalQueue();
@@ -89,8 +136,32 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         leaveLocalQueue();
         refresh();
       },
+      fillBots: () => {
+        fillQueueWithBots();
+        refresh();
+      },
+      startMatch: () => {
+        tryCreateLocalMatch();
+        refresh();
+      },
+      fillBotsAndMatch: () => {
+        fillBotsAndStartMatch();
+        refresh();
+      },
+      submitMatch: (matchId, alphaScore, bravoScore) => {
+        submitLocalMatchResult(matchId, alphaScore, bravoScore);
+        refresh();
+      },
+      confirmMatch: (matchId, asPlayerId) => {
+        confirmLocalMatchResult(matchId, asPlayerId);
+        refresh();
+      },
+      resetAll: () => {
+        resetDemoData();
+        refresh();
+      },
     }),
-    [state, shellUser, queue, refresh],
+    [state, shellUser, queue, stats, myMatches, leaderboard, refresh],
   );
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;

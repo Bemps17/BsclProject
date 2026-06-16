@@ -138,6 +138,14 @@ export function Sidebar({ user, demoMode }: { user: ShellUser; demoMode?: boolea
                 />
               );
             })}
+            {demoMode && section === "platform" && (
+              <NavLink
+                href="/demo"
+                label={t.nav.demo}
+                icon="◎"
+                active={pathname === "/demo"}
+              />
+            )}
           </div>
         );
       })}
@@ -173,12 +181,13 @@ export function Topbar({ demoMode }: { demoMode?: boolean }) {
         <LanguageSwitcher />
 
         {demoMode && (
-          <span
-            className="hidden rounded-full border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.12)] px-2 py-0.5 text-[10px] font-semibold text-[#F59E0B] md:inline"
-            title={t.common.demoBadge}
+          <Link
+            href="/demo"
+            className="hidden rounded-full border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.12)] px-2 py-0.5 text-[10px] font-semibold text-[#F59E0B] transition hover:bg-[rgba(245,158,11,.2)] md:inline"
+            title={t.demo.openHub}
           >
             {t.common.demoBadge}
-          </span>
+          </Link>
         )}
 
         <div

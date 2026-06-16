@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MatchStatus } from "@/generated/prisma/client";
+import { DemoActiveMatch } from "@/components/bscl/demo-active-match";
 import { useDemoOptional } from "@/components/bscl/demo-provider";
 import { useT } from "@/components/bscl/locale-provider";
 import { Card, CardHeader, EmptyState, StatCell, TableScroll, Tag } from "@/components/bscl/ui";
@@ -140,9 +141,30 @@ export function PlayClient({
   }
 
   const queueActive = isDemo ? demo?.state.inQueue ?? false : inQueue;
+  const demoLiveCount = isDemo ? demo?.stats.liveMatches ?? 0 : initialStats.liveMatches;
+  const demoTodayCount = isDemo ? demo?.stats.todayMatches ?? 0 : initialStats.todayMatches;
+
+  function handleFillBots() {
+    if (!demo?.player) {
+      router.push("/login");
+      return;
+    }
+    setError(null);
+    try {
+      if (!demo.state.inQueue) {
+        demo.joinQueue();
+      }
+      demo.fillBots();
+      demo.startMatch();
+      syncDemoQueue();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.play.failJoin);
+    }
+  }
 
   return (
     <>
+      {isDemo && <DemoActiveMatch />}
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
         <StatCell
           label={t.play.inQueue}
@@ -154,8 +176,8 @@ export function PlayClient({
           value={<>—</>}
           sub={isDemo ? t.play.demoMode : t.play.collectingData}
         />
-        <StatCell label={t.play.live} value={initialStats.liveMatches} sub={t.common.matches} />
-        <StatCell label={t.home.today} value={initialStats.todayMatches} sub={t.common.matches} />
+        <StatCell label={t.play.live} value={demoLiveCount} sub={t.common.matches} />
+        <StatCell label={t.home.today} value={demoTodayCount} sub={t.common.matches} />
       </div>
 
       <div className="rounded-xl border border-[#1E2D45] bg-[#162032] p-4 md:p-5">
@@ -180,6 +202,19 @@ export function PlayClient({
             {loading ? "…" : queueActive ? t.play.leave : t.play.join}
           </button>
         </div>
+
+        {isDemo && queue.count < SLOT_COUNT && (
+          <div className="mb-3 flex justify-end">
+            <button
+              type="button"
+              onClick={handleFillBots}
+              disabled={!demo?.player}
+              className="rounded-lg border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.08)] px-3 py-1.5 text-xs font-semibold text-[#F59E0B] disabled:opacity-50"
+            >
+              {t.play.fillBots}
+            </button>
+          </div>
+        )}
 
         {error && <p className="mb-3 text-center text-xs text-[#EF4444]">{error}</p>}
 

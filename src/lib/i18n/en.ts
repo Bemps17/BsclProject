@@ -12,6 +12,7 @@ export const en: Translations = {
     tickets: "Support",
     admin: "Admin",
     me: "Me",
+    demo: "Demo",
   },
   sections: {
     platform: "Platform",
@@ -28,6 +29,7 @@ export const en: Translations = {
     "/tournaments": "Tournaments",
     "/tickets": "Support",
     "/admin": "Admin Panel",
+    "/demo": "Demo Mode",
   },
   ranks: {
     elite: "ELITE",
@@ -99,7 +101,7 @@ export const en: Translations = {
     join: "Join",
     leave: "Leave",
     footerLive: "10 players needed · Captains auto-selected · Snake draft via Discord bot",
-    footerDemo: "Demo queue — stored in your browser. Sign in as guest first.",
+    footerDemo: "Demo queue — stored in your browser. Use Fill with bots to start a 5v5.",
     howItWorks: "How it works",
     steps: [
       ["01 · Join", "Queue Up", "Click Join. Bot adds you to the 5v5 pool."],
@@ -111,6 +113,7 @@ export const en: Translations = {
     noActiveMatches: "No active matches right now.",
     failJoin: "Failed to join queue",
     failLeave: "Failed to leave queue",
+    fillBots: "Fill with bots & start match",
   },
   rankings: {
     players: "Players",
@@ -194,6 +197,39 @@ export const en: Translations = {
       authorize: "Authorize",
       customUsername: "Custom username",
       demoNote: "Demo simulation — no real Discord connection.",
+    },
+  },
+  demo: {
+    title: "Prototype demo mode",
+    subtitle:
+      "Test the full player journey locally: simulated Discord sign-in, queue, 5v5 matchmaking with bots, score submit/confirm, and ELO updates — no database or OAuth required.",
+    openHub: "Open demo hub",
+    enterPrototype: "Try prototype mode (no Discord required)",
+    journeyTitle: "Player journey checklist",
+    authTitle: "Authentication (simulated)",
+    authDesc: "Discord OAuth is mocked in a separate modal. You can also continue as a guest.",
+    actionsTitle: "Quick actions",
+    goPlay: "Go to Play",
+    fillBotsMatch: "Fill queue with bots & create match",
+    resetAll: "Reset all demo data",
+    activeMatch: "Active match",
+    continueOnPlay: "Submit scores and confirm on the Play page.",
+    submitScore: "Submit score",
+    confirmScore: "Confirm score",
+    simulateConfirm: "Simulate captain confirm",
+    waitingConfirm: "Waiting for opposing captain to confirm…",
+    invalidScore: "Enter valid scores",
+    actionFailed: "Action failed",
+    stats: {
+      queue: "In queue",
+      live: "Live matches",
+      played: "Matches played",
+    },
+    steps: {
+      signIn: "Sign in (Discord sim or guest)",
+      queue: "Join the PUG queue",
+      match: "Play a 5v5 match (bots fill the queue)",
+      elo: "Submit & confirm score — ELO updates",
     },
   },
   admin: {

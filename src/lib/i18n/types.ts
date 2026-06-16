@@ -12,6 +12,7 @@ export type Translations = {
     tickets: string;
     admin: string;
     me: string;
+    demo: string;
   };
   sections: {
     platform: string;
@@ -27,7 +28,8 @@ export type Translations = {
     | "/matches"
     | "/tournaments"
     | "/tickets"
-    | "/admin",
+    | "/admin"
+    | "/demo",
     string
   >;
   ranks: {
@@ -106,6 +108,7 @@ export type Translations = {
     noActiveMatches: string;
     failJoin: string;
     failLeave: string;
+    fillBots: string;
   };
   rankings: {
     players: string;
@@ -186,6 +189,38 @@ export type Translations = {
       authorize: string;
       customUsername: string;
       demoNote: string;
+    };
+  };
+  demo: {
+    title: string;
+    subtitle: string;
+    openHub: string;
+    enterPrototype: string;
+    journeyTitle: string;
+    authTitle: string;
+    authDesc: string;
+    actionsTitle: string;
+    goPlay: string;
+    fillBotsMatch: string;
+    resetAll: string;
+    activeMatch: string;
+    continueOnPlay: string;
+    submitScore: string;
+    confirmScore: string;
+    simulateConfirm: string;
+    waitingConfirm: string;
+    invalidScore: string;
+    actionFailed: string;
+    stats: {
+      queue: string;
+      live: string;
+      played: string;
+    };
+    steps: {
+      signIn: string;
+      queue: string;
+      match: string;
+      elo: string;
     };
   };
   admin: {

@@ -12,6 +12,7 @@ export const fr: Translations = {
     tickets: "Support",
     admin: "Admin",
     me: "Moi",
+    demo: "Démo",
   },
   sections: {
     platform: "Plateforme",
@@ -28,6 +29,7 @@ export const fr: Translations = {
     "/tournaments": "Tournois",
     "/tickets": "Support",
     "/admin": "Panneau admin",
+    "/demo": "Mode démo",
   },
   ranks: {
     elite: "ÉLITE",
@@ -99,7 +101,7 @@ export const fr: Translations = {
     join: "Rejoindre",
     leave: "Quitter",
     footerLive: "10 joueurs requis · Capitaines auto · Draft serpentin via bot Discord",
-    footerDemo: "File démo — stockée dans ton navigateur. Connecte-toi d'abord en invité.",
+    footerDemo: "File démo — stockée dans le navigateur. Utilise « Remplir avec bots » pour lancer un 5v5.",
     howItWorks: "Comment ça marche",
     steps: [
       ["01 · Rejoindre", "File d'attente", "Clique Rejoindre. Le bot t'ajoute au pool 5v5."],
@@ -111,6 +113,7 @@ export const fr: Translations = {
     noActiveMatches: "Aucun match actif pour l'instant.",
     failJoin: "Impossible de rejoindre la file",
     failLeave: "Impossible de quitter la file",
+    fillBots: "Remplir avec bots & lancer",
   },
   rankings: {
     players: "Joueurs",
@@ -194,6 +197,39 @@ export const fr: Translations = {
       authorize: "Autoriser",
       customUsername: "Nom personnalisé",
       demoNote: "Simulation démo — aucune connexion Discord réelle.",
+    },
+  },
+  demo: {
+    title: "Mode démo prototype",
+    subtitle:
+      "Teste le parcours joueur en local : connexion Discord simulée, file d'attente, matchmaking 5v5 avec bots, soumission/confirmation des scores et mise à jour ELO — sans base de données ni OAuth.",
+    openHub: "Ouvrir le hub démo",
+    enterPrototype: "Essayer le mode prototype (sans Discord)",
+    journeyTitle: "Parcours joueur",
+    authTitle: "Authentification (simulée)",
+    authDesc: "L'OAuth Discord est simulé dans une modale. Tu peux aussi continuer en invité.",
+    actionsTitle: "Actions rapides",
+    goPlay: "Aller jouer",
+    fillBotsMatch: "Remplir la file avec des bots & créer un match",
+    resetAll: "Réinitialiser toutes les données démo",
+    activeMatch: "Match en cours",
+    continueOnPlay: "Soumets et confirme les scores sur la page Jouer.",
+    submitScore: "Soumettre le score",
+    confirmScore: "Confirmer le score",
+    simulateConfirm: "Simuler la confirmation capitaine",
+    waitingConfirm: "En attente de confirmation par le capitaine adverse…",
+    invalidScore: "Entre des scores valides",
+    actionFailed: "Action échouée",
+    stats: {
+      queue: "En file",
+      live: "Matchs live",
+      played: "Matchs joués",
+    },
+    steps: {
+      signIn: "Se connecter (Discord sim ou invité)",
+      queue: "Rejoindre la file PUG",
+      match: "Jouer un 5v5 (bots complètent la file)",
+      elo: "Soumettre & confirmer — ELO mis à jour",
     },
   },
   admin: {

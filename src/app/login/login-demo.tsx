@@ -1,27 +1,40 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { DiscordSimModal } from "@/components/bscl/discord-sim-modal";
 import { useT } from "@/components/bscl/locale-provider";
 import type { MockDiscordAccount } from "@/lib/discord-sim";
-import { saveSimulatedDiscordPlayer } from "@/lib/local-store";
+import { saveGuestPlayer, saveSimulatedDiscordPlayer } from "@/lib/local-store";
 import { LoginShell } from "./login-shell";
 
 export function LoginDemo() {
   const router = useRouter();
   const t = useT();
   const [modalOpen, setModalOpen] = useState(false);
+  const [guestName, setGuestName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   function handleAuthorize(account: MockDiscordAccount) {
     try {
       saveSimulatedDiscordPlayer(account);
       setModalOpen(false);
-      router.push("/");
+      router.push("/demo");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : t.login.saveFailed);
+    }
+  }
+
+  function handleGuest(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      saveGuestPlayer(guestName);
+      router.push("/demo");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t.login.nameRequired);
     }
   }
 
@@ -45,6 +58,31 @@ export function LoginDemo() {
             </svg>
             {t.login.discordCta}
           </button>
+
+          <form onSubmit={handleGuest} className="flex gap-2">
+            <input
+              type="text"
+              value={guestName}
+              onChange={(e) => setGuestName(e.target.value)}
+              placeholder={t.login.displayName}
+              maxLength={24}
+              className="min-w-0 flex-1 rounded-lg border border-[#1E2D45] bg-[#0B1628] px-3 py-2.5 text-sm outline-none focus:border-[#0066FF]"
+            />
+            <button
+              type="submit"
+              className="shrink-0 rounded-lg border border-[#1E2D45] bg-[#162032] px-3 py-2.5 text-sm font-semibold"
+            >
+              {t.login.demoCta}
+            </button>
+          </form>
+
+          <Link
+            href="/demo"
+            className="block text-center text-xs font-semibold text-[#0066FF] hover:underline"
+          >
+            {t.demo.openHub} →
+          </Link>
+
           {error && <p className="text-xs text-[#EF4444]">{error}</p>}
         </div>
       </LoginShell>

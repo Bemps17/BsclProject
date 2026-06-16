@@ -1,7 +1,15 @@
+import { cookies } from "next/headers";
 import { MatchesClient } from "@/app/(platform)/matches/matches-client";
+import { MatchesDemo } from "@/app/(platform)/matches/matches-demo";
+import { isDemoMode } from "@/lib/backend";
 import { formatMatchScore, getActiveSeason, getMatches } from "@/lib/data";
 
 export default async function MatchesPage() {
+  const cookieStore = await cookies();
+  if (isDemoMode(cookieStore.get("bscl_demo")?.value)) {
+    return <MatchesDemo />;
+  }
+
   const [matches, season] = await Promise.all([getMatches(50), getActiveSeason()]);
   const seasonLabel = season ? `S${season.number}` : "S1";
 

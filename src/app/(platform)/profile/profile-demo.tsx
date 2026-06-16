@@ -3,17 +3,18 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { Card, CardHeader, EmptyState, RankBadge, StatCell, Tag } from "@/components/bscl/ui";
+import { Card, CardHeader, EmptyState, MatchRow, RankBadge, StatCell, Tag } from "@/components/bscl/ui";
 import { useDemo } from "@/components/bscl/demo-provider";
 import { useT } from "@/components/bscl/locale-provider";
 import { RANK_THRESHOLDS } from "@/lib/elo";
+import { formatMatchScore } from "@/lib/match-display";
 import { discordTag } from "@/lib/discord-sim";
 import { clearGuestPlayer } from "@/lib/local-store";
 import { playerInitials } from "@/lib/ranks";
 
 export function ProfileDemo() {
   const router = useRouter();
-  const { player } = useDemo();
+  const { player, myMatches } = useDemo();
   const t = useT();
 
   useEffect(() => {
@@ -114,7 +115,33 @@ export function ProfileDemo() {
 
       <Card>
         <CardHeader title={t.profile.matchHistory} />
-        <EmptyState message={t.profile.noMatchesDemo} />
+        {myMatches.filter((m) => m.status === "CONFIRMED").length === 0 ? (
+          <EmptyState message={t.profile.noMatchesDemo} />
+        ) : (
+          <div className="flex flex-col gap-1.5">
+            {myMatches
+              .filter((m) => m.status === "CONFIRMED")
+              .map((match) => {
+                const mp = match.players.find((p) => p.playerId === player.id)!;
+                const onAlpha = mp.side === "ALPHA";
+                const won =
+                  match.alphaScore != null &&
+                  match.bravoScore != null &&
+                  (onAlpha
+                    ? match.alphaScore > match.bravoScore
+                    : match.bravoScore > match.alphaScore);
+                return (
+                  <MatchRow
+                    key={match.id}
+                    result={won ? "win" : "loss"}
+                    score={formatMatchScore(match.alphaScore ?? null, match.bravoScore ?? null)}
+                    meta={`#M-${String(match.number).padStart(3, "0")} · ${onAlpha ? "Alpha" : "Bravo"}`}
+                    delta={mp.eloDelta}
+                  />
+                );
+              })}
+          </div>
+        )}
       </Card>
 
       <Card>

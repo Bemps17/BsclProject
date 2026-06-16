@@ -1,11 +1,13 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { isBackendEnabled } from "@/lib/backend";
+import { isDemoMode } from "@/lib/backend";
 import { getCurrentPlayerProfile } from "@/lib/data";
 import { ProfileDemo } from "./profile-demo";
 import { ProfileLive } from "./profile-live";
 
 export default async function ProfilePage() {
-  if (!isBackendEnabled()) {
+  const cookieStore = await cookies();
+  if (isDemoMode(cookieStore.get("bscl_demo")?.value)) {
     return <ProfileDemo />;
   }
 

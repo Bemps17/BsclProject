@@ -1,7 +1,8 @@
+import { cookies } from "next/headers";
 import { AppShell } from "@/components/bscl/shell";
 import { DemoProvider } from "@/components/bscl/demo-provider";
 import { getSessionUser } from "@/lib/auth";
-import { isBackendEnabled } from "@/lib/backend";
+import { isDemoMode } from "@/lib/backend";
 import { playerInitials, rankTierToKey } from "@/lib/ranks";
 
 export default async function PlatformLayout({
@@ -9,7 +10,10 @@ export default async function PlatformLayout({
 }: {
   children: React.ReactNode;
 }) {
-  if (!isBackendEnabled()) {
+  const cookieStore = await cookies();
+  const demoMode = isDemoMode(cookieStore.get("bscl_demo")?.value);
+
+  if (demoMode) {
     return (
       <DemoProvider>
         <AppShell demoMode user={null}>
