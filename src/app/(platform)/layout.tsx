@@ -1,5 +1,7 @@
 import { AppShell } from "@/components/bscl/shell";
+import { DemoProvider } from "@/components/bscl/demo-provider";
 import { getSessionUser } from "@/lib/auth";
+import { isBackendEnabled } from "@/lib/backend";
 import { playerInitials, rankTierToKey } from "@/lib/ranks";
 
 export default async function PlatformLayout({
@@ -7,6 +9,16 @@ export default async function PlatformLayout({
 }: {
   children: React.ReactNode;
 }) {
+  if (!isBackendEnabled()) {
+    return (
+      <DemoProvider>
+        <AppShell demoMode user={null}>
+          {children}
+        </AppShell>
+      </DemoProvider>
+    );
+  }
+
   const user = await getSessionUser();
   const shellUser = user?.player
     ? {

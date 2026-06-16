@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { UserRole } from "@/generated/prisma/client";
+import { isBackendEnabled } from "@/lib/backend";
 import { prisma } from "@/lib/prisma";
 
 const ROLE_HIERARCHY: Record<UserRole, number> = {
@@ -11,7 +12,14 @@ const ROLE_HIERARCHY: Record<UserRole, number> = {
 };
 
 export async function getSessionUser() {
-  const session = await auth();
+  if (!isBackendEnabled()) return null;
+
+  let session;
+  try {
+    session = await auth();
+  } catch {
+    return null;
+  }
   if (!session?.user?.id) return null;
 
   const user = await prisma.user.findUnique({

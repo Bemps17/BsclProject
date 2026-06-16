@@ -7,6 +7,7 @@ import {
   RankBadge,
   StatCell,
 } from "@/components/bscl/ui";
+import { DemoHomeStats } from "@/app/(platform)/demo-home-stats";
 import { BSCL } from "@/lib/constants";
 import {
   formatMatchScore,
@@ -118,6 +119,8 @@ export default async function HomePage() {
           sub={myPlayer ? "Overall" : undefined}
         />
       </div>
+
+      <DemoHomeStats />
 
       <Card>
         <CardHeader

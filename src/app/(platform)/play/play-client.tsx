@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MatchStatus } from "@/generated/prisma/client";
+import { useDemoOptional } from "@/components/bscl/demo-provider";
 import { Card, CardHeader, EmptyState, StatCell, Tag } from "@/components/bscl/ui";
 import { matchStatusVariant } from "@/lib/match-display";
 
@@ -36,13 +37,27 @@ export function PlayClient({
   initialMatches: LiveMatch[];
 }) {
   const router = useRouter();
+  const demo = useDemoOptional();
+  const isDemo = Boolean(demo);
+
   const [queue, setQueue] = useState<QueueState>({ count: 0, needed: 10, players: [] });
   const [inQueue, setInQueue] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [liveMatches] = useState(initialMatches);
 
+  const syncDemoQueue = useCallback(() => {
+    if (!demo) return;
+    const snap = demo.queue;
+    setQueue({ count: snap.count, needed: snap.needed, players: snap.players });
+    setInQueue(demo.state.inQueue);
+  }, [demo]);
+
   const fetchQueue = useCallback(async () => {
+    if (isDemo) {
+      syncDemoQueue();
+      return;
+    }
     try {
       const res = await fetch("/api/queue");
       if (!res.ok) return;
@@ -51,22 +66,40 @@ export function PlayClient({
     } catch {
       /* ignore polling errors */
     }
-  }, []);
+  }, [isDemo, syncDemoQueue]);
 
   useEffect(() => {
     fetchQueue();
+    if (isDemo) return;
     const timer = setInterval(fetchQueue, 3000);
     return () => clearInterval(timer);
-  }, [fetchQueue]);
+  }, [fetchQueue, isDemo]);
+
+  useEffect(() => {
+    if (isDemo) syncDemoQueue();
+  }, [isDemo, syncDemoQueue, demo?.state]);
 
   const pct = (queue.count / SLOT_COUNT) * 100;
-
   const slots = Array.from({ length: SLOT_COUNT }, (_, i) => queue.players[i] ?? null);
 
   async function toggleQueue() {
     setLoading(true);
     setError(null);
     try {
+      if (isDemo) {
+        if (!demo?.player) {
+          router.push("/login");
+          return;
+        }
+        if (demo.state.inQueue) {
+          demo.leaveQueue();
+        } else {
+          demo.joinQueue();
+        }
+        syncDemoQueue();
+        return;
+      }
+
       if (inQueue) {
         const res = await fetch("/api/queue", { method: "DELETE" });
         if (res.status === 401) {
@@ -98,11 +131,13 @@ export function PlayClient({
     }
   }
 
+  const queueActive = isDemo ? demo?.state.inQueue ?? false : inQueue;
+
   return (
     <>
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
         <StatCell label="In Queue" value={queue.count} sub={`${queue.needed} needed`} />
-        <StatCell label="Avg Wait" value={<>—</>} sub="Collecting data" />
+        <StatCell label="Avg Wait" value={<>—</>} sub={isDemo ? "Demo mode" : "Collecting data"} />
         <StatCell label="Live" value={initialStats.liveMatches} sub="matches" />
         <StatCell label="Today" value={initialStats.todayMatches} sub="matches" />
       </div>
@@ -121,18 +156,16 @@ export function PlayClient({
             onClick={toggleQueue}
             disabled={loading}
             className={
-              inQueue
+              queueActive
                 ? "rounded-lg border border-[#1E2D45] bg-[#162032] px-4 py-2 text-[13px] font-semibold disabled:opacity-50"
                 : "rounded-lg bg-[#0066FF] px-4 py-2 text-[13px] font-semibold text-white shadow-[0_0_14px_rgba(0,102,255,.28)] disabled:opacity-50"
             }
           >
-            {loading ? "…" : inQueue ? "Leave" : "Join"}
+            {loading ? "…" : queueActive ? "Leave" : "Join"}
           </button>
         </div>
 
-        {error && (
-          <p className="mb-3 text-center text-xs text-[#EF4444]">{error}</p>
-        )}
+        {error && <p className="mb-3 text-center text-xs text-[#EF4444]">{error}</p>}
 
         <div className="mb-3">
           <div className="mb-1.5 flex justify-between text-[11px] text-[#6B7280]">
@@ -171,7 +204,9 @@ export function PlayClient({
         </div>
 
         <p className="text-center text-[11px] leading-relaxed text-[#6B7280]">
-          10 players needed · Captains auto-selected · Snake draft via Discord bot
+          {isDemo
+            ? "Demo queue — stored in your browser. Sign in as guest first."
+            : "10 players needed · Captains auto-selected · Snake draft via Discord bot"}
         </p>
       </div>
 

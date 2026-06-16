@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LogoHex } from "@/components/bscl/ui";
+import { useDemoOptional } from "@/components/bscl/demo-provider";
 import { NAV_ITEMS, PAGE_TITLES, RANK_LABELS, type RankKey } from "@/lib/constants";
 
 export type ShellUser = {
@@ -54,14 +55,14 @@ function NavLink({
   );
 }
 
-function UserTile({ user }: { user: ShellUser }) {
+function UserTile({ user, demoMode }: { user: ShellUser; demoMode?: boolean }) {
   if (!user) {
     return (
       <Link
         href="/login"
         className="flex items-center justify-center rounded-lg border border-[#1E2D45] bg-[#162032] p-2.5 text-xs font-semibold text-[#0066FF] transition hover:border-[#0066FF]"
       >
-        Sign in with Discord
+        {demoMode ? "Guest sign-in" : "Sign in with Discord"}
       </Link>
     );
   }
@@ -84,7 +85,7 @@ function UserTile({ user }: { user: ShellUser }) {
   );
 }
 
-export function Sidebar({ user }: { user: ShellUser }) {
+export function Sidebar({ user, demoMode }: { user: ShellUser; demoMode?: boolean }) {
   const pathname = usePathname();
   const sections = ["platform", "account", "staff"] as const;
   const labels = { platform: "Platform", account: "Account", staff: "Staff" };
@@ -122,13 +123,13 @@ export function Sidebar({ user }: { user: ShellUser }) {
       })}
 
       <div className="mt-auto border-t border-[#1E2D45] p-3">
-        <UserTile user={user} />
+        <UserTile user={user} demoMode={demoMode} />
       </div>
     </aside>
   );
 }
 
-export function Topbar() {
+export function Topbar({ demoMode }: { demoMode?: boolean }) {
   const pathname = usePathname();
   const title = PAGE_TITLES[pathname] ?? "BSCL";
 
@@ -144,6 +145,11 @@ export function Topbar() {
         {title}
       </h1>
       <div className="flex-1" />
+      {demoMode && (
+        <span className="hidden rounded-full border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.12)] px-2 py-0.5 text-[10px] font-semibold text-[#F59E0B] sm:inline">
+          Demo · local
+        </span>
+      )}
       <div className="flex items-center gap-2 rounded-full border border-[#1E2D45] bg-[#162032] px-2 py-1 text-[11px] text-[#6B7280]">
         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#22C55E] shadow-[0_0_5px_#22C55E]" />
         Online
@@ -197,14 +203,19 @@ export function Tabbar() {
 export function AppShell({
   children,
   user,
+  demoMode = false,
 }: {
   children: React.ReactNode;
   user: ShellUser;
+  demoMode?: boolean;
 }) {
+  const demo = useDemoOptional();
+  const resolvedUser = demoMode ? (demo?.shellUser ?? null) : user;
+
   return (
     <div className="flex min-h-svh flex-col md:grid md:h-screen md:grid-cols-[228px_1fr] md:grid-rows-[56px_1fr] md:overflow-hidden">
-      <Sidebar user={user} />
-      <Topbar />
+      <Sidebar user={resolvedUser} demoMode={demoMode} />
+      <Topbar demoMode={demoMode} />
       <main className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 pb-[calc(64px+env(safe-area-inset-bottom,0px)+16px)] md:col-start-2 md:overflow-y-auto md:p-6 md:pb-6">
         <div className="mx-auto flex max-w-5xl flex-col gap-4">{children}</div>
       </main>

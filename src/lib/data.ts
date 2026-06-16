@@ -1,12 +1,29 @@
 import { MatchStatus } from "@/generated/prisma/client";
 import { getSessionUser } from "@/lib/auth";
+import { isBackendEnabled } from "@/lib/backend";
+import { BSCL } from "@/lib/constants";
 import { rankTierToKey } from "@/lib/ranks";
 import { prisma } from "@/lib/prisma";
 import type { LeaderboardEntry } from "@/lib/match-display";
 
 export type { LeaderboardEntry };
 
+const EMPTY_STATS = {
+  playerCount: 0,
+  matchCount: 0,
+  teamCount: 0,
+  queueCount: 0,
+  liveMatches: 0,
+  todayMatches: 0,
+  season: {
+    number: BSCL.season.number,
+    week: BSCL.season.week,
+    endsAt: new Date(Date.now() + BSCL.season.daysLeft * 86_400_000),
+  },
+};
+
 export async function getActiveSeason() {
+  if (!isBackendEnabled()) return null;
   return prisma.season.findFirst({
     where: { active: true },
     orderBy: { number: "desc" },
@@ -14,6 +31,8 @@ export async function getActiveSeason() {
 }
 
 export async function getPlatformStats() {
+  if (!isBackendEnabled()) return EMPTY_STATS;
+
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
 
@@ -42,6 +61,8 @@ export async function getPlatformStats() {
 }
 
 export async function getLeaderboard(limit = 100): Promise<LeaderboardEntry[]> {
+  if (!isBackendEnabled()) return [];
+
   const sessionUser = await getSessionUser();
   const currentPlayerId = sessionUser?.player?.id;
 
@@ -72,6 +93,7 @@ export async function getLeaderboard(limit = 100): Promise<LeaderboardEntry[]> {
 }
 
 export async function getMatches(limit = 50) {
+  if (!isBackendEnabled()) return [];
   return prisma.match.findMany({
     orderBy: { number: "desc" },
     take: limit,
@@ -80,6 +102,7 @@ export async function getMatches(limit = 50) {
 }
 
 export async function getLiveMatches(limit = 10) {
+  if (!isBackendEnabled()) return [];
   return prisma.match.findMany({
     where: { status: { in: ["LIVE", "SUBMITTED", "DRAFT"] } },
     orderBy: { number: "desc" },
@@ -89,6 +112,7 @@ export async function getLiveMatches(limit = 10) {
 }
 
 export async function getTeams() {
+  if (!isBackendEnabled()) return [];
   return prisma.team.findMany({
     orderBy: { wins: "desc" },
     include: {
@@ -99,6 +123,8 @@ export async function getTeams() {
 }
 
 export async function getCurrentPlayerProfile() {
+  if (!isBackendEnabled()) return null;
+
   const user = await getSessionUser();
   if (!user?.player) return null;
 
@@ -125,6 +151,10 @@ export async function getCurrentPlayerProfile() {
 }
 
 export async function getAdminStats() {
+  if (!isBackendEnabled()) {
+    return { users: 0, openTickets: 0, activeBans: 0, pendingMatches: 0 };
+  }
+
   const [users, openTickets, activeBans, pendingMatches] = await Promise.all([
     prisma.user.count(),
     prisma.ticket.count({ where: { status: "OPEN" } }),

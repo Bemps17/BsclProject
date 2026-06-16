@@ -1,11 +1,17 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Card, CardHeader, EmptyState, MatchRow, RankBadge, StatCell, Tag } from "@/components/bscl/ui";
+import { isBackendEnabled } from "@/lib/backend";
 import { formatMatchScore, getCurrentPlayerProfile } from "@/lib/data";
 import { RANK_THRESHOLDS } from "@/lib/elo";
 import { playerInitials, rankTierToKey } from "@/lib/ranks";
+import { ProfileDemo } from "./profile-demo";
 
 export default async function ProfilePage() {
+  if (!isBackendEnabled()) {
+    return <ProfileDemo />;
+  }
+
   const profile = await getCurrentPlayerProfile();
   if (!profile) {
     redirect("/login");

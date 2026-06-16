@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
+import { isBackendEnabled } from "@/lib/backend";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
+  if (!isBackendEnabled()) {
+    return NextResponse.json({ count: 0, needed: 10, players: [] });
+  }
   const entries = await prisma.queueEntry.findMany({
     where: { status: "WAITING" },
     orderBy: { joinedAt: "asc" },
@@ -25,6 +29,9 @@ export async function GET() {
 }
 
 export async function POST() {
+  if (!isBackendEnabled()) {
+    return NextResponse.json({ error: "Demo mode" }, { status: 503 });
+  }
   const { requireAuth } = await import("@/lib/auth");
   try {
     const user = await requireAuth("PLAYER");
@@ -63,6 +70,9 @@ export async function POST() {
 }
 
 export async function DELETE() {
+  if (!isBackendEnabled()) {
+    return NextResponse.json({ error: "Demo mode" }, { status: 503 });
+  }
   const { requireAuth } = await import("@/lib/auth");
   try {
     const user = await requireAuth("PLAYER");
