@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isBackendEnabled } from "@/lib/backend";
+import { processQueueMatchmaking } from "@/lib/matchmaker";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
@@ -58,8 +59,15 @@ export async function POST() {
     });
 
     const count = await prisma.queueEntry.count({ where: { status: "WAITING" } });
+    const matchesCreated = count >= 10 ? await processQueueMatchmaking() : [];
+    const remaining = await prisma.queueEntry.count({ where: { status: "WAITING" } });
 
-    return NextResponse.json({ entry, count, ready: count >= 10 });
+    return NextResponse.json({
+      entry,
+      count: remaining,
+      ready: remaining >= 10,
+      matchesCreated,
+    });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Error";
     if (msg === "UNAUTHORIZED") {

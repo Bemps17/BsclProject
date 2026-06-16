@@ -21,8 +21,13 @@ vi.mock("@/lib/auth", () => ({
   requireAuth: vi.fn(),
 }));
 
+vi.mock("@/lib/matchmaker", () => ({
+  processQueueMatchmaking: vi.fn(async () => []),
+}));
+
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { processQueueMatchmaking } from "@/lib/matchmaker";
 
 const mockFindMany = vi.mocked(prisma.queueEntry.findMany);
 const mockFindFirst = vi.mocked(prisma.queueEntry.findFirst);
@@ -30,6 +35,7 @@ const mockCreate = vi.mocked(prisma.queueEntry.create);
 const mockUpdateMany = vi.mocked(prisma.queueEntry.updateMany);
 const mockCount = vi.mocked(prisma.queueEntry.count);
 const mockRequireAuth = vi.mocked(requireAuth);
+const mockProcessQueueMatchmaking = vi.mocked(processQueueMatchmaking);
 
 describe("GET /api/queue", () => {
   beforeEach(() => vi.clearAllMocks());
@@ -78,14 +84,17 @@ describe("POST /api/queue", () => {
     } as Awaited<ReturnType<typeof mockRequireAuth>>);
     mockFindFirst.mockResolvedValue(null);
     mockCreate.mockResolvedValue({ id: "entry-new" } as Awaited<ReturnType<typeof mockCreate>>);
-    mockCount.mockResolvedValue(10);
+    mockCount.mockResolvedValueOnce(10).mockResolvedValueOnce(0);
+    mockProcessQueueMatchmaking.mockResolvedValue([{ matchId: "m1", matchNumber: 1 }]);
 
     const res = await POST();
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(body.ready).toBe(true);
-    expect(body.count).toBe(10);
+    expect(body.ready).toBe(false);
+    expect(body.count).toBe(0);
+    expect(body.matchesCreated).toHaveLength(1);
+    expect(mockProcessQueueMatchmaking).toHaveBeenCalled();
   });
 
   it("returns 400 when user has no player profile", async () => {
