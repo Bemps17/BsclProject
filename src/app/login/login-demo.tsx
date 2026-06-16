@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { DiscordSimModal } from "@/components/bscl/discord-sim-modal";
 import { DiscordIcon } from "@/components/bscl/icons";
 import {
   Button,
+  ButtonLink,
   Field,
   FieldGroup,
   FieldLabel,
@@ -86,9 +86,9 @@ export function LoginDemo() {
 
           <SwitchModeLink />
 
-          <Button variant="link" className="h-auto p-0 text-xs text-muted-foreground" render={<Link href="/demo" />}>
+          <ButtonLink href="/demo" variant="link" className="h-auto p-0 text-xs text-muted-foreground">
             {t.demo.openHub} →
-          </Button>
+          </ButtonLink>
 
           {error && <p className="text-xs text-destructive">{error}</p>}
         </FieldGroup>

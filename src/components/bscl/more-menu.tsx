@@ -127,7 +127,7 @@ export function MoreMenu({
 
       {!user && (
         <Link
-          href="/login"
+          href={resolvedDemo ? "/demo" : "/login"}
           className="flex items-center justify-center rounded-xl border border-primary/35 px-4 py-3.5 text-sm font-semibold text-primary"
         >
           {resolvedDemo ? t.common.guestSignIn : t.common.signInDiscord}

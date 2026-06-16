@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DiscordSimModal } from "@/components/bscl/discord-sim-modal";
 import { useDemo } from "@/components/bscl/demo-provider";
 import { DiscordIcon } from "@/components/bscl/icons";
 import {
   Button,
+  ButtonLink,
   Card,
   CardHeader,
   Field,
@@ -153,9 +153,9 @@ export function DemoHub() {
               <span className={cn("flex-1", step.done ? "text-foreground" : "text-muted-foreground")}>
                 {step.label}
               </span>
-              <Button variant="link" className="h-auto p-0 text-xs" render={<Link href={step.href} />}>
+              <ButtonLink href={step.href} variant="link" className="h-auto p-0 text-xs">
                 →
-              </Button>
+              </ButtonLink>
             </li>
           ))}
         </ol>
@@ -201,9 +201,9 @@ export function DemoHub() {
         <Card>
           <CardHeader title={t.demo.actionsTitle} />
           <div className="flex flex-col gap-2">
-            <Button render={<Link href="/play" />} className="w-full shadow-[0_0_14px_color-mix(in_oklch,var(--primary),transparent_72%)]">
+            <ButtonLink href="/play" className="w-full shadow-[0_0_14px_color-mix(in_oklch,var(--primary),transparent_72%)]">
               {t.demo.goPlay}
-            </Button>
+            </ButtonLink>
             <Button
               type="button"
               variant="outline"
@@ -245,9 +245,9 @@ export function DemoHub() {
           <p className="mb-3 text-xs text-muted-foreground">
             #{String(activeMatch.number).padStart(3, "0")} · {t.demo.continueOnPlay}
           </p>
-          <Button variant="link" className="h-auto p-0" render={<Link href="/play" />}>
+          <ButtonLink href="/play" variant="link" className="h-auto p-0">
             {t.demo.goPlay} →
-          </Button>
+          </ButtonLink>
         </Card>
       )}
 

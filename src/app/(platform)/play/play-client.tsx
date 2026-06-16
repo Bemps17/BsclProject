@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MatchStatus } from "@/generated/prisma/client";
 import { DemoMatchFlow } from "@/components/bscl/demo-match-flow";
@@ -9,6 +8,7 @@ import { useDemoOptional } from "@/components/bscl/demo-provider";
 import { useT } from "@/components/bscl/locale-provider";
 import {
   Button,
+  ButtonLink,
   Card,
   CardHeader,
   EmptyState,
@@ -121,7 +121,7 @@ export function PlayClient({
     try {
       if (isDemo) {
         if (!demo?.player) {
-          router.push("/login");
+          router.push("/demo");
           return;
         }
         if (demo.state.inQueue) {
@@ -170,7 +170,7 @@ export function PlayClient({
 
   function handleFillBots() {
     if (!demo?.player) {
-      router.push("/login");
+      router.push("/demo");
       return;
     }
     setError(null);
@@ -304,9 +304,9 @@ export function PlayClient({
         <CardHeader
           title={t.play.activeMatches}
           action={
-            <Button variant="secondary" size="sm" render={<Link href="/matches" />}>
+            <ButtonLink href="/matches" variant="secondary" size="sm">
               {t.common.all} →
-            </Button>
+            </ButtonLink>
           }
         />
         {liveMatches.length === 0 ? (

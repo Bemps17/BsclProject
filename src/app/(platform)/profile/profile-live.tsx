@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Button, Card, CardHeader, EmptyState, MatchRow, RankBadge, StatCell, Tag } from "@/components/bscl/ui";
+import { Button, ButtonLink, Card, CardHeader, EmptyState, MatchRow, RankBadge, StatCell, Tag } from "@/components/bscl/ui";
 import { ChevronRight, NavIcon } from "@/components/bscl/icons";
 import { useT } from "@/components/bscl/locale-provider";
 import { RANK_THRESHOLDS } from "@/lib/elo";
@@ -126,9 +126,9 @@ export function ProfileLive({
         <CardHeader
           title={t.profile.matchHistory}
           action={
-            <Button variant="secondary" size="sm" render={<Link href="/matches" />}>
+            <ButtonLink href="/matches" variant="secondary" size="sm">
               {t.common.all} →
-            </Button>
+            </ButtonLink>
           }
         />
         {recentMatches.length === 0 ? (

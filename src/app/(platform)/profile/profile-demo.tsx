@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import {
   Button,
+  ButtonLink,
   Card,
   CardHeader,
   EmptyState,
@@ -31,7 +32,7 @@ export function ProfileDemo() {
   const t = useT();
 
   useEffect(() => {
-    if (!player) router.replace("/login");
+    if (!player) router.replace("/demo");
   }, [player, router]);
 
   if (!player) return null;
@@ -147,9 +148,9 @@ export function ProfileDemo() {
         <CardHeader
           title={t.profile.matchHistory}
           action={
-            <Button variant="secondary" size="sm" render={<Link href="/matches" />}>
+            <ButtonLink href="/matches" variant="secondary" size="sm">
               {t.common.all} →
-            </Button>
+            </ButtonLink>
           }
         />
         {myMatches.filter((m) => m.status === "CONFIRMED").length === 0 ? (
@@ -185,9 +186,9 @@ export function ProfileDemo() {
         <CardHeader
           title={t.profile.myTeam}
           action={
-            <Button variant="secondary" size="sm" render={<Link href="/teams" />}>
+            <ButtonLink href="/teams" variant="secondary" size="sm">
               {t.profile.manage}
-            </Button>
+            </ButtonLink>
           }
         />
         {myTeam ? (
@@ -214,9 +215,9 @@ export function ProfileDemo() {
             </div>
             <p className="text-[13px] text-muted-foreground">
               {t.profile.notInTeam} ·{" "}
-              <Button size="sm" className="inline-flex h-auto px-3 py-1" render={<Link href="/teams" />}>
+              <ButtonLink href="/teams" size="sm" className="inline-flex h-auto px-3 py-1">
                 {t.profile.createOrJoin}
-              </Button>
+              </ButtonLink>
             </p>
           </div>
         )}

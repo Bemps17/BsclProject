@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { useT } from "@/components/bscl/locale-provider";
 import { RANK_STYLES, type RankKey } from "@/lib/constants";
 
-export { Button, buttonVariants } from "@/components/ui/button";
+export { Button, ButtonLink, buttonVariants } from "@/components/ui/button";
 export { Input } from "@/components/ui/input";
 export { Label } from "@/components/ui/label";
 export {

@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import {
-  Button,
+  ButtonLink,
   Card,
   CardHeader,
   EmptyState,
@@ -87,15 +86,15 @@ export function HomeClient({
         </h2>
         <p className="mb-4 max-w-lg text-[13px] leading-relaxed text-muted-foreground">{t.home.heroDesc}</p>
         <div className="flex flex-wrap gap-2">
-          <Button
+          <ButtonLink
+            href="/play"
             className="shadow-[0_0_14px_color-mix(in_oklch,var(--primary),transparent_72%)]"
-            render={<Link href="/play" />}
           >
             {t.home.joinPug}
-          </Button>
-          <Button variant="secondary" render={<Link href="/rankings" />}>
+          </ButtonLink>
+          <ButtonLink href="/rankings" variant="secondary">
             {t.home.leaderboard}
-          </Button>
+          </ButtonLink>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-0 border-t border-border pt-4 md:grid-cols-4">
           {[
@@ -124,9 +123,9 @@ export function HomeClient({
             {interpolate(t.home.endsIn, { d: daysLeft })}
           </div>
         </div>
-        <Button variant="secondary" size="sm" render={<Link href="/rankings" />}>
+        <ButtonLink href="/rankings" variant="secondary" size="sm">
           →
-        </Button>
+        </ButtonLink>
       </div>
 
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
@@ -149,9 +148,9 @@ export function HomeClient({
         <CardHeader
           title={t.home.recentResults}
           action={
-            <Button variant="secondary" size="sm" render={<Link href="/matches" />}>
+            <ButtonLink href="/matches" variant="secondary" size="sm">
               {t.common.all} →
-            </Button>
+            </ButtonLink>
           }
         />
         {recentMatches.length === 0 ? (
@@ -187,9 +186,9 @@ export function HomeClient({
           title={t.home.topPlayers}
           accent={t.home.weekAccent}
           action={
-            <Button variant="secondary" size="sm" render={<Link href="/rankings" />}>
+            <ButtonLink href="/rankings" variant="secondary" size="sm">
               {t.common.all} →
-            </Button>
+            </ButtonLink>
           }
         />
         {topPlayers.length === 0 ? (

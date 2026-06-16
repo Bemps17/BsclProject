@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Button, LogoHex } from "@/components/bscl/ui";
+import { Button, ButtonLink, LogoHex } from "@/components/bscl/ui";
 import { DemoExitButton } from "@/components/bscl/demo-exit-button";
 import { NavIcon, Play } from "@/components/bscl/icons";
 import { isMobileMorePath } from "@/components/bscl/more-menu";
@@ -79,13 +79,13 @@ function UserTile({ user, demoMode }: { user: ShellUser; demoMode?: boolean }) {
 
   if (!user) {
     return (
-      <Button
+      <ButtonLink
+        href={demoMode ? "/demo" : "/login"}
         variant="outline"
         className="w-full"
-        render={<Link href="/login" />}
       >
         {demoMode ? t.common.guestSignIn : t.common.signInDiscord}
-      </Button>
+      </ButtonLink>
     );
   }
 
@@ -206,14 +206,15 @@ export function Topbar({ demoMode }: { demoMode?: boolean }) {
           {t.common.online}
         </div>
 
-        <Button
+        <ButtonLink
+          href="/play"
           size="sm"
           className="h-8 w-8 shrink-0 px-0 shadow-[0_0_14px_color-mix(in_oklch,var(--primary),transparent_65%)] sm:h-auto sm:w-auto sm:px-3.5"
-          render={<Link href="/play" aria-label={t.common.joinQueue} />}
+          aria-label={t.common.joinQueue}
         >
           <Play className="sm:hidden" aria-hidden strokeWidth={2} />
           <span className="hidden max-w-[9rem] truncate sm:inline">{t.common.joinQueue}</span>
-        </Button>
+        </ButtonLink>
       </div>
     </header>
   );

@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useDemoOptional } from "@/components/bscl/demo-provider";
 import { useT } from "@/components/bscl/locale-provider";
-import { Button, StatCell } from "@/components/bscl/ui";
+import { ButtonLink, StatCell } from "@/components/bscl/ui";
 
 export function DemoHomeStats() {
   const demo = useDemoOptional();
@@ -22,9 +21,9 @@ export function DemoHomeStats() {
         <StatCell label={t.home.winRate} value={`${winRate}%`} sub={t.home.demoProfile} />
         <StatCell label={t.home.today} value={stats.todayMatches} sub={t.common.matches} />
       </div>
-      <Button variant="outline" className="w-full" render={<Link href="/demo" />}>
+      <ButtonLink href="/demo" variant="outline" className="w-full">
         {t.demo.openHub} →
-      </Button>
+      </ButtonLink>
     </>
   );
 }
