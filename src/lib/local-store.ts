@@ -3,9 +3,11 @@
 import type { RankKey } from "@/lib/constants";
 import {
   LOCAL_BOT_POOL,
+  advanceDraftReveal,
   botQueueEntry,
   confirmLocalMatch,
   createMatchFromQueue,
+  resolveSubmitCaptainId,
   submitLocalScores,
   type LocalMatch,
 } from "@/lib/local-matchmaker";
@@ -40,6 +42,8 @@ export type LocalState = {
   inQueue: boolean;
   matches: LocalMatch[];
   matchCounter: number;
+  /** User accepted the demo launch modal */
+  sessionAccepted: boolean;
 };
 
 const DEFAULT_STATE: LocalState = {
@@ -48,6 +52,7 @@ const DEFAULT_STATE: LocalState = {
   inQueue: false,
   matches: [],
   matchCounter: 0,
+  sessionAccepted: false,
 };
 
 function readState(): LocalState {
@@ -59,12 +64,23 @@ function readState(): LocalState {
     return {
       ...DEFAULT_STATE,
       ...parsed,
-      matches: parsed.matches ?? [],
+      matches: (parsed.matches ?? []).map(normalizeLocalMatch),
       matchCounter: parsed.matchCounter ?? 0,
+      sessionAccepted: parsed.sessionAccepted ?? false,
     };
   } catch {
     return DEFAULT_STATE;
   }
+}
+
+function normalizeLocalMatch(match: LocalMatch): LocalMatch {
+  return {
+    ...match,
+    draftOrder: match.draftOrder ?? [],
+    draftPicks: match.draftPicks ?? [],
+    draftRevealStep: match.draftRevealStep ?? 0,
+    status: match.status === "LIVE" && !match.draftPicks?.length ? "LIVE" : match.status,
+  };
 }
 
 function writeState(state: LocalState) {
@@ -136,6 +152,17 @@ export function saveSimulatedDiscordPlayer(account: {
   const state = readState();
   writeState({ ...state, player });
   return player;
+}
+
+export function acceptDemoSession(): LocalState {
+  const state = readState();
+  const next = { ...state, sessionAccepted: true };
+  writeState(next);
+  return next;
+}
+
+export function isDemoSessionAccepted(): boolean {
+  return readState().sessionAccepted;
 }
 
 export function clearGuestPlayer() {
@@ -232,6 +259,19 @@ export function fillBotsAndStartMatch(): LocalState {
   return tryCreateLocalMatch();
 }
 
+export function advanceLocalDraft(matchId: string): LocalState {
+  const state = readState();
+  const index = state.matches.findIndex((m) => m.id === matchId);
+  if (index === -1) throw new Error("Match not found");
+
+  const updated = advanceDraftReveal(state.matches[index]);
+  const matches = [...state.matches];
+  matches[index] = updated;
+  const next = { ...state, matches };
+  writeState(next);
+  return next;
+}
+
 export function submitLocalMatchResult(
   matchId: string,
   alphaScore: number,
@@ -243,12 +283,9 @@ export function submitLocalMatchResult(
   const index = state.matches.findIndex((m) => m.id === matchId);
   if (index === -1) throw new Error("Match not found");
 
-  const updated = submitLocalScores(
-    state.matches[index],
-    state.player.id,
-    alphaScore,
-    bravoScore,
-  );
+  const match = state.matches[index];
+  const captainId = resolveSubmitCaptainId(match, state.player.id);
+  const updated = submitLocalScores(match, captainId, alphaScore, bravoScore);
 
   const matches = [...state.matches];
   matches[index] = updated;
@@ -296,7 +333,7 @@ export function localQueueSnapshot(): { count: number; needed: number; players: 
 
 export function localDemoStats() {
   const state = readState();
-  const liveMatches = state.matches.filter((m) => m.status === "LIVE").length;
+  const liveMatches = state.matches.filter((m) => m.status === "LIVE" || m.status === "DRAFT").length;
   const todayMatches = state.matches.filter((m) => {
     const created = new Date(m.createdAt);
     const now = new Date();

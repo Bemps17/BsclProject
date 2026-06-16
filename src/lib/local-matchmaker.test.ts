@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   LOCAL_BOT_POOL,
+  advanceDraftReveal,
   confirmLocalMatch,
   createMatchFromQueue,
+  draftRevealTotalSteps,
   submitLocalScores,
 } from "./local-matchmaker";
 
@@ -17,6 +19,25 @@ describe("local-matchmaker", () => {
     expect(match!.players).toHaveLength(10);
     expect(match!.alphaIds).toHaveLength(5);
     expect(match!.bravoIds).toHaveLength(5);
+    expect(match!.status).toBe("DRAFT");
+    expect(match!.captainAlpha).toBe("p1");
+    expect(match!.draftPicks).toHaveLength(8);
+  });
+
+  it("advances draft reveal until LIVE", () => {
+    const queue = [
+      { id: "p1", name: "Player1" },
+      ...LOCAL_BOT_POOL.slice(0, 9).map((b) => ({ id: b.id, name: b.name })),
+    ];
+    let match = createMatchFromQueue(queue, 1, { id: "p1", elo: 1000 })!;
+    const total = draftRevealTotalSteps(match);
+
+    for (let i = 0; i < total; i++) {
+      match = advanceDraftReveal(match);
+    }
+
+    expect(match.status).toBe("LIVE");
+    expect(match.draftRevealStep).toBe(total);
   });
 
   it("runs submit → confirm and updates local player ELO", () => {
@@ -25,8 +46,14 @@ describe("local-matchmaker", () => {
       ...LOCAL_BOT_POOL.slice(0, 9).map((b) => ({ id: b.id, name: b.name })),
     ];
     const match = createMatchFromQueue(queue, 1, { id: "p1", elo: 1000 })!;
-    const captainId = match.captainAlpha;
-    const submitted = submitLocalScores(match, captainId, 13, 7);
+    let live = match;
+    for (let i = 0; i < draftRevealTotalSteps(match); i++) {
+      live = advanceDraftReveal(live);
+    }
+    expect(live.status).toBe("LIVE");
+
+    const captainId = live.captainAlpha;
+    const submitted = submitLocalScores(live, captainId, 13, 7);
     expect(submitted.status).toBe("SUBMITTED");
 
     const confirmerId =

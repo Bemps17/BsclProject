@@ -192,10 +192,21 @@ export type Translations = {
     };
   };
   demo: {
+    modeLabel: string;
     title: string;
     subtitle: string;
     openHub: string;
     enterPrototype: string;
+    launchTitle: string;
+    launchDesc: string;
+    launchFeatures: [string, string, string, string];
+    launchNote: string;
+    launchCta: string;
+    exitDemo: string;
+    exitTitle: string;
+    exitDesc: string;
+    exitCancel: string;
+    exitConfirm: string;
     journeyTitle: string;
     authTitle: string;
     authDesc: string;
@@ -211,6 +222,16 @@ export type Translations = {
     waitingConfirm: string;
     invalidScore: string;
     actionFailed: string;
+    captainSelection: string;
+    captainRule: string;
+    captain: string;
+    you: string;
+    draftPick: string;
+    startDraft: string;
+    nextDraftPick: string;
+    youAreAlphaCaptain: string;
+    youAreBravoCaptain: string;
+    matchComplete: string;
     stats: {
       queue: string;
       live: string;
@@ -219,6 +240,7 @@ export type Translations = {
     steps: {
       signIn: string;
       queue: string;
+      draft: string;
       match: string;
       elo: string;
     };

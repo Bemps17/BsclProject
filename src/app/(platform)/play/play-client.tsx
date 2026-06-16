@@ -4,12 +4,13 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MatchStatus } from "@/generated/prisma/client";
-import { DemoActiveMatch } from "@/components/bscl/demo-active-match";
+import { DemoMatchFlow } from "@/components/bscl/demo-match-flow";
 import { useDemoOptional } from "@/components/bscl/demo-provider";
 import { useT } from "@/components/bscl/locale-provider";
 import { Card, CardHeader, EmptyState, StatCell, TableScroll, Tag } from "@/components/bscl/ui";
 import { matchStatusVariant } from "@/lib/match-display";
 import type { Translations } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
 type QueuePlayer = {
   id: string;
@@ -53,7 +54,22 @@ export function PlayClient({
   const [inQueue, setInQueue] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [liveMatches] = useState(initialMatches);
+  const liveMatches = isDemo
+    ? (demo?.matches ?? [])
+        .filter((m) => m.status === "DRAFT" || m.status === "LIVE" || m.status === "SUBMITTED")
+        .map((m) => {
+          const alphaName =
+            m.players.find((p) => p.playerId === m.captainAlpha)?.name ?? "Alpha";
+          const bravoName =
+            m.players.find((p) => p.playerId === m.captainBravo)?.name ?? "Bravo";
+          return {
+            id: `#${String(m.number).padStart(3, "0")}`,
+            alpha: alphaName,
+            bravo: bravoName,
+            status: m.status,
+          };
+        })
+    : initialMatches;
 
   const syncDemoQueue = useCallback(() => {
     if (!demo) return;
@@ -164,7 +180,7 @@ export function PlayClient({
 
   return (
     <>
-      {isDemo && <DemoActiveMatch />}
+      {isDemo && <DemoMatchFlow />}
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
         <StatCell
           label={t.play.inQueue}
@@ -196,7 +212,9 @@ export function PlayClient({
             className={
               queueActive
                 ? "rounded-lg border border-[#1E2D45] bg-[#162032] px-4 py-2 text-[13px] font-semibold disabled:opacity-50"
-                : "rounded-lg bg-[#0066FF] px-4 py-2 text-[13px] font-semibold text-white shadow-[0_0_14px_rgba(0,102,255,.28)] disabled:opacity-50"
+                : isDemo
+                  ? "rounded-lg bg-[#F59E0B] px-4 py-2 text-[13px] font-bold text-[#0B0B0B] shadow-[0_0_14px_rgba(245,158,11,.28)] disabled:opacity-50"
+                  : "rounded-lg bg-[#0066FF] px-4 py-2 text-[13px] font-semibold text-white shadow-[0_0_14px_rgba(0,102,255,.28)] disabled:opacity-50"
             }
           >
             {loading ? "…" : queueActive ? t.play.leave : t.play.join}
@@ -223,11 +241,16 @@ export function PlayClient({
             <span>
               {queue.count}/{SLOT_COUNT}
             </span>
-            <span className="font-semibold text-[#0066FF]">5v5 PUG</span>
+            <span className={cn("font-semibold", isDemo ? "text-[#F59E0B]" : "text-[#0066FF]")}>5v5 PUG</span>
           </div>
           <div className="h-1.5 overflow-hidden rounded-full bg-[#1E2D45]">
             <div
-              className="h-full rounded-full bg-[#0066FF] shadow-[0_0_8px_rgba(0,102,255,.28)] transition-all duration-400"
+              className={cn(
+                "h-full rounded-full transition-all duration-400",
+                isDemo
+                  ? "bg-[#F59E0B] shadow-[0_0_8px_rgba(245,158,11,.35)]"
+                  : "bg-[#0066FF] shadow-[0_0_8px_rgba(0,102,255,.28)]",
+              )}
               style={{ width: `${pct}%` }}
             />
           </div>
@@ -238,9 +261,19 @@ export function PlayClient({
             player ? (
               <div
                 key={player.id}
-                className="flex aspect-square flex-col items-center justify-center gap-0.5 rounded-lg border border-[#0066FF] bg-[rgba(0,102,255,.1)]"
+                className={cn(
+                  "flex aspect-square flex-col items-center justify-center gap-0.5 rounded-lg border",
+                  isDemo
+                    ? "border-[#F59E0B] bg-[rgba(245,158,11,.12)]"
+                    : "border-[#0066FF] bg-[rgba(0,102,255,.1)]",
+                )}
               >
-                <div className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-[#0066FF] font-[family-name:var(--font-rajdhani)] text-[10px] font-bold">
+                <div
+                  className={cn(
+                    "flex h-[26px] w-[26px] items-center justify-center rounded-full font-[family-name:var(--font-rajdhani)] text-[10px] font-bold",
+                    isDemo ? "bg-[#F59E0B] text-[#0B0B0B]" : "bg-[#0066FF]",
+                  )}
+                >
                   {player.initials}
                 </div>
                 <span className="max-w-full truncate px-0.5 text-[9px]">{player.name}</span>
@@ -266,7 +299,14 @@ export function PlayClient({
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
           {t.play.steps.map(([n, title, desc]) => (
             <div key={n} className="rounded-lg border border-[#1E2D45] bg-[#162032] p-3">
-              <div className="mb-0.5 font-[family-name:var(--font-rajdhani)] text-xs font-bold text-[#0066FF]">{n}</div>
+              <div
+                className={cn(
+                  "mb-0.5 font-[family-name:var(--font-rajdhani)] text-xs font-bold",
+                  isDemo ? "text-[#F59E0B]" : "text-[#0066FF]",
+                )}
+              >
+                {n}
+              </div>
               <div className="mb-0.5 text-xs font-semibold">{title}</div>
               <div className="text-[11px] leading-snug text-[#6B7280]">{desc}</div>
             </div>

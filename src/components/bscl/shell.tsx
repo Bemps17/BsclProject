@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { LogoHex } from "@/components/bscl/ui";
+import { DemoExitButton } from "@/components/bscl/demo-exit-button";
 import { useDemoOptional } from "@/components/bscl/demo-provider";
 import { LanguageSwitcher, useT } from "@/components/bscl/locale-provider";
 import { NAV_ITEMS, type RankKey } from "@/lib/constants";
@@ -35,6 +36,7 @@ function NavLink({
   badge,
   badgeRed,
   active,
+  demoMode,
 }: {
   href: string;
   label: string;
@@ -42,6 +44,7 @@ function NavLink({
   badge?: number;
   badgeRed?: boolean;
   active: boolean;
+  demoMode?: boolean;
 }) {
   return (
     <Link
@@ -49,8 +52,12 @@ function NavLink({
       className={cn(
         "relative flex items-center gap-2.5 rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors",
         active
-          ? "-ml-0.5 border-l-2 border-[#0066FF] bg-[rgba(0,102,255,.1)] text-[#0066FF] shadow-[inset_0_0_18px_rgba(0,102,255,.06)]"
-          : "text-[#6B7280] hover:bg-[rgba(0,102,255,.1)] hover:text-[#E5E7EB]",
+          ? demoMode
+            ? "-ml-0.5 border-l-2 border-[#F59E0B] bg-[rgba(245,158,11,.12)] text-[#F59E0B] shadow-[inset_0_0_18px_rgba(245,158,11,.08)]"
+            : "-ml-0.5 border-l-2 border-[#0066FF] bg-[rgba(0,102,255,.1)] text-[#0066FF] shadow-[inset_0_0_18px_rgba(0,102,255,.06)]"
+          : demoMode
+            ? "text-[#6B7280] hover:bg-[rgba(245,158,11,.08)] hover:text-[#E5E7EB]"
+            : "text-[#6B7280] hover:bg-[rgba(0,102,255,.1)] hover:text-[#E5E7EB]",
       )}
     >
       <span className="w-[15px] shrink-0 text-center opacity-80">{icon}</span>
@@ -59,7 +66,7 @@ function NavLink({
         <span
           className={cn(
             "ml-auto rounded-full px-1.5 py-px text-[9px] font-bold text-white",
-            badgeRed ? "bg-[#EF4444]" : "bg-[#0066FF]",
+            badgeRed ? "bg-[#EF4444]" : demoMode ? "bg-[#F59E0B]" : "bg-[#0066FF]",
           )}
         >
           {badge}
@@ -76,7 +83,12 @@ function UserTile({ user, demoMode }: { user: ShellUser; demoMode?: boolean }) {
     return (
       <Link
         href="/login"
-        className="flex items-center justify-center rounded-lg border border-[#1E2D45] bg-[#162032] p-2.5 text-xs font-semibold text-[#0066FF] transition hover:border-[#0066FF]"
+        className={cn(
+          "flex items-center justify-center rounded-lg border bg-[#162032] p-2.5 text-xs font-semibold transition",
+          demoMode
+            ? "border-[rgba(245,158,11,.35)] text-[#F59E0B] hover:border-[#F59E0B]"
+            : "border-[#1E2D45] text-[#0066FF] hover:border-[#0066FF]",
+        )}
       >
         {demoMode ? t.common.guestSignIn : t.common.signInDiscord}
       </Link>
@@ -86,9 +98,19 @@ function UserTile({ user, demoMode }: { user: ShellUser; demoMode?: boolean }) {
   return (
     <Link
       href="/profile"
-      className="flex items-center gap-2.5 rounded-lg border border-[#1E2D45] bg-[#162032] p-2.5 transition hover:border-[#0066FF]"
+      className={cn(
+        "flex items-center gap-2.5 rounded-lg border border-[#1E2D45] bg-[#162032] p-2.5 transition",
+        demoMode ? "hover:border-[#F59E0B]" : "hover:border-[#0066FF]",
+      )}
     >
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-[#0066FF] bg-[#0066FF] font-[family-name:var(--font-rajdhani)] text-sm font-bold text-white shadow-[0_0_10px_rgba(0,102,255,.28)]">
+      <div
+        className={cn(
+          "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 font-[family-name:var(--font-rajdhani)] text-sm font-bold text-[#0B0B0B]",
+          demoMode
+            ? "border-[#F59E0B] bg-[#F59E0B] shadow-[0_0_10px_rgba(245,158,11,.35)]"
+            : "border-[#0066FF] bg-[#0066FF] text-white shadow-[0_0_10px_rgba(0,102,255,.28)]",
+        )}
+      >
         {user.initials}
       </div>
       <div className="min-w-0">
@@ -107,11 +129,21 @@ export function Sidebar({ user, demoMode }: { user: ShellUser; demoMode?: boolea
   const sections = ["platform", "account", "staff"] as const;
 
   return (
-    <aside className="hidden md:col-start-1 md:row-span-2 md:row-start-1 md:flex md:min-h-0 md:flex-col md:overflow-y-auto md:border-r md:border-[#1E2D45] md:bg-[#111827] lg:w-[252px]">
-      <div className="flex h-14 shrink-0 items-center gap-2.5 border-b border-[#1E2D45] px-4">
+    <aside
+      className={cn(
+        "hidden md:col-start-1 md:row-span-2 md:row-start-1 md:flex md:min-h-0 md:flex-col md:overflow-y-auto md:border-r md:bg-[#111827] lg:w-[252px]",
+        demoMode ? "border-[rgba(245,158,11,.25)]" : "border-[#1E2D45]",
+      )}
+    >
+      <div
+        className={cn(
+          "flex h-14 shrink-0 items-center gap-2.5 border-b px-4",
+          demoMode ? "border-[rgba(245,158,11,.25)]" : "border-[#1E2D45]",
+        )}
+      >
         <LogoHex />
         <div className="font-[family-name:var(--font-rajdhani)] text-base font-bold tracking-wide text-white">
-          <span className="text-[#0066FF]">BSCL</span>.gg
+          <span className={demoMode ? "text-[#F59E0B]" : "text-[#0066FF]"}>BSCL</span>.gg
         </div>
       </div>
 
@@ -135,6 +167,7 @@ export function Sidebar({ user, demoMode }: { user: ShellUser; demoMode?: boolea
                   badge={item.badge}
                   badgeRed={item.badgeRed}
                   active={pathname === item.href}
+                  demoMode={demoMode}
                 />
               );
             })}
@@ -144,13 +177,19 @@ export function Sidebar({ user, demoMode }: { user: ShellUser; demoMode?: boolea
                 label={t.nav.demo}
                 icon="◎"
                 active={pathname === "/demo"}
+                demoMode={demoMode}
               />
             )}
           </div>
         );
       })}
 
-      <div className="mt-auto shrink-0 border-t border-[#1E2D45] p-3">
+      <div
+        className={cn(
+          "mt-auto shrink-0 border-t p-3",
+          demoMode ? "border-[rgba(245,158,11,.25)]" : "border-[#1E2D45]",
+        )}
+      >
         <UserTile user={user} demoMode={demoMode} />
       </div>
     </aside>
@@ -164,7 +203,12 @@ export function Topbar({ demoMode }: { demoMode?: boolean }) {
   const title = t.pages[pageKey] ?? "BSCL";
 
   return (
-    <header className="sticky top-0 z-[100] flex h-14 shrink-0 items-center gap-2 border-b border-[#1E2D45] bg-[#111827]/95 px-3 backdrop-blur-sm supports-[backdrop-filter]:bg-[#111827]/80 md:static md:col-start-2 md:row-start-1 md:gap-4 md:px-6 md:backdrop-blur-none lg:px-8">
+    <header
+      className={cn(
+        "sticky top-0 z-[100] flex h-14 shrink-0 items-center gap-2 border-b bg-[#111827]/95 px-3 backdrop-blur-sm supports-[backdrop-filter]:bg-[#111827]/80 md:static md:col-start-2 md:row-start-1 md:gap-4 md:px-6 md:backdrop-blur-none lg:px-8",
+        demoMode ? "border-[rgba(245,158,11,.25)]" : "border-[#1E2D45]",
+      )}
+    >
       <div className="flex min-w-0 flex-1 items-center gap-2 md:flex-none">
         <div className="flex min-w-0 items-center gap-2 md:hidden">
           <LogoHex size="sm" />
@@ -181,13 +225,15 @@ export function Topbar({ demoMode }: { demoMode?: boolean }) {
         <LanguageSwitcher />
 
         {demoMode && (
-          <Link
-            href="/demo"
-            className="hidden rounded-full border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.12)] px-2 py-0.5 text-[10px] font-semibold text-[#F59E0B] transition hover:bg-[rgba(245,158,11,.2)] md:inline"
-            title={t.demo.openHub}
-          >
-            {t.common.demoBadge}
-          </Link>
+          <>
+            <span
+              className="hidden rounded-full border border-[rgba(245,158,11,.45)] bg-[rgba(245,158,11,.15)] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#F59E0B] md:inline"
+              title={t.demo.modeLabel}
+            >
+              {t.demo.modeLabel}
+            </span>
+            <DemoExitButton />
+          </>
         )}
 
         <div
@@ -198,16 +244,15 @@ export function Topbar({ demoMode }: { demoMode?: boolean }) {
           {t.common.online}
         </div>
 
-        <span
-          className="flex h-2 w-2 animate-pulse rounded-full bg-[#22C55E] shadow-[0_0_5px_#22C55E] lg:hidden"
-          title={t.common.online}
-          aria-label={t.common.online}
-        />
-
         <Link
           href="/play"
           aria-label={t.common.joinQueue}
-          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#0066FF] text-sm font-bold text-white shadow-[0_0_14px_rgba(0,102,255,.28)] transition active:scale-[.97] sm:h-auto sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:font-semibold"
+          className={cn(
+            "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-bold transition active:scale-[.97] sm:h-auto sm:w-auto sm:px-3.5 sm:py-1.5 sm:text-xs sm:font-semibold",
+            demoMode
+              ? "bg-[#F59E0B] text-[#0B0B0B] shadow-[0_0_14px_rgba(245,158,11,.35)]"
+              : "bg-[#0066FF] text-white shadow-[0_0_14px_rgba(0,102,255,.28)]",
+          )}
         >
           <span className="sm:hidden" aria-hidden>
             ▶
@@ -219,13 +264,18 @@ export function Topbar({ demoMode }: { demoMode?: boolean }) {
   );
 }
 
-export function Tabbar() {
+export function Tabbar({ demoMode }: { demoMode?: boolean }) {
   const pathname = usePathname();
   const t = useT();
   const tabs = NAV_ITEMS.filter((n) => n.mobile);
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-[200] flex h-[calc(4rem+env(safe-area-inset-bottom,0px))] border-t border-[#1E2D45] bg-[#111827]/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-sm supports-[backdrop-filter]:bg-[#111827]/80 md:hidden">
+    <nav
+      className={cn(
+        "fixed inset-x-0 bottom-0 z-[200] flex h-[calc(4rem+env(safe-area-inset-bottom,0px))] border-t bg-[#111827]/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-sm supports-[backdrop-filter]:bg-[#111827]/80 md:hidden",
+        demoMode ? "border-[rgba(245,158,11,.25)]" : "border-[#1E2D45]",
+      )}
+    >
       {tabs.map((tab) => {
         const active = pathname === tab.href;
         const labelKey = NAV_LABEL_KEYS[tab.id];
@@ -237,21 +287,27 @@ export function Tabbar() {
             href={tab.href}
             className={cn(
               "relative flex min-h-[44px] min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 pt-1 text-[9px] font-semibold uppercase tracking-wide transition-colors sm:gap-1 sm:text-[10px]",
-              active ? "text-[#0066FF]" : "text-[#6B7280]",
+              active
+                ? demoMode
+                  ? "text-[#F59E0B]"
+                  : "text-[#0066FF]"
+                : "text-[#6B7280]",
             )}
           >
             {active && (
-              <span className="absolute top-0 h-0.5 w-8 -translate-x-1/2 rounded-b bg-[#0066FF] shadow-[0_0_8px_rgba(0,102,255,.28)] left-1/2" />
+              <span
+                className={cn(
+                  "absolute top-0 h-0.5 w-8 -translate-x-1/2 rounded-b left-1/2",
+                  demoMode
+                    ? "bg-[#F59E0B] shadow-[0_0_8px_rgba(245,158,11,.35)]"
+                    : "bg-[#0066FF] shadow-[0_0_8px_rgba(0,102,255,.28)]",
+                )}
+              />
             )}
             <span className={cn("text-lg leading-none transition-transform sm:text-xl", active && "scale-110")}>
               {tab.icon}
             </span>
             <span className="max-w-full truncate">{label}</span>
-            {tab.badge !== undefined && (
-              <span className="absolute right-[calc(50%-16px)] top-1.5 min-w-[14px] rounded-full bg-[#EF4444] px-1 text-center text-[9px] font-bold leading-[14px] text-white">
-                {tab.badge}
-              </span>
-            )}
           </Link>
         );
       })}
@@ -272,15 +328,29 @@ export function AppShell({
   const resolvedUser = demoMode ? (demo?.shellUser ?? null) : user;
 
   return (
-    <div className="flex min-h-svh flex-col md:grid md:h-svh md:min-h-0 md:grid-cols-[240px_minmax(0,1fr)] md:grid-rows-[56px_minmax(0,1fr)] md:overflow-hidden lg:grid-cols-[252px_minmax(0,1fr)]">
+    <div
+      data-demo-mode={demoMode ? "true" : undefined}
+      className={cn(
+        "flex min-h-svh flex-col md:grid md:h-svh md:min-h-0 md:grid-cols-[240px_minmax(0,1fr)] md:grid-rows-[56px_minmax(0,1fr)] md:overflow-hidden lg:grid-cols-[252px_minmax(0,1fr)]",
+        demoMode && "demo-mode-root",
+      )}
+    >
+      {demoMode && (
+        <div className="fixed inset-x-0 top-0 z-[250] h-0.5 bg-gradient-to-r from-transparent via-[#F59E0B] to-transparent md:hidden" aria-hidden />
+      )}
       <Sidebar user={resolvedUser} demoMode={demoMode} />
       <Topbar demoMode={demoMode} />
-      <main className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-3 py-4 pb-[calc(4rem+env(safe-area-inset-bottom,0px)+1rem)] md:col-start-2 md:row-start-2 md:p-6 md:pb-6 lg:p-8">
+      <main
+        className={cn(
+          "flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-3 py-4 pb-[calc(4rem+env(safe-area-inset-bottom,0px)+1rem)] md:col-start-2 md:row-start-2 md:p-6 md:pb-6 lg:p-8",
+          demoMode && "demo-mode-main",
+        )}
+      >
         <div className="mx-auto flex w-full max-w-none flex-col gap-4 md:max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl">
           {children}
         </div>
       </main>
-      <Tabbar />
+      <Tabbar demoMode={demoMode} />
     </div>
   );
 }

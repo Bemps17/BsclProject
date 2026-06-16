@@ -25,9 +25,14 @@ export function DemoHub() {
   const [guestName, setGuestName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const activeMatch = demo.matches.find((m) => m.status === "LIVE" || m.status === "SUBMITTED");
+  const activeMatch = demo.matches.find(
+    (m) => m.status === "DRAFT" || m.status === "LIVE" || m.status === "SUBMITTED",
+  );
   const signedIn = Boolean(demo.player);
   const inQueue = demo.state.inQueue;
+  const draftDone = demo.matches.some(
+    (m) => m.status === "LIVE" || m.status === "SUBMITTED" || m.status === "CONFIRMED",
+  );
   const hasMatches = demo.matches.some((m) => m.status === "CONFIRMED");
 
   function handleDiscordAuthorize(account: MockDiscordAccount) {
@@ -53,8 +58,9 @@ export function DemoHub() {
 
   const steps = [
     { done: signedIn, label: t.demo.steps.signIn },
-    { done: inQueue || hasMatches, label: t.demo.steps.queue },
-    { done: Boolean(activeMatch) || hasMatches, label: t.demo.steps.match },
+    { done: inQueue || Boolean(activeMatch) || hasMatches, label: t.demo.steps.queue },
+    { done: draftDone || hasMatches, label: t.demo.steps.draft },
+    { done: hasMatches, label: t.demo.steps.match },
     { done: hasMatches, label: t.demo.steps.elo },
   ];
 
@@ -75,7 +81,7 @@ export function DemoHub() {
         <StatCell
           label={t.home.myElo}
           value={demo.player?.elo ?? "—"}
-          valueClassName={demo.player ? "text-[#0066FF]" : undefined}
+          valueClassName={demo.player ? "text-[#F59E0B]" : undefined}
         />
       </div>
 
@@ -85,11 +91,13 @@ export function DemoHub() {
           {steps.map((step, i) => (
             <li
               key={step.label}
-              className="flex items-center gap-3 rounded-lg border border-[#1E2D45] bg-[#162032] px-3 py-2.5 text-sm"
+              className="flex items-center gap-3 rounded-lg border border-[rgba(245,158,11,.25)] bg-[#162032] px-3 py-2.5 text-sm"
             >
               <span
                 className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                  step.done ? "bg-[#22C55E] text-white" : "bg-[#1E2D45] text-[#6B7280]"
+                  step.done
+                    ? "bg-[#22C55E] text-white"
+                    : "bg-[rgba(245,158,11,.15)] text-[#F59E0B]"
                 }`}
               >
                 {step.done ? "✓" : i + 1}
@@ -119,7 +127,7 @@ export function DemoHub() {
                 onChange={(e) => setGuestName(e.target.value)}
                 placeholder={t.login.displayName}
                 maxLength={24}
-                className="min-w-0 flex-1 rounded-lg border border-[#1E2D45] bg-[#0B1628] px-3 py-2 text-sm outline-none focus:border-[#0066FF]"
+                className="min-w-0 flex-1 rounded-lg border border-[#1E2D45] bg-[#0B1628] px-3 py-2 text-sm outline-none focus:border-[#F59E0B]"
               />
               <button
                 type="submit"
@@ -137,7 +145,7 @@ export function DemoHub() {
           <div className="flex flex-col gap-2">
             <Link
               href="/play"
-              className="rounded-lg bg-[#0066FF] px-4 py-2.5 text-center text-sm font-semibold text-white"
+              className="rounded-lg bg-[#F59E0B] px-4 py-2.5 text-center text-sm font-bold text-[#0B0B0B] shadow-[0_0_14px_rgba(245,158,11,.28)]"
             >
               {t.demo.goPlay}
             </Link>
@@ -151,7 +159,7 @@ export function DemoHub() {
                   setError(err instanceof Error ? err.message : t.demo.actionFailed);
                 }
               }}
-              className="rounded-lg border border-[#1E2D45] bg-[#162032] px-4 py-2.5 text-sm font-semibold disabled:opacity-50"
+              className="rounded-lg border border-[rgba(245,158,11,.35)] bg-[rgba(245,158,11,.08)] px-4 py-2.5 text-sm font-semibold text-[#F59E0B] disabled:opacity-50"
             >
               {t.demo.fillBotsMatch}
             </button>
@@ -182,7 +190,7 @@ export function DemoHub() {
           <p className="mb-3 text-xs text-[#6B7280]">
             #{String(activeMatch.number).padStart(3, "0")} · {t.demo.continueOnPlay}
           </p>
-          <Link href="/play" className="text-sm font-semibold text-[#0066FF]">
+          <Link href="/play" className="text-sm font-semibold text-[#F59E0B]">
             {t.demo.goPlay} →
           </Link>
         </Card>

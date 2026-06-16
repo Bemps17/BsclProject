@@ -83,6 +83,18 @@
   --chart-5: #ef4444;
 }
 
+[data-demo-mode] {
+  --primary: #f59e0b;
+  --ring: #f59e0b;
+  --sidebar-primary: #f59e0b;
+  --sidebar-ring: #f59e0b;
+}
+
+[data-demo-mode] .demo-mode-main a.text-\[\#0066FF\],
+[data-demo-mode] .demo-mode-main .text-\[\#0066FF\] {
+  color: #f59e0b;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

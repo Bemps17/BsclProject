@@ -9,12 +9,15 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { DemoLaunchModal } from "@/components/bscl/demo-launch-modal";
 import { discordTag } from "@/lib/discord-sim";
 import {
   buildDemoLeaderboard,
   type LocalMatch,
 } from "@/lib/local-matchmaker";
 import {
+  acceptDemoSession,
+  advanceLocalDraft,
   confirmLocalMatchResult,
   fillBotsAndStartMatch,
   fillQueueWithBots,
@@ -44,6 +47,7 @@ export type DemoShellUser = {
 type DemoContextValue = {
   state: LocalState;
   player: LocalPlayer | null;
+  sessionAccepted: boolean;
   shellUser: DemoShellUser;
   queue: ReturnType<typeof localQueueSnapshot>;
   stats: ReturnType<typeof localDemoStats>;
@@ -51,11 +55,14 @@ type DemoContextValue = {
   myMatches: LocalMatch[];
   leaderboard: ReturnType<typeof buildDemoLeaderboard>;
   refresh: () => void;
+  acceptSession: () => void;
+  exitDemo: () => void;
   joinQueue: () => void;
   leaveQueue: () => void;
   fillBots: () => void;
   startMatch: () => void;
   fillBotsAndMatch: () => void;
+  advanceDraft: (matchId: string) => void;
   submitMatch: (matchId: string, alphaScore: number, bravoScore: number) => void;
   confirmMatch: (matchId: string, asPlayerId?: string) => void;
   resetAll: () => void;
@@ -63,9 +70,18 @@ type DemoContextValue = {
 
 const DemoContext = createContext<DemoContextValue | null>(null);
 
+const EMPTY_STATE: LocalState = {
+  player: null,
+  queue: [],
+  inQueue: false,
+  matches: [],
+  matchCounter: 0,
+  sessionAccepted: false,
+};
+
 export function DemoProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<LocalState>(() =>
-    typeof window === "undefined" ? { player: null, queue: [], inQueue: false, matches: [], matchCounter: 0 } : getLocalState(),
+    typeof window === "undefined" ? EMPTY_STATE : getLocalState(),
   );
 
   const refresh = useCallback(() => {
@@ -121,6 +137,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     (): DemoContextValue => ({
       state,
       player: state.player,
+      sessionAccepted: state.sessionAccepted,
       shellUser,
       queue,
       stats,
@@ -128,6 +145,14 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       myMatches,
       leaderboard,
       refresh,
+      acceptSession: () => {
+        acceptDemoSession();
+        refresh();
+      },
+      exitDemo: () => {
+        resetDemoData();
+        refresh();
+      },
       joinQueue: () => {
         joinLocalQueue();
         refresh();
@@ -148,6 +173,10 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         fillBotsAndStartMatch();
         refresh();
       },
+      advanceDraft: (matchId) => {
+        advanceLocalDraft(matchId);
+        refresh();
+      },
       submitMatch: (matchId, alphaScore, bravoScore) => {
         submitLocalMatchResult(matchId, alphaScore, bravoScore);
         refresh();
@@ -164,7 +193,15 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     [state, shellUser, queue, stats, myMatches, leaderboard, refresh],
   );
 
-  return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
+  return (
+    <DemoContext.Provider value={value}>
+      <DemoLaunchModal
+        open={!state.sessionAccepted}
+        onLaunch={() => value.acceptSession()}
+      />
+      {children}
+    </DemoContext.Provider>
+  );
 }
 
 export function useDemo() {

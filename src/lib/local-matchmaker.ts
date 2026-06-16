@@ -1,11 +1,11 @@
 import { PLACEMENT_MATCHES, calculateEloDelta, getRankFromElo } from "@/lib/elo";
 import type { LeaderboardEntry } from "@/lib/match-display";
-import { canConfirmMatch, PUG_QUEUE_SIZE } from "@/lib/match";
+import { canConfirmMatch, PUG_QUEUE_SIZE, type DraftSide } from "@/lib/match";
 import { rankKeyToTier, rankTierToKey } from "@/lib/ranks";
 import { assignPugTeams, teamAverageElo } from "@/lib/team-balance";
 import type { RankKey } from "@/lib/constants";
 
-export type LocalMatchStatus = "LIVE" | "SUBMITTED" | "CONFIRMED" | "DISPUTED";
+export type LocalMatchStatus = "DRAFT" | "LIVE" | "SUBMITTED" | "CONFIRMED" | "DISPUTED";
 
 export type LocalMatchPlayer = {
   playerId: string;
@@ -13,6 +13,13 @@ export type LocalMatchPlayer = {
   side: "ALPHA" | "BRAVO";
   elo: number;
   eloDelta?: number;
+};
+
+export type LocalDraftPick = {
+  playerId: string;
+  name: string;
+  side: DraftSide;
+  pickNumber: number;
 };
 
 export type LocalMatch = {
@@ -27,6 +34,10 @@ export type LocalMatch = {
   bravoScore?: number;
   submittedBy?: string;
   players: LocalMatchPlayer[];
+  draftOrder: DraftSide[];
+  draftPicks: LocalDraftPick[];
+  /** 0 = captains reveal, 1..N = snake picks, N+1 = ready for LIVE */
+  draftRevealStep: number;
   createdAt: string;
 };
 
@@ -37,7 +48,9 @@ export type LocalBot = {
   elo: number;
 };
 
-/** Nine bots with spread ELO — one real player fills the 10th slot. */
+/** Demo ELO boost so the local human is always Alpha captain. */
+export const DEMO_CAPTAIN_ELO = 9999;
+
 export const LOCAL_BOT_POOL: LocalBot[] = [
   { id: "bot_neo", name: "NeoStrike", initials: "NE", elo: 1120 },
   { id: "bot_shadow", name: "ShadowFK", initials: "SH", elo: 1080 },
@@ -63,6 +76,14 @@ export function resolvePlayerElo(
   return bot?.elo ?? 1000;
 }
 
+export function assignmentElo(
+  playerId: string,
+  localPlayer: { id: string; elo: number } | null,
+): number {
+  if (localPlayer?.id === playerId) return DEMO_CAPTAIN_ELO;
+  return resolvePlayerElo(playerId, localPlayer);
+}
+
 export function createMatchFromQueue(
   queue: { id: string; name: string }[],
   matchNumber: number,
@@ -70,16 +91,27 @@ export function createMatchFromQueue(
 ): LocalMatch | null {
   if (queue.length < PUG_QUEUE_SIZE) return null;
 
-  const draftPlayers = queue.slice(0, PUG_QUEUE_SIZE).map((entry) => ({
+  const slice = queue.slice(0, PUG_QUEUE_SIZE);
+  const draftPlayers = slice.map((entry) => ({
     id: entry.id,
     displayName: entry.name,
-    elo: resolvePlayerElo(entry.id, localPlayer),
+    elo: assignmentElo(entry.id, localPlayer),
   }));
 
   const assignment = assignPugTeams(draftPlayers);
+  const sorted = [...draftPlayers].sort((a, b) => b.elo - a.elo || a.id.localeCompare(b.id));
+  const pool = sorted.slice(2);
+
+  const draftPicks: LocalDraftPick[] = assignment.draftOrder.map((side, index) => ({
+    playerId: pool[index].id,
+    name: pool[index].displayName,
+    side,
+    pickNumber: index + 1,
+  }));
+
   const players: LocalMatchPlayer[] = [
     ...assignment.alphaIds.map((playerId) => {
-      const entry = queue.find((q) => q.id === playerId)!;
+      const entry = slice.find((q) => q.id === playerId)!;
       return {
         playerId,
         name: entry.name,
@@ -88,7 +120,7 @@ export function createMatchFromQueue(
       };
     }),
     ...assignment.bravoIds.map((playerId) => {
-      const entry = queue.find((q) => q.id === playerId)!;
+      const entry = slice.find((q) => q.id === playerId)!;
       return {
         playerId,
         name: entry.name,
@@ -101,14 +133,35 @@ export function createMatchFromQueue(
   return {
     id: `local_match_${Date.now()}`,
     number: matchNumber,
-    status: "LIVE",
+    status: "DRAFT",
     captainAlpha: assignment.captainAlpha,
     captainBravo: assignment.captainBravo,
     alphaIds: assignment.alphaIds,
     bravoIds: assignment.bravoIds,
+    draftOrder: assignment.draftOrder,
+    draftPicks,
+    draftRevealStep: 0,
     players,
     createdAt: new Date().toISOString(),
   };
+}
+
+/** Total reveal steps: 1 (captains) + draft picks count. */
+export function draftRevealTotalSteps(match: LocalMatch): number {
+  return 1 + match.draftPicks.length;
+}
+
+export function advanceDraftReveal(match: LocalMatch): LocalMatch {
+  if (match.status !== "DRAFT") return match;
+
+  const total = draftRevealTotalSteps(match);
+  const nextStep = match.draftRevealStep + 1;
+
+  if (nextStep >= total) {
+    return { ...match, draftRevealStep: nextStep, status: "LIVE" };
+  }
+
+  return { ...match, draftRevealStep: nextStep };
 }
 
 export function submitLocalScores(
@@ -174,7 +227,8 @@ export function confirmLocalMatch(
     const onAlpha = mp.side === "ALPHA";
     const won = onAlpha ? alphaWon : !alphaWon;
     const opponentAvg = onAlpha ? bravoAvg : alphaAvg;
-    const placementProtection = mp.playerId === localPlayer?.id && localPlayer.wins + localPlayer.losses < PLACEMENT_MATCHES;
+    const placementProtection =
+      mp.playerId === localPlayer?.id && localPlayer.wins + localPlayer.losses < PLACEMENT_MATCHES;
     const delta = calculateEloDelta(mp.elo, opponentAvg, won, placementProtection);
     return { ...mp, eloDelta: delta };
   });
@@ -207,6 +261,11 @@ export function confirmLocalMatch(
   };
 }
 
+export function resolveSubmitCaptainId(match: LocalMatch, humanId: string): string {
+  if (humanId === match.captainAlpha || humanId === match.captainBravo) return humanId;
+  return match.captainAlpha;
+}
+
 export function buildDemoLeaderboard(
   localPlayer: {
     id: string;
@@ -217,8 +276,8 @@ export function buildDemoLeaderboard(
     losses: number;
   } | null,
 ): LeaderboardEntry[] {
-  const rows: LeaderboardEntry[] = LOCAL_BOT_POOL.map((bot, index) => ({
-    position: index + 1,
+  const rows: LeaderboardEntry[] = LOCAL_BOT_POOL.map((bot) => ({
+    position: 0,
     id: bot.id,
     name: bot.name,
     rank: rankKeyToTier(rankTierToKey(getRankFromElo(bot.elo))),
@@ -231,7 +290,7 @@ export function buildDemoLeaderboard(
   if (localPlayer) {
     const total = localPlayer.wins + localPlayer.losses;
     rows.push({
-      position: rows.length + 1,
+      position: 0,
       id: localPlayer.id,
       name: localPlayer.displayName,
       rank: rankKeyToTier(localPlayer.rankKey),
