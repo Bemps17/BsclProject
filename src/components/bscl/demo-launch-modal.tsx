@@ -40,7 +40,7 @@ export function DemoLaunchModal({
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-chart-3">
             {t.demo.modeLabel}
           </p>
-          <DialogTitle className="font-[family-name:var(--font-rajdhani)] text-2xl font-bold text-foreground">
+          <DialogTitle className="font-heading text-2xl font-bold text-foreground">
             {t.demo.launchTitle}
           </DialogTitle>
         </DialogHeader>

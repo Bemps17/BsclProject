@@ -34,7 +34,7 @@ En mode démo, l'or devient la couleur primaire — les surfaces restent sombres
 
 | Rôle | Variable | Police |
 |------|----------|--------|
-| Titres / stats | `--font-heading` | Rajdhani |
+| Titres / stats | `--font-heading` | Space Grotesk |
 | Corps | `--font-sans` | Inter |
 | Scores / IDs | `--font-mono` | JetBrains Mono |
 

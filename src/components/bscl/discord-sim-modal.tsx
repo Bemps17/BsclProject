@@ -84,7 +84,7 @@ export function DiscordSimModal({
 
         <div className="px-5 py-5">
           <div className="mb-4 flex items-start gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary font-[family-name:var(--font-rajdhani)] text-sm font-bold text-primary-foreground">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary font-heading text-sm font-bold text-primary-foreground">
               BS
             </div>
             <div className="min-w-0 pt-0.5">

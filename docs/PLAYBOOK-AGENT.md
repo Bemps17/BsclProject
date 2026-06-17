@@ -271,12 +271,12 @@ Ordre recommandé pour minimiser les régressions :
 
 **Fichiers :**
 
-- `src/app/layout.tsx` (Rajdhani, Inter, JetBrains Mono)
+- `src/app/layout.tsx` (Space Grotesk, Inter, JetBrains Mono)
 - Composants utilisant des polices hors `--font-heading` / `--font-sans`
 
 **Critères d'acceptation :**
 
-- [ ] Titres en Rajdhani ; scores/IDs en JetBrains Mono
+- [ ] Titres en Space Grotesk (`font-heading`) ; scores/IDs en JetBrains Mono
 
 ---
 

@@ -224,7 +224,7 @@ export function PlayClient({
       <div className="rounded-xl border border-border bg-secondary p-4 md:p-5">
         <div className="mb-3.5 flex items-start justify-between gap-2.5">
           <div>
-            <h2 className="font-[family-name:var(--font-rajdhani)] text-lg font-bold">{t.play.pugTitle}</h2>
+            <h2 className="font-heading text-lg font-bold">{t.play.pugTitle}</h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {queue.count} / {SLOT_COUNT} ·{" "}
               {queue.count < SLOT_COUNT ? t.play.filling : t.play.readyDraft}
@@ -285,7 +285,7 @@ export function PlayClient({
                 key={player.id}
                 className="flex aspect-square flex-col items-center justify-center gap-0.5 rounded-lg border border-primary bg-primary/12"
               >
-                <div className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-primary font-[family-name:var(--font-rajdhani)] text-[10px] font-bold text-primary-foreground">
+                <div className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-primary font-heading text-[10px] font-bold text-primary-foreground">
                   {player.initials}
                 </div>
                 <span className="max-w-full truncate px-0.5 text-[9px]">{player.name}</span>
@@ -307,11 +307,11 @@ export function PlayClient({
       </div>
 
       <Card>
-        <h2 className="mb-3.5 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold">{t.play.howItWorks}</h2>
+        <h2 className="mb-3.5 font-heading text-[15px] font-bold">{t.play.howItWorks}</h2>
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
           {t.play.steps.map(([n, title, desc]) => (
             <div key={n} className="rounded-lg border border-border bg-secondary p-3">
-              <div className="mb-0.5 font-[family-name:var(--font-rajdhani)] text-xs font-bold text-primary">
+              <div className="mb-0.5 font-heading text-xs font-bold text-primary">
                 {n}
               </div>
               <div className="mb-0.5 text-xs font-semibold">{title}</div>

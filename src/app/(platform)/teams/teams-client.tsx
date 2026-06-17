@@ -174,11 +174,11 @@ export function TeamsClient({
                   isMine ? "border-primary" : "border-border active:border-primary",
                 )}
               >
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border bg-primary/6 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold text-primary">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border bg-primary/6 font-heading text-[15px] font-bold text-primary">
                   {team.tag}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="font-[family-name:var(--font-rajdhani)] text-[15px] font-bold">{team.name}</div>
+                  <div className="font-heading text-[15px] font-bold">{team.name}</div>
                   <div className="mt-0.5 text-[11px] text-muted-foreground">
                     {team.memberCount} {t.teams.members} · {t.teams.captain}: {team.captainName}
                   </div>

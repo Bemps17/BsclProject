@@ -33,7 +33,7 @@ export function MatchesClient({
 
   return (
     <Card>
-      <h2 className="mb-3.5 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold">
+      <h2 className="mb-3.5 font-heading text-[15px] font-bold">
         {t.matches.title} <span className="text-primary">· {seasonLabel}</span>
       </h2>
       {matches.length === 0 ? (

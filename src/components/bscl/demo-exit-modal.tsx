@@ -32,7 +32,7 @@ export function DemoExitModal({
     <AlertDialog open={open} onOpenChange={(next) => !next && !loading && onCancel()}>
       <AlertDialogContent className="border-chart-3/30 ring-chart-3/20">
         <AlertDialogHeader className="text-left sm:text-left">
-          <AlertDialogTitle className="font-[family-name:var(--font-rajdhani)] text-xl">
+          <AlertDialogTitle className="font-heading text-xl">
             {t.demo.exitTitle}
           </AlertDialogTitle>
           <AlertDialogDescription>{t.demo.exitDesc}</AlertDialogDescription>

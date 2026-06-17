@@ -21,7 +21,7 @@ export function AdminClient({
   return (
     <>
       <div className="flex flex-wrap items-center gap-2">
-        <h2 className="font-[family-name:var(--font-rajdhani)] text-[22px] font-bold">{t.admin.title}</h2>
+        <h2 className="font-heading text-[22px] font-bold">{t.admin.title}</h2>
         {demoMode ? (
           <Tag variant="gold">{t.admin.demoPreview}</Tag>
         ) : (

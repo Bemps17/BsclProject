@@ -73,7 +73,7 @@ export function ProfileDemo() {
       <div className="rounded-[14px] border border-border bg-card p-5">
         <div className="mb-4 flex items-center gap-3.5">
           <div
-            className="flex h-[72px] w-[72px] items-center justify-center rounded-full border-[3px] border-primary bg-primary font-[family-name:var(--font-rajdhani)] text-[28px] font-bold text-primary-foreground shadow-[0_0_20px_color-mix(in_oklch,var(--primary),transparent_72%)]"
+            className="flex h-[72px] w-[72px] items-center justify-center rounded-full border-[3px] border-primary bg-primary font-heading text-[28px] font-bold text-primary-foreground shadow-[0_0_20px_color-mix(in_oklch,var(--primary),transparent_72%)]"
             style={
               avatarHue != null
                 ? {
@@ -87,7 +87,7 @@ export function ProfileDemo() {
             {playerInitials(player.displayName)}
           </div>
           <div>
-            <h2 className="font-[family-name:var(--font-rajdhani)] text-2xl font-bold">{player.displayName}</h2>
+            <h2 className="font-heading text-2xl font-bold">{player.displayName}</h2>
             <p className="text-[11px] text-muted-foreground">
               {isDiscordSim ? `${discordLabel} · ${t.profile.discordSimProfile}` : t.profile.guestProfile}
             </p>
@@ -125,7 +125,7 @@ export function ProfileDemo() {
       </div>
 
       <Card>
-        <h2 className="mb-3.5 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold">{t.profile.rankProgress}</h2>
+        <h2 className="mb-3.5 font-heading text-[15px] font-bold">{t.profile.rankProgress}</h2>
         <div className="flex flex-col gap-1.5">
           <div className="flex justify-between text-[10px] text-muted-foreground">
             <span>{RANK_THRESHOLDS.DIAMOND}</span>

@@ -48,13 +48,13 @@ Use these values consistently. Prefer CSS variables in `globals.css` or Tailwind
 
 | Role | Font | Weight | Where |
 |------|------|--------|-------|
-| Headings / stats | Rajdhani (`--font-rajdhani`) | 600–700 | Titles, ELO numbers, queue labels |
+| Headings / stats | Space Grotesk (`--font-display` / `font-heading`) | 500–700 | Titles, ELO numbers, queue labels |
 | Body | Inter (`--font-inter`) | 400–600 | Paragraphs, tables, buttons |
 | Scores / IDs | JetBrains Mono (`--font-jetbrains`) | 500–700 | Match scores, ticket IDs, ELO deltas |
 
 **Rules:**
 - Section labels: `10px`, uppercase, `letter-spacing: 1–1.5px`, `--muted`
-- Stat values: Rajdhani `28–36px`, bold
+- Stat values: Space Grotesk `28–36px`, bold
 - Never use system default fonts for branded surfaces
 
 ### 2.3 Spacing & layout

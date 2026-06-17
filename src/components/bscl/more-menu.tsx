@@ -112,7 +112,7 @@ export function MoreMenu({
           href="/profile"
           className="flex items-center gap-3 rounded-xl border border-border bg-secondary p-4 transition hover:border-primary"
         >
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-primary font-[family-name:var(--font-rajdhani)] text-sm font-bold text-primary-foreground">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-primary font-heading text-sm font-bold text-primary-foreground">
             {user.initials}
           </div>
           <div className="min-w-0 flex-1">

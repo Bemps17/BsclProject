@@ -22,7 +22,7 @@ export function LoginShell({
             <div className="mx-auto w-fit">
               <LogoHex />
             </div>
-            <h1 className="mt-3 font-[family-name:var(--font-rajdhani)] text-[clamp(1.5rem,4.5vw,1.75rem)] font-bold">
+            <h1 className="mt-3 font-heading text-[clamp(1.5rem,4.5vw,1.75rem)] font-bold">
               <span className="text-primary">BSCL</span>.gg
             </h1>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{description}</p>

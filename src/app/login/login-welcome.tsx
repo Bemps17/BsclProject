@@ -51,7 +51,7 @@ function ModeChoiceCard({
       >
         {badge}
       </span>
-      <span className="w-full font-[family-name:var(--font-rajdhani)] text-lg font-bold text-foreground sm:text-xl">
+      <span className="w-full font-heading text-lg font-bold text-foreground sm:text-xl">
         {title}
       </span>
       <span className="mt-2 w-full whitespace-normal break-words text-sm leading-relaxed text-muted-foreground">
@@ -138,7 +138,7 @@ export function LoginWelcome({
 
       <div className="mb-6 flex w-full min-w-0 max-w-2xl flex-col items-center text-center sm:mb-8">
         <LogoHex />
-        <h1 className="mt-4 font-[family-name:var(--font-rajdhani)] text-[clamp(1.75rem,5vw,2.25rem)] font-bold leading-tight">
+        <h1 className="mt-4 font-heading text-[clamp(1.75rem,5vw,2.25rem)] font-bold leading-tight">
           <span className="text-primary">BSCL</span>.gg
         </h1>
         <p className="mt-2 max-w-md px-1 text-sm leading-relaxed text-muted-foreground">
