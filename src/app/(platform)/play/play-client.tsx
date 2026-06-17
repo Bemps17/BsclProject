@@ -18,6 +18,7 @@ import {
 } from "@/components/bscl/ui";
 import { matchStatusVariant } from "@/lib/match-display";
 import type { Translations } from "@/lib/i18n";
+import { ApiError, fetchJson } from "@/lib/fetch-client";
 import { cn } from "@/lib/utils";
 
 type QueuePlayer = {
@@ -92,9 +93,7 @@ export function PlayClient({
       return;
     }
     try {
-      const res = await fetch("/api/queue");
-      if (!res.ok) return;
-      const data = (await res.json()) as QueueState;
+      const data = await fetchJson<QueueState>("/api/queue");
       setQueue(data);
     } catch {
       /* ignore polling errors */
@@ -102,15 +101,31 @@ export function PlayClient({
   }, [isDemo, syncDemoQueue]);
 
   useEffect(() => {
-    fetchQueue();
-    if (isDemo) return;
-    const timer = setInterval(fetchQueue, 3000);
-    return () => clearInterval(timer);
-  }, [fetchQueue, isDemo]);
+    let cancelled = false;
 
-  useEffect(() => {
-    if (isDemo) syncDemoQueue();
-  }, [isDemo, syncDemoQueue, demo?.state]);
+    void (async () => {
+      if (isDemo) {
+        if (!cancelled) syncDemoQueue();
+        return;
+      }
+      try {
+        const data = await fetchJson<QueueState>("/api/queue");
+        if (!cancelled) setQueue(data);
+      } catch {
+        /* ignore initial load errors */
+      }
+    })();
+
+    if (isDemo) return;
+
+    const timer = setInterval(() => {
+      void fetchQueue();
+    }, 3000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [fetchQueue, isDemo, syncDemoQueue, demo?.state.inQueue]);
 
   const pct = (queue.count / SLOT_COUNT) * 100;
   const slots = Array.from({ length: SLOT_COUNT }, (_, i) => queue.players[i] ?? null);
@@ -134,29 +149,31 @@ export function PlayClient({
       }
 
       if (inQueue) {
-        const res = await fetch("/api/queue", { method: "DELETE" });
-        if (res.status === 401) {
-          router.push("/login");
+        try {
+          await fetchJson("/api/queue", { method: "DELETE" });
+          setInQueue(false);
+        } catch (err) {
+          if (err instanceof ApiError && err.status === 401) {
+            router.push("/login");
+            return;
+          }
+          setError(err instanceof ApiError ? err.message : t.play.failLeave);
+          await fetchQueue();
           return;
         }
-        if (!res.ok) {
-          const body = (await res.json()) as { error?: string };
-          setError(body.error ?? t.play.failLeave);
-          return;
-        }
-        setInQueue(false);
       } else {
-        const res = await fetch("/api/queue", { method: "POST" });
-        if (res.status === 401) {
-          router.push("/login");
+        try {
+          await fetchJson("/api/queue", { method: "POST" });
+          setInQueue(true);
+        } catch (err) {
+          if (err instanceof ApiError && err.status === 401) {
+            router.push("/login");
+            return;
+          }
+          setError(err instanceof ApiError ? err.message : t.play.failJoin);
+          await fetchQueue();
           return;
         }
-        if (!res.ok) {
-          const body = (await res.json()) as { error?: string };
-          setError(body.error ?? t.play.failJoin);
-          return;
-        }
-        setInQueue(true);
       }
       await fetchQueue();
     } finally {
@@ -207,7 +224,7 @@ export function PlayClient({
       <div className="rounded-xl border border-border bg-secondary p-4 md:p-5">
         <div className="mb-3.5 flex items-start justify-between gap-2.5">
           <div>
-            <h2 className="font-[family-name:var(--font-rajdhani)] text-lg font-bold">{t.play.pugTitle}</h2>
+            <h2 className="font-heading text-lg font-bold">{t.play.pugTitle}</h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {queue.count} / {SLOT_COUNT} ·{" "}
               {queue.count < SLOT_COUNT ? t.play.filling : t.play.readyDraft}
@@ -240,7 +257,11 @@ export function PlayClient({
           </div>
         )}
 
-        {error && <p className="mb-3 text-center text-xs text-destructive">{error}</p>}
+        {error && (
+          <p className="mb-3 text-center text-xs text-destructive" role="alert" aria-live="polite">
+            {error}
+          </p>
+        )}
 
         <div className="mb-3">
           <div className="mb-1.5 flex justify-between text-[11px] text-muted-foreground">
@@ -264,7 +285,7 @@ export function PlayClient({
                 key={player.id}
                 className="flex aspect-square flex-col items-center justify-center gap-0.5 rounded-lg border border-primary bg-primary/12"
               >
-                <div className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-primary font-[family-name:var(--font-rajdhani)] text-[10px] font-bold text-primary-foreground">
+                <div className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-primary font-heading text-[10px] font-bold text-primary-foreground">
                   {player.initials}
                 </div>
                 <span className="max-w-full truncate px-0.5 text-[9px]">{player.name}</span>
@@ -286,11 +307,11 @@ export function PlayClient({
       </div>
 
       <Card>
-        <h2 className="mb-3.5 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold">{t.play.howItWorks}</h2>
+        <h2 className="mb-3.5 font-heading text-[15px] font-bold">{t.play.howItWorks}</h2>
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
           {t.play.steps.map(([n, title, desc]) => (
             <div key={n} className="rounded-lg border border-border bg-secondary p-3">
-              <div className="mb-0.5 font-[family-name:var(--font-rajdhani)] text-xs font-bold text-primary">
+              <div className="mb-0.5 font-heading text-xs font-bold text-primary">
                 {n}
               </div>
               <div className="mb-0.5 text-xs font-semibold">{title}</div>

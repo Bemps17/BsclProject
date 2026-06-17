@@ -12,7 +12,6 @@ import {
 } from "@/components/bscl/ui";
 import { draftRevealTotalSteps } from "@/lib/local-matchmaker";
 import { matchStatusVariant } from "@/lib/match-display";
-import { cn } from "@/lib/utils";
 import type { Translations } from "@/lib/i18n";
 import type { LocalMatch } from "@/lib/local-store";
 

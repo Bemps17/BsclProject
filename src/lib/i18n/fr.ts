@@ -63,6 +63,7 @@ export const fr: Translations = {
     staffOnly: "Staff uniquement",
     demo: "Démo",
     elo: "ELO",
+    skipToContent: "Aller au contenu",
   },
   home: {
     seasonLive: "En direct",
@@ -136,6 +137,7 @@ export const fr: Translations = {
     recruiting: "Recrute",
     createTeam: "Créer ton équipe",
     empty: "Aucune équipe pour l'instant. Crée la première escouade de la Saison 1.",
+    emptyRecruiting: "Aucune équipe ne recrute pour le moment.",
     members: "membres",
     captain: "Capitaine",
     tagLabel: "Tag",
@@ -203,6 +205,8 @@ export const fr: Translations = {
     demoCta: "Continuer en invité",
     nameRequired: "Le nom affiché est requis",
     saveFailed: "Impossible d'enregistrer le profil",
+    demoEnterFailed: "Impossible de démarrer le mode démo",
+    demoExitFailed: "Impossible de quitter le mode démo",
     discordSim: {
       title: "Discord",
       subtitle: "BSCL.gg souhaite accéder à ton compte Discord",

@@ -64,6 +64,7 @@ export type Translations = {
     staffOnly: string;
     demo: string;
     elo: string;
+    skipToContent: string;
   };
   home: {
     seasonLive: string;
@@ -131,6 +132,7 @@ export type Translations = {
     recruiting: string;
     createTeam: string;
     empty: string;
+    emptyRecruiting: string;
     members: string;
     captain: string;
     tagLabel: string;
@@ -197,6 +199,8 @@ export type Translations = {
     demoCta: string;
     nameRequired: string;
     saveFailed: string;
+    demoEnterFailed: string;
+    demoExitFailed: string;
     discordSim: {
       title: string;
       subtitle: string;

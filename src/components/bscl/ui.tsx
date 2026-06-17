@@ -41,7 +41,7 @@ export function RankBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded px-1.5 py-0.5 font-[family-name:var(--font-rajdhani)] text-[10px] font-bold tracking-wide",
+        "inline-flex items-center rounded px-1.5 py-0.5 font-heading text-[10px] font-bold tracking-wide",
         RANK_STYLES[rank],
         className,
       )}
@@ -89,7 +89,7 @@ export function StatCell({
         </div>
         <div
           className={cn(
-            "font-[family-name:var(--font-rajdhani)] text-[28px] font-bold leading-none text-foreground",
+            "font-heading text-[28px] font-bold leading-none text-foreground",
             valueClassName,
           )}
         >
@@ -128,7 +128,7 @@ export function CardHeader({
 }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <CardTitle className="flex items-center gap-1.5 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold tracking-wide">
+      <CardTitle className="flex items-center gap-1.5 font-heading text-[15px] font-bold tracking-wide">
         {title}
         {accent && <span className="text-primary">{accent}</span>}
       </CardTitle>
@@ -147,7 +147,7 @@ export function LogoHex({ size = "md" }: { size?: "sm" | "md" }) {
       )}
       style={{ clipPath: "polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)" }}
     >
-      <span className="font-[family-name:var(--font-rajdhani)] font-bold text-primary-foreground">BS</span>
+      <span className="font-heading font-bold text-primary-foreground">BS</span>
     </div>
   );
 }
@@ -170,7 +170,7 @@ export function MatchRow({
       <Badge
         variant="outline"
         className={cn(
-          "min-w-[38px] justify-center rounded px-2 font-[family-name:var(--font-rajdhani)] text-[11px] font-bold",
+          "min-w-[38px] justify-center rounded px-2 font-heading text-[11px] font-bold",
           win
             ? "border-chart-2/30 bg-chart-2/10 text-chart-2"
             : "border-destructive/30 bg-destructive/10 text-destructive",

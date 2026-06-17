@@ -18,11 +18,13 @@ export function DemoExitModal({
   onCancel,
   onConfirm,
   loading,
+  error,
 }: {
   open: boolean;
   onCancel: () => void;
   onConfirm: () => void;
   loading?: boolean;
+  error?: string | null;
 }) {
   const t = useT();
 
@@ -30,10 +32,15 @@ export function DemoExitModal({
     <AlertDialog open={open} onOpenChange={(next) => !next && !loading && onCancel()}>
       <AlertDialogContent className="border-chart-3/30 ring-chart-3/20">
         <AlertDialogHeader className="text-left sm:text-left">
-          <AlertDialogTitle className="font-[family-name:var(--font-rajdhani)] text-xl">
+          <AlertDialogTitle className="font-heading text-xl">
             {t.demo.exitTitle}
           </AlertDialogTitle>
           <AlertDialogDescription>{t.demo.exitDesc}</AlertDialogDescription>
+          {error && (
+            <p className="text-sm text-destructive" role="alert">
+              {error}
+            </p>
+          )}
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={loading}>{t.demo.exitCancel}</AlertDialogCancel>

@@ -1,7 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { Button, EmptyState, Field, FieldGroup, FieldLabel, Input, Tag } from "@/components/bscl/ui";
+import { useMemo, useState } from "react";
+import {
+  Button,
+  EmptyState,
+  Field,
+  FieldGroup,
+  FieldLabel,
+  Input,
+  StatCell,
+  Tag,
+} from "@/components/bscl/ui";
 import { useLocale, useT } from "@/components/bscl/locale-provider";
 import { formatCount, interpolate } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -16,6 +25,8 @@ type TeamRow = {
   captainName: string;
   memberCount: number;
 };
+
+type TeamFilter = "all" | "recruiting";
 
 export function TeamsClient({
   teams,
@@ -39,6 +50,16 @@ export function TeamsClient({
   const [tag, setTag] = useState("");
   const [name, setName] = useState("");
   const [showCreate, setShowCreate] = useState(false);
+  const [filter, setFilter] = useState<TeamFilter>("all");
+
+  const recruitingCount = useMemo(() => teams.filter((team) => team.recruiting).length, [teams]);
+
+  const visibleTeams = useMemo(() => {
+    if (filter === "recruiting") {
+      return teams.filter((team) => team.recruiting);
+    }
+    return teams;
+  }, [filter, teams]);
 
   function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -48,17 +69,49 @@ export function TeamsClient({
     setShowCreate(false);
   }
 
+  const filters: { key: TeamFilter; label: string }[] = [
+    { key: "all", label: t.common.all },
+    { key: "recruiting", label: t.teams.recruiting },
+  ];
+
   return (
     <>
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-[family-name:var(--font-rajdhani)] text-[22px] font-bold">{t.teams.title}</h2>
-          <p className="text-xs text-muted-foreground">
-            {interpolate(t.teams.registered, { n: formatCount(teamCount, locale) })}
-          </p>
+      <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3">
+        <StatCell
+          label={t.teams.title}
+          value={formatCount(teamCount, locale)}
+          sub={interpolate(t.teams.registered, { n: formatCount(teamCount, locale) })}
+        />
+        <StatCell label={t.teams.recruiting} value={recruitingCount} />
+        <StatCell
+          label={t.teams.myTeam}
+          value={myTeamId ? "✓" : "—"}
+          valueClassName={myTeamId ? "text-[var(--gold)]" : undefined}
+        />
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex min-h-[44px] flex-1 rounded-lg border border-border bg-secondary p-0.5">
+          {filters.map((item) => (
+            <Button
+              key={item.key}
+              type="button"
+              variant={filter === item.key ? "default" : "ghost"}
+              size="sm"
+              aria-pressed={filter === item.key}
+              onClick={() => setFilter(item.key)}
+              className={cn(
+                "min-h-[40px] flex-1",
+                filter === item.key &&
+                  "shadow-[0_0_10px_color-mix(in_oklch,var(--primary),transparent_72%)]",
+              )}
+            >
+              {item.label}
+            </Button>
+          ))}
         </div>
         {interactive && !myTeamId && (
-          <Button size="sm" onClick={() => setShowCreate((v) => !v)}>
+          <Button size="sm" className="min-h-[44px]" onClick={() => setShowCreate((v) => !v)}>
             + {t.common.create}
           </Button>
         )}
@@ -88,19 +141,25 @@ export function TeamsClient({
               />
             </Field>
             <div className="flex items-end">
-              <Button type="submit">{t.teams.createTeam}</Button>
+              <Button type="submit" className="min-h-[44px]">
+                {t.teams.createTeam}
+              </Button>
             </div>
           </FieldGroup>
         </form>
       )}
 
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && (
+        <p className="text-xs text-destructive" role="alert">
+          {error}
+        </p>
+      )}
 
-      {teams.length === 0 ? (
-        <EmptyState message={t.teams.empty} />
+      {visibleTeams.length === 0 ? (
+        <EmptyState message={filter === "recruiting" ? t.teams.emptyRecruiting : t.teams.empty} />
       ) : (
         <div className="grid gap-2.5 md:grid-cols-2">
-          {teams.map((team) => {
+          {visibleTeams.map((team) => {
             const winRate =
               team.wins + team.losses > 0
                 ? Math.round((team.wins / (team.wins + team.losses)) * 100)
@@ -115,11 +174,11 @@ export function TeamsClient({
                   isMine ? "border-primary" : "border-border active:border-primary",
                 )}
               >
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border bg-primary/6 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold text-primary">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border bg-primary/6 font-heading text-[15px] font-bold text-primary">
                   {team.tag}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="font-[family-name:var(--font-rajdhani)] text-[15px] font-bold">{team.name}</div>
+                  <div className="font-heading text-[15px] font-bold">{team.name}</div>
                   <div className="mt-0.5 text-[11px] text-muted-foreground">
                     {team.memberCount} {t.teams.members} · {t.teams.captain}: {team.captainName}
                   </div>
@@ -142,7 +201,13 @@ export function TeamsClient({
                     {team.wins}W / {team.losses}L
                   </span>
                   {interactive && !myTeamId && team.recruiting && onJoinTeam && (
-                    <Button type="button" size="xs" variant="outline" onClick={() => onJoinTeam(team.id)}>
+                    <Button
+                      type="button"
+                      size="xs"
+                      variant="outline"
+                      className="min-h-[44px] md:min-h-0"
+                      onClick={() => onJoinTeam(team.id)}
+                    >
                       {t.teams.joinTeam}
                     </Button>
                   )}

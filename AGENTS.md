@@ -3,6 +3,9 @@
 > **Black Squad Competitive League** · [bscl.gg](https://bscl.gg)  
 > Canonical instructions for AI agents and contributors working on this repository.
 
+**Playbook tâches (qualité / design / sécurité) :** [`docs/PLAYBOOK-AGENT.md`](docs/PLAYBOOK-AGENT.md) — charger ce fichier pour exécuter les tâches Q*, D*, S* avec périmètre strict.  
+**Références :** [`docs/DESIGN.md`](docs/DESIGN.md) · [`docs/security.md`](docs/security.md)
+
 ---
 
 ## 1. Project context
@@ -45,13 +48,13 @@ Use these values consistently. Prefer CSS variables in `globals.css` or Tailwind
 
 | Role | Font | Weight | Where |
 |------|------|--------|-------|
-| Headings / stats | Rajdhani (`--font-rajdhani`) | 600–700 | Titles, ELO numbers, queue labels |
+| Headings / stats | Space Grotesk (`--font-display` / `font-heading`) | 500–700 | Titles, ELO numbers, queue labels |
 | Body | Inter (`--font-inter`) | 400–600 | Paragraphs, tables, buttons |
 | Scores / IDs | JetBrains Mono (`--font-jetbrains`) | 500–700 | Match scores, ticket IDs, ELO deltas |
 
 **Rules:**
 - Section labels: `10px`, uppercase, `letter-spacing: 1–1.5px`, `--muted`
-- Stat values: Rajdhani `28–36px`, bold
+- Stat values: Space Grotesk `28–36px`, bold
 - Never use system default fonts for branded surfaces
 
 ### 2.3 Spacing & layout
@@ -317,7 +320,9 @@ bot/                  # Separate package — excluded from Next tsconfig
 ### 7.1 Always run before push
 
 ```bash
-npm test               # Vitest — 46+ unit/integration tests
+npm run verify         # lint + test + build (gate PR)
+npm run verify:technical  # lint + test (rapide)
+npm test               # Vitest — 67+ unit/integration tests
 npm run test:coverage  # Optional coverage report
 npm run build          # TypeScript + Next.js production build
 npm run lint           # ESLint
@@ -328,7 +333,9 @@ npm run lint           # ESLint
 - [x] Unit tests in `src/lib/elo.test.ts` — delta, ranks, soft reset, placement protection
 - [x] Unit tests in `src/lib/match.test.ts` — snake draft, queue snapshot, confirm rules
 - [x] Validators in `src/lib/validators/match.test.ts`
-- [ ] Confirm → ELO update is idempotent (integration test, Phase 7)
+- [x] `src/lib/integration/pug-flow.integration.test.ts` — join → matchmaker, submit → confirm idempotency
+- [x] `src/app/api/bot/queue/route.test.ts` — bot-authenticated queue API
+- [ ] Confirm → ELO update with full transactional mock (extend 7e with player rows)
 
 ### 7.3 When touching auth / API
 
@@ -403,6 +410,8 @@ Document all new variables in `.env.example`:
 | `DISCORD_CLIENT_SECRET` | Yes | Web |
 | `DISCORD_BOT_TOKEN` | Yes | Bot |
 | `DISCORD_GUILD_ID` | Prod | Bot command registration |
+| `BSCL_API_URL` | Bot | Web API base URL (defaults to `AUTH_URL`) |
+| `BOT_API_SECRET` | Optional | Override Bearer token for `/api/bot/*` |
 | `S3_*` | Optional | Team logos |
 
 ---
@@ -413,8 +422,8 @@ Document all new variables in `.env.example`:
 |-------|------|
 | 1–6 + M1–M7 | Scaffold + live reads + full demo sim + shadcn + i18n + responsive + nav ✅ |
 | **7a–7b** | Queue → match → ELO works end-to-end on web ✅ (live API); demo sim in M6 ✅ |
-| **7c** | Bot commands use same queue/match APIs as web |
-| **7d–7f** | Auth guards (middleware partial ✅), integration tests, security checklist (section 6) green |
+| **7c** | **Bot sync** — `/api/bot/*` + Discord bot wired to shared queue/match APIs | Done ✅ |
+| **7d–7f** | Auth guards (middleware partial ✅), integration tests (7e ✅), security checklist (section 6) green |
 | **7g–7k** | Live APIs for teams/tickets/admin/tournaments — demo UX done; wire to DB next |
 | **8** | Production deploy only after 7a–7f green + monitoring configured |
 

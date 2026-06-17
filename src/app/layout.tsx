@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Rajdhani } from "next/font/google";
+import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { LocaleProvider } from "@/components/bscl/locale-provider";
 import "./globals.css";
 
@@ -9,8 +9,8 @@ const inter = Inter({
   weight: ["400", "500", "600"],
 });
 
-const rajdhani = Rajdhani({
-  variable: "--font-rajdhani",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-display",
   subsets: ["latin"],
   weight: ["500", "600", "700"],
 });
@@ -47,7 +47,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${inter.variable} ${rajdhani.variable} ${jetbrains.variable} min-h-dvh min-h-svh`}
+        className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrains.variable} min-h-dvh min-h-svh overflow-x-hidden`}
       >
         <LocaleProvider>{children}</LocaleProvider>
       </body>

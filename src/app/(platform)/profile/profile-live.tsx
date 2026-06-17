@@ -61,11 +61,11 @@ export function ProfileLive({
     <>
       <div className="rounded-[14px] border border-border bg-card p-5">
         <div className="mb-4 flex items-center gap-3.5">
-          <div className="flex h-[72px] w-[72px] items-center justify-center rounded-full border-[3px] border-primary bg-primary font-[family-name:var(--font-rajdhani)] text-[28px] font-bold text-primary-foreground shadow-[0_0_20px_color-mix(in_oklch,var(--primary),transparent_72%)]">
+          <div className="flex h-[72px] w-[72px] items-center justify-center rounded-full border-[3px] border-primary bg-primary font-heading text-[28px] font-bold text-primary-foreground shadow-[0_0_20px_color-mix(in_oklch,var(--primary),transparent_72%)]">
             {playerInitials(displayName)}
           </div>
           <div>
-            <h2 className="font-[family-name:var(--font-rajdhani)] text-2xl font-bold">{displayName}</h2>
+            <h2 className="font-heading text-2xl font-bold">{displayName}</h2>
             <p className="text-[11px] text-muted-foreground">{t.profile.discord}: {username} · S1</p>
             <div className="mt-2 flex flex-wrap gap-1.5">
               <RankBadge rank={rankKey} />
@@ -95,7 +95,7 @@ export function ProfileLive({
       </div>
 
       <Card>
-        <h2 className="mb-3.5 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold">{t.profile.rankProgress}</h2>
+        <h2 className="mb-3.5 font-heading text-[15px] font-bold">{t.profile.rankProgress}</h2>
         <div className="mb-3.5 flex flex-wrap items-center gap-1.5">
           <RankBadge rank="plat" /> <span className="text-xs text-muted-foreground">→</span>
           <RankBadge rank="diamond" className={rank === "DIAMOND" || rank === "ELITE" ? "outline outline-1 outline-primary" : "opacity-40"} />{" "}

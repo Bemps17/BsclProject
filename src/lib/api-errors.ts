@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { BotAuthError } from "@/lib/bot-auth";
 import { MatchLifecycleError } from "@/lib/match-lifecycle";
 
 export function matchLifecycleErrorResponse(error: unknown) {
@@ -23,4 +24,17 @@ export function matchLifecycleErrorResponse(error: unknown) {
     return NextResponse.json({ error: "Account banned" }, { status: 403 });
   }
   return NextResponse.json({ error: "Request failed" }, { status: 500 });
+}
+
+export function botAuthErrorResponse(error: unknown) {
+  if (error instanceof BotAuthError) {
+    const status =
+      error.code === "BOT_UNAUTHORIZED"
+        ? 401
+        : error.code === "DISCORD_ID_REQUIRED" || error.code === "ACCOUNT_NOT_LINKED"
+          ? 400
+          : 403;
+    return NextResponse.json({ error: error.message, code: error.code }, { status });
+  }
+  return matchLifecycleErrorResponse(error);
 }

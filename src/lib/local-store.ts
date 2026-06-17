@@ -234,7 +234,7 @@ export function fillQueueWithBots(): LocalState {
     throw new Error("No local player");
   }
 
-  let queue = [...state.queue];
+  const queue = [...state.queue];
   if (!queue.some((p) => p.id === state.player!.id)) {
     queue.push({
       id: state.player.id,

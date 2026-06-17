@@ -42,7 +42,7 @@ export function TicketsClient({
   return (
     <>
       <div className="flex items-center justify-between">
-        <h2 className="font-[family-name:var(--font-rajdhani)] text-[22px] font-bold">{t.tickets.title}</h2>
+        <h2 className="font-heading text-[22px] font-bold">{t.tickets.title}</h2>
         {interactive ? (
           <Button size="sm" onClick={() => setShowForm((v) => !v)}>
             + {t.tickets.new}
@@ -75,7 +75,7 @@ export function TicketsClient({
       {error && <p className="text-xs text-destructive">{error}</p>}
 
       <Card>
-        <h2 className="mb-3.5 font-[family-name:var(--font-rajdhani)] text-[15px] font-bold">{t.tickets.myTickets}</h2>
+        <h2 className="mb-3.5 font-heading text-[15px] font-bold">{t.tickets.myTickets}</h2>
         <div className="flex flex-col gap-2">
           {tickets.map((ticket) => (
             <div key={ticket.id} className="flex items-center gap-2.5 rounded-lg border border-border bg-secondary p-3">

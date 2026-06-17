@@ -8,6 +8,7 @@ import {
   getLeaderboard,
   getPlatformStats,
 } from "@/lib/data";
+import { computeSeasonDaysLeft } from "@/lib/season";
 
 export default async function HomePage() {
   const cookieStore = await cookies();
@@ -24,8 +25,9 @@ export default async function HomePage() {
   const season = stats.season;
   const seasonNumber = season?.number ?? BSCL.season.number;
   const seasonWeek = season?.week ?? BSCL.season.week;
+  const referenceTime = new Date();
   const daysLeft = season?.endsAt
-    ? Math.max(0, Math.ceil((season.endsAt.getTime() - Date.now()) / 86_400_000))
+    ? computeSeasonDaysLeft(season.endsAt, referenceTime)
     : BSCL.season.daysLeft;
 
   const myPlayer = profile?.player ?? null;

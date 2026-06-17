@@ -76,7 +76,7 @@ export function TournamentsClient({
 
   return (
     <>
-      <h2 className="font-[family-name:var(--font-rajdhani)] text-[22px] font-bold">{t.tournaments.title}</h2>
+      <h2 className="font-heading text-[22px] font-bold">{t.tournaments.title}</h2>
       {error && <p className="text-xs text-destructive">{error}</p>}
       <div className="flex flex-col gap-2.5">
         {tournaments.map((item) => {
@@ -89,7 +89,7 @@ export function TournamentsClient({
               <div className={cn("flex items-center gap-3 border-b border-border p-4", item.dim ? "bg-secondary" : "bg-gradient-to-br from-background to-secondary")}>
                 <AppIcon name={item.icon} className="h-7 w-7 text-chart-3" />
                 <div>
-                  <div className="font-[family-name:var(--font-rajdhani)] text-lg font-bold">{item.name}</div>
+                  <div className="font-heading text-lg font-bold">{item.name}</div>
                   <div className="text-[11px] text-muted-foreground">{item.meta}</div>
                 </div>
                 <Tag variant={item.variant} className="ml-auto">{status}</Tag>
@@ -97,7 +97,7 @@ export function TournamentsClient({
               <div className="flex items-center justify-between gap-3 p-3.5">
                 <div>
                   <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{prizeLabel}</div>
-                  <div className={cn("font-[family-name:var(--font-rajdhani)] font-bold", item.statusKey === "statusEnded" ? "text-base" : "text-[22px] text-chart-3")}>
+                  <div className={cn("font-heading font-bold", item.statusKey === "statusEnded" ? "text-base" : "text-[22px] text-chart-3")}>
                     {item.prize}
                   </div>
                 </div>

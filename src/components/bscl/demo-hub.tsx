@@ -93,7 +93,7 @@ export function DemoHub() {
         <Tag variant="gold" className="mb-2">
           {t.common.demoBadge}
         </Tag>
-        <h2 className="font-[family-name:var(--font-rajdhani)] text-2xl font-bold">{t.demo.title}</h2>
+        <h2 className="font-heading text-2xl font-bold">{t.demo.title}</h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">{t.demo.subtitle}</p>
       </section>
 

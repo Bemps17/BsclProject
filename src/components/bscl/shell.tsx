@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Button, ButtonLink, LogoHex } from "@/components/bscl/ui";
+import { ButtonLink, LogoHex } from "@/components/bscl/ui";
 import { DemoExitButton } from "@/components/bscl/demo-exit-button";
 import { NavIcon, Play } from "@/components/bscl/icons";
 import { isMobileMorePath } from "@/components/bscl/more-menu";
@@ -94,7 +94,7 @@ function UserTile({ user, demoMode }: { user: ShellUser; demoMode?: boolean }) {
       href="/profile"
       className="flex items-center gap-2.5 rounded-lg border border-border bg-secondary p-2.5 transition hover:border-primary"
     >
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-primary font-[family-name:var(--font-rajdhani)] text-sm font-bold text-primary-foreground shadow-[0_0_10px_color-mix(in_oklch,var(--primary),transparent_65%)]">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-primary font-heading text-sm font-bold text-primary-foreground shadow-[0_0_10px_color-mix(in_oklch,var(--primary),transparent_65%)]">
         {user.initials}
       </div>
       <div className="min-w-0">
@@ -116,7 +116,7 @@ export function Sidebar({ user, demoMode }: { user: ShellUser; demoMode?: boolea
     <aside className="hidden md:col-start-1 md:row-span-2 md:row-start-1 md:flex md:min-h-0 md:flex-col md:overflow-y-auto md:border-r md:border-border md:bg-sidebar lg:w-[252px]">
       <div className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border px-4">
         <LogoHex />
-        <div className="font-[family-name:var(--font-rajdhani)] text-base font-bold tracking-wide text-foreground">
+        <div className="font-heading text-base font-bold tracking-wide text-foreground">
           <span className="text-primary">BSCL</span>.gg
         </div>
       </div>
@@ -170,26 +170,26 @@ export function Topbar({ demoMode }: { demoMode?: boolean }) {
   const title = t.pages[pageKey] ?? "BSCL";
 
   return (
-    <header className="sticky top-0 z-[100] flex h-14 shrink-0 items-center gap-2 border-b border-border bg-card/95 px-3 backdrop-blur-sm supports-[backdrop-filter]:bg-card/80 md:static md:col-start-2 md:row-start-1 md:gap-4 md:px-6 md:backdrop-blur-none lg:px-8">
-      <div className="flex min-w-0 flex-1 items-center gap-2 md:flex-none">
+    <header className="sticky top-0 z-[100] flex h-14 w-full max-w-full shrink-0 items-center gap-1.5 overflow-hidden border-b border-border bg-card/95 px-2.5 backdrop-blur-sm supports-[backdrop-filter]:bg-card/80 sm:gap-2 sm:px-3 md:static md:col-start-2 md:row-start-1 md:gap-4 md:px-6 md:backdrop-blur-none lg:px-8">
+      <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden md:flex-none">
         <div className="flex min-w-0 items-center gap-2 md:hidden">
           <LogoHex size="sm" />
-          <h1 className="truncate font-[family-name:var(--font-rajdhani)] text-[15px] font-bold leading-tight">
+          <h1 className="truncate font-heading text-[15px] font-bold leading-tight">
             {title}
           </h1>
         </div>
-        <h1 className="hidden truncate font-[family-name:var(--font-rajdhani)] text-xl font-bold md:block lg:text-2xl">
+        <h1 className="hidden truncate font-heading text-xl font-bold md:block lg:text-2xl">
           {title}
         </h1>
       </div>
 
-      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-        <LanguageSwitcher />
+      <div className="flex min-w-0 shrink items-center gap-1 sm:gap-1.5 md:gap-2">
+        <LanguageSwitcher className={demoMode ? "max-sm:[&_button]:min-w-[22px] max-sm:[&_button]:px-1" : undefined} />
 
         {demoMode && (
           <>
             <span
-              className="rounded-full border border-primary/45 bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary sm:px-2 sm:text-[10px]"
+              className="hidden shrink-0 rounded-full border border-primary/45 bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary sm:inline-flex"
               title={t.demo.modeLabel}
             >
               {t.demo.modeLabel}
@@ -220,7 +220,7 @@ export function Topbar({ demoMode }: { demoMode?: boolean }) {
   );
 }
 
-export function Tabbar({ demoMode }: { demoMode?: boolean }) {
+export function Tabbar() {
   const pathname = usePathname();
   const t = useT();
   const tabs = NAV_ITEMS.filter((n) => n.mobile);
@@ -267,22 +267,28 @@ export function AppShell({
   demoMode?: boolean;
 }) {
   const demo = useDemoOptional();
+  const t = useT();
   const resolvedUser = demoMode ? (demo?.shellUser ?? null) : user;
 
   return (
     <div
       data-demo-mode={demoMode ? "true" : undefined}
       className={cn(
-        "flex min-h-dvh min-h-svh flex-col md:grid md:h-dvh md:min-h-0 md:grid-cols-[240px_minmax(0,1fr)] md:grid-rows-[56px_minmax(0,1fr)] md:overflow-hidden lg:grid-cols-[252px_minmax(0,1fr)]",
+        "relative flex min-h-dvh min-h-svh w-full max-w-full flex-col overflow-x-hidden md:grid md:h-dvh md:min-h-0 md:grid-cols-[240px_minmax(0,1fr)] md:grid-rows-[56px_minmax(0,1fr)] md:overflow-hidden lg:grid-cols-[252px_minmax(0,1fr)]",
         demoMode && "demo-mode-root",
       )}
     >
+      <a href="#main" className="skip-link">
+        {t.common.skipToContent}
+      </a>
       {demoMode && (
         <div className="fixed inset-x-0 top-0 z-[250] h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent md:hidden" aria-hidden />
       )}
       <Sidebar user={resolvedUser} demoMode={demoMode} />
       <Topbar demoMode={demoMode} />
       <main
+        id="main"
+        tabIndex={-1}
         className={cn(
           "flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-3 py-4 pb-[calc(4rem+env(safe-area-inset-bottom,0px)+1rem)] md:col-start-2 md:row-start-2 md:p-6 md:pb-6 lg:p-8",
           demoMode && "demo-mode-main",
@@ -292,7 +298,7 @@ export function AppShell({
           {children}
         </div>
       </main>
-      <Tabbar demoMode={demoMode} />
+      <Tabbar />
     </div>
   );
 }

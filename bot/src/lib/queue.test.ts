@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PUG_QUEUE_SIZE, queueSnapshot } from "./queue";
+import { PUG_QUEUE_SIZE, queueSnapshot } from "./queue.js";
 
 describe("bot queueSnapshot", () => {
   it("matches web queue semantics", () => {

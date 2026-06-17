@@ -9,7 +9,6 @@ import {
   RankBadge,
   StatCell,
   TableScroll,
-  Tag,
 } from "@/components/bscl/ui";
 import { useLocale, useT } from "@/components/bscl/locale-provider";
 import { formatCount, interpolate } from "@/lib/i18n";
@@ -80,7 +79,7 @@ export function HomeClient({
         <p className="mb-2 text-[9px] font-bold uppercase tracking-[1.5px] text-primary sm:text-[10px] sm:tracking-[2px]">
           Season {seasonNumber} — Week {seasonWeek} — {t.home.seasonLive}
         </p>
-        <h2 className="mb-2.5 font-[family-name:var(--font-rajdhani)] text-[26px] font-bold leading-tight tracking-wide sm:text-[30px] md:text-4xl">
+        <h2 className="mb-2.5 font-heading text-[26px] font-bold leading-tight tracking-wide sm:text-[30px] md:text-4xl">
           {t.home.heroLine1}
           <em className="block not-italic text-primary">{t.home.heroLine2}</em>
         </h2>
@@ -104,7 +103,7 @@ export function HomeClient({
             [`S${seasonNumber}`, t.home.season],
           ].map(([n, l]) => (
             <div key={l} className="py-1.5">
-              <div className="font-[family-name:var(--font-rajdhani)] text-[22px] font-bold">{n}</div>
+              <div className="font-heading text-[22px] font-bold">{n}</div>
               <div className="text-[11px] text-muted-foreground">{l}</div>
             </div>
           ))}
@@ -112,7 +111,7 @@ export function HomeClient({
       </section>
 
       <div className="flex flex-col gap-2.5 rounded-[10px] border border-primary/28 bg-gradient-to-r from-primary/10 to-transparent px-3.5 py-3 sm:flex-row sm:items-center">
-        <div className="shrink-0 font-[family-name:var(--font-rajdhani)] text-[22px] font-bold text-primary">
+        <div className="shrink-0 font-heading text-[22px] font-bold text-primary">
           S{seasonNumber}
         </div>
         <div className="flex-1">
