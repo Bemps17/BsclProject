@@ -81,6 +81,15 @@
   --chart-3: #f59e0b;
   --chart-4: #60a5fa;
   --chart-5: #ef4444;
+  /* BSCL semantic aliases (see docs/DESIGN.md) */
+  --gold: #f59e0b;
+  --gold-muted: #d97706;
+  --blue-glow: rgba(0, 102, 255, 0.28);
+  --green: #22c55e;
+  --red: #ef4444;
+  --surface: var(--card);
+  --surface2: var(--secondary);
+  --text-muted: var(--muted-foreground);
 }
 
 [data-demo-mode] {

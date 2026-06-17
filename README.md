@@ -42,6 +42,10 @@ npm run dev
 
 ```
 AGENTS.md             # Agent guide: design system, journeys, security & test gates
+docs/
+  PLAYBOOK-AGENT.md   # Unified playbook (quality, design, security tasks Q/D/S)
+  DESIGN.md           # Design tokens & or/blue rules
+  security.md         # Ops security checklist
 src/
   app/
     (platform)/     # Main app (Home, Play, Rankings, Teams, Profile…)

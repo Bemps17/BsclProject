@@ -3,6 +3,9 @@
 > **Black Squad Competitive League** · [bscl.gg](https://bscl.gg)  
 > Canonical instructions for AI agents and contributors working on this repository.
 
+**Playbook tâches (qualité / design / sécurité) :** [`docs/PLAYBOOK-AGENT.md`](docs/PLAYBOOK-AGENT.md) — charger ce fichier pour exécuter les tâches Q*, D*, S* avec périmètre strict.  
+**Références :** [`docs/DESIGN.md`](docs/DESIGN.md) · [`docs/security.md`](docs/security.md)
+
 ---
 
 ## 1. Project context
@@ -317,7 +320,9 @@ bot/                  # Separate package — excluded from Next tsconfig
 ### 7.1 Always run before push
 
 ```bash
-npm test               # Vitest — 46+ unit/integration tests
+npm run verify         # lint + test + build (gate PR)
+npm run verify:technical  # lint + test (rapide)
+npm test               # Vitest — 67+ unit/integration tests
 npm run test:coverage  # Optional coverage report
 npm run build          # TypeScript + Next.js production build
 npm run lint           # ESLint
