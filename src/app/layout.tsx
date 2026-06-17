@@ -45,10 +45,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body
-        className={`${montserrat.variable} ${sora.variable} ${jetbrains.variable} min-h-dvh min-h-svh overflow-x-hidden`}
-      >
+    <html
+      lang="en"
+      className={`dark ${montserrat.variable} ${sora.variable} ${jetbrains.variable}`}
+    >
+      <body className="min-h-dvh min-h-svh overflow-x-hidden font-sans antialiased">
         <LocaleProvider>{children}</LocaleProvider>
       </body>
     </html>
