@@ -126,7 +126,7 @@ export function DemoHub() {
               >
                 {step.done ? "✓" : i + 1}
               </span>
-              <span className={step.done ? "text-foreground" : "text-muted-foreground"}>{step.label}</span>
+              <span className={step.done ? "text-foreground" : "text-foreground/80"}>{step.label}</span>
             </li>
           ))}
         </ol>
@@ -150,7 +150,7 @@ export function DemoHub() {
               >
                 {step.done ? "✓" : i + 1}
               </span>
-              <span className={cn("flex-1", step.done ? "text-foreground" : "text-muted-foreground")}>
+              <span className={cn("flex-1", step.done ? "text-foreground" : "text-foreground/80")}>
                 {step.label}
               </span>
               <ButtonLink href={step.href} variant="link" className="h-auto p-0 text-xs">

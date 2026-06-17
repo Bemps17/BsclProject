@@ -98,9 +98,9 @@ export function ProfileLive({
         <h2 className="mb-3.5 font-heading text-[15px] font-bold">{t.profile.rankProgress}</h2>
         <div className="mb-3.5 flex flex-wrap items-center gap-1.5">
           <RankBadge rank="plat" /> <span className="text-xs text-muted-foreground">→</span>
-          <RankBadge rank="diamond" className={rank === "DIAMOND" || rank === "ELITE" ? "outline outline-1 outline-primary" : "opacity-40"} />{" "}
+          <RankBadge rank="diamond" className={rank === "DIAMOND" || rank === "ELITE" ? "outline outline-1 outline-primary" : "outline outline-1 outline-border"} />{" "}
           <span className="text-xs text-muted-foreground">→</span>
-          <RankBadge rank="elite" className={rank === "ELITE" ? "outline outline-1 outline-primary" : "opacity-40"} />
+          <RankBadge rank="elite" className={rank === "ELITE" ? "outline outline-1 outline-primary" : "outline outline-1 outline-border"} />
         </div>
         {nextRankElo != null && (
           <div className="flex flex-col gap-1.5">

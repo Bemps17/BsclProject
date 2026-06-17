@@ -65,6 +65,9 @@ export type Translations = {
     demo: string;
     elo: string;
     skipToContent: string;
+    mainNavigation: string;
+    sidebarNavigation: string;
+    language: string;
   };
   home: {
     seasonLive: string;

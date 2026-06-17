@@ -60,7 +60,7 @@
   --secondary: #162032;
   --secondary-foreground: #e5e7eb;
   --muted: #162032;
-  --muted-foreground: #6b7280;
+  --muted-foreground: #9ca3af;
   --accent: #162032;
   --accent-foreground: #e5e7eb;
   --destructive: #ef4444;
@@ -103,7 +103,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/70;
   }
   .skip-link {
     position: absolute;
@@ -151,6 +151,21 @@
   textarea,
   select {
     @apply font-sans;
+  }
+  :focus-visible {
+    outline: 2px solid color-mix(in oklch, var(--ring), transparent 15%);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

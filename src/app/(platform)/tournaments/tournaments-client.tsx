@@ -85,7 +85,7 @@ export function TournamentsClient({
           const prizeLabel = item.statusKey === "statusEnded" ? t.tournaments.winner : t.tournaments.prizePool;
 
           return (
-            <div key={item.id} className={cn("overflow-hidden rounded-xl border border-border bg-card", item.dim && "opacity-65")}>
+            <div key={item.id} className={cn("overflow-hidden rounded-xl border bg-card", item.dim ? "border-border/70 bg-card/90" : "border-border")}>
               <div className={cn("flex items-center gap-3 border-b border-border p-4", item.dim ? "bg-secondary" : "bg-gradient-to-br from-background to-secondary")}>
                 <AppIcon name={item.icon} className="h-7 w-7 text-chart-3" />
                 <div>

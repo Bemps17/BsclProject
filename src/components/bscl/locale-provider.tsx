@@ -90,6 +90,7 @@ export function useT(): Translations {
 
 export function LanguageSwitcher({ className }: { className?: string }) {
   const { locale, setLocale } = useLocale();
+  const t = useT();
 
   return (
     <div
@@ -98,7 +99,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         className,
       )}
       role="group"
-      aria-label="Language"
+      aria-label={t.common.language}
     >
       {(["en", "fr"] as const).map((code) => (
         <button
@@ -106,10 +107,10 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           type="button"
           onClick={() => setLocale(code)}
           className={cn(
-            "min-w-[26px] rounded-full px-1.5 py-0.5 transition-colors sm:min-w-[34px] sm:px-2 sm:py-1",
+            "min-h-[44px] min-w-[44px] rounded-full px-1.5 py-0.5 transition-colors sm:min-h-0 sm:min-w-[34px] sm:px-2 sm:py-1",
             locale === code
               ? "bg-primary text-primary-foreground shadow-[0_0_8px_color-mix(in_oklch,var(--primary),transparent_72%)]"
-              : "text-muted-foreground hover:text-foreground",
+              : "text-foreground/75 hover:text-foreground",
           )}
           aria-pressed={locale === code}
         >

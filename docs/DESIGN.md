@@ -15,7 +15,7 @@
 | `--gold-muted` | `#D97706` | Or atténué, hover |
 | `--green` | `#22C55E` | Victoire, online |
 | `--red` | `#EF4444` | Défaite, erreurs |
-| `--muted-foreground` | `#6B7280` | Labels, texte secondaire |
+| `--muted-foreground` | `#9CA3AF` | Labels, texte secondaire (contraste WCAG AA sur fond sombre) |
 
 ### Mode démo
 
@@ -44,11 +44,15 @@ Réutiliser `src/components/bscl/ui.tsx` (`Card`, `StatCell`, `RankBadge`, `Matc
 
 ## Accessibilité (cibles playbook)
 
-- Touch targets ≥ 44px
-- Skip link → `#main` (tâche D3)
-- Focus trap menu More (tâche D4)
-- `aria-pressed` sur filtres toggle
-- Couleur + texte pour WIN/LOSS
+- Touch targets ≥ 44px (tab bar, sélecteur de langue)
+- Skip link → `#main` (tâche D3) ✅
+- Focus trap menu More (tâche D4) — page `/more` (navigation standard)
+- `aria-pressed` sur filtres toggle ✅
+- `aria-current="page"` sur nav active (sidebar + tab bar) ✅
+- Couleur + texte pour WIN/LOSS ✅
+- `--muted-foreground: #9CA3AF` — ratio ≥ 4.5:1 sur `--card` / `--background`
+- Anneau de focus `:focus-visible` 2px (`--ring`)
+- `prefers-reduced-motion` pour pulse / transitions
 
 ## Livrables design (PR)
 

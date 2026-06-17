@@ -51,14 +51,15 @@ function NavLink({
   return (
     <Link
       href={href}
+      aria-current={active ? "page" : undefined}
       className={cn(
         "relative flex items-center gap-2.5 rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors",
         active
           ? "-ml-0.5 border-l-2 border-primary bg-primary/12 text-primary shadow-[inset_0_0_18px_color-mix(in_oklch,var(--primary),transparent_92%)]"
-          : "text-muted-foreground hover:bg-primary/10 hover:text-foreground",
+          : "text-foreground/75 hover:bg-primary/10 hover:text-foreground",
       )}
     >
-      <NavIcon name={icon} className="h-[15px] w-[15px] opacity-80" />
+      <NavIcon name={icon} className="h-[15px] w-[15px]" aria-hidden />
       <span className="truncate">{label}</span>
       {badge !== undefined && (
         <span
@@ -113,7 +114,10 @@ export function Sidebar({ user, demoMode }: { user: ShellUser; demoMode?: boolea
   const sections = ["platform", "account", "staff"] as const;
 
   return (
-    <aside className="hidden md:col-start-1 md:row-span-2 md:row-start-1 md:flex md:min-h-0 md:flex-col md:overflow-y-auto md:border-r md:border-border md:bg-sidebar lg:w-[252px]">
+    <aside
+      aria-label={t.common.sidebarNavigation}
+      className="hidden md:col-start-1 md:row-span-2 md:row-start-1 md:flex md:min-h-0 md:flex-col md:overflow-y-auto md:border-r md:border-border md:bg-sidebar lg:w-[252px]"
+    >
       <div className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border px-4">
         <LogoHex />
         <div className="font-heading text-base font-bold tracking-wide text-foreground">
@@ -226,7 +230,10 @@ export function Tabbar() {
   const tabs = NAV_ITEMS.filter((n) => n.mobile);
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-[200] flex h-[calc(4rem+env(safe-area-inset-bottom,0px))] border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-sm supports-[backdrop-filter]:bg-card/80 md:hidden">
+    <nav
+      aria-label={t.common.mainNavigation}
+      className="fixed inset-x-0 bottom-0 z-[200] flex h-[calc(4rem+env(safe-area-inset-bottom,0px))] border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-sm supports-[backdrop-filter]:bg-card/80 md:hidden"
+    >
       {tabs.map((tab) => {
         const active =
           tab.id === "more" ? isMobileMorePath(pathname) : pathname === tab.href;
@@ -237,9 +244,10 @@ export function Tabbar() {
           <Link
             key={tab.href}
             href={tab.href}
+            aria-current={active ? "page" : undefined}
             className={cn(
               "relative flex min-h-[44px] min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-0.5 pt-1 text-[9px] font-semibold uppercase tracking-wide transition-colors sm:gap-1 sm:text-[10px]",
-              active ? "text-primary" : "text-muted-foreground",
+              active ? "text-primary" : "text-foreground/75",
             )}
           >
             {active && (
