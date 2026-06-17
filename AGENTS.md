@@ -333,7 +333,9 @@ npm run lint           # ESLint
 - [x] Unit tests in `src/lib/elo.test.ts` — delta, ranks, soft reset, placement protection
 - [x] Unit tests in `src/lib/match.test.ts` — snake draft, queue snapshot, confirm rules
 - [x] Validators in `src/lib/validators/match.test.ts`
-- [ ] Confirm → ELO update is idempotent (integration test, Phase 7)
+- [x] `src/lib/integration/pug-flow.integration.test.ts` — join → matchmaker, submit → confirm idempotency
+- [x] `src/app/api/bot/queue/route.test.ts` — bot-authenticated queue API
+- [ ] Confirm → ELO update with full transactional mock (extend 7e with player rows)
 
 ### 7.3 When touching auth / API
 
@@ -408,6 +410,8 @@ Document all new variables in `.env.example`:
 | `DISCORD_CLIENT_SECRET` | Yes | Web |
 | `DISCORD_BOT_TOKEN` | Yes | Bot |
 | `DISCORD_GUILD_ID` | Prod | Bot command registration |
+| `BSCL_API_URL` | Bot | Web API base URL (defaults to `AUTH_URL`) |
+| `BOT_API_SECRET` | Optional | Override Bearer token for `/api/bot/*` |
 | `S3_*` | Optional | Team logos |
 
 ---
@@ -418,8 +422,8 @@ Document all new variables in `.env.example`:
 |-------|------|
 | 1–6 + M1–M7 | Scaffold + live reads + full demo sim + shadcn + i18n + responsive + nav ✅ |
 | **7a–7b** | Queue → match → ELO works end-to-end on web ✅ (live API); demo sim in M6 ✅ |
-| **7c** | Bot commands use same queue/match APIs as web |
-| **7d–7f** | Auth guards (middleware partial ✅), integration tests, security checklist (section 6) green |
+| **7c** | **Bot sync** — `/api/bot/*` + Discord bot wired to shared queue/match APIs | Done ✅ |
+| **7d–7f** | Auth guards (middleware partial ✅), integration tests (7e ✅), security checklist (section 6) green |
 | **7g–7k** | Live APIs for teams/tickets/admin/tournaments — demo UX done; wire to DB next |
 | **8** | Production deploy only after 7a–7f green + monitoring configured |
 

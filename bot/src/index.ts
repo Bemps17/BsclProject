@@ -7,7 +7,7 @@ import {
   SlashCommandBuilder,
   ChatInputCommandInteraction,
 } from "discord.js";
-import { PUG_QUEUE_SIZE, queueSnapshot } from "./lib/queue.js";
+import { createClientFromEnv, formatApiError, PUG_QUEUE_SIZE } from "./lib/config.js";
 
 const token = process.env.DISCORD_BOT_TOKEN;
 const clientId = process.env.DISCORD_CLIENT_ID;
@@ -18,23 +18,31 @@ if (!token || !clientId) {
   process.exit(1);
 }
 
+const api = createClientFromEnv();
+
 const commands = [
   new SlashCommandBuilder().setName("join").setDescription("Join the 5v5 PUG queue"),
   new SlashCommandBuilder().setName("leave").setDescription("Leave the PUG queue"),
   new SlashCommandBuilder().setName("queue").setDescription("Show current queue status"),
   new SlashCommandBuilder()
     .setName("result")
-    .setDescription("Submit match result")
-    .addStringOption((o) => o.setName("alpha").setDescription("Alpha score").setRequired(true))
-    .addStringOption((o) => o.setName("bravo").setDescription("Bravo score").setRequired(true)),
+    .setDescription("Submit match result (uses active match if no ID)")
+    .addIntegerOption((o) =>
+      o.setName("alpha").setDescription("Alpha score").setRequired(true).setMinValue(0).setMaxValue(16),
+    )
+    .addIntegerOption((o) =>
+      o.setName("bravo").setDescription("Bravo score").setRequired(true).setMinValue(0).setMaxValue(16),
+    )
+    .addStringOption((o) => o.setName("match_id").setDescription("Match ID (optional)")),
   new SlashCommandBuilder()
     .setName("confirm")
     .setDescription("Confirm a submitted match result")
-    .addStringOption((o) => o.setName("match_id").setDescription("Match ID").setRequired(true)),
+    .addStringOption((o) => o.setName("match_id").setDescription("Match ID (optional)")),
   new SlashCommandBuilder()
     .setName("dispute")
     .setDescription("Dispute a match result")
-    .addStringOption((o) => o.setName("match_id").setDescription("Match ID").setRequired(true)),
+    .addStringOption((o) => o.setName("match_id").setDescription("Match ID (optional)"))
+    .addStringOption((o) => o.setName("reason").setDescription("Reason")),
   new SlashCommandBuilder().setName("profile").setDescription("View your BSCL profile"),
   new SlashCommandBuilder().setName("team").setDescription("View your team"),
   new SlashCommandBuilder()
@@ -55,55 +63,109 @@ async function registerCommands() {
   }
 }
 
-const queue = new Set<string>();
+async function resolveMatchId(interaction: ChatInputCommandInteraction): Promise<string | null> {
+  const explicit = interaction.options.getString("match_id");
+  if (explicit) return explicit;
+
+  const active = await api.getActiveMatch(interaction.user.id);
+  return active.match?.id ?? null;
+}
 
 async function handleCommand(interaction: ChatInputCommandInteraction) {
   const { commandName } = interaction;
+  const discordId = interaction.user.id;
 
   switch (commandName) {
     case "join": {
-      queue.add(interaction.user.id);
-      const snap = queueSnapshot(queue.size);
+      const result = await api.joinQueue(discordId);
+      const created =
+        result.matchesCreated.length > 0
+          ? `\n🎮 Match #${result.matchesCreated[0]!.matchNumber} created — check https://bscl.gg/play`
+          : "";
       await interaction.reply({
-        content: `✅ Joined queue (${snap.count}/${PUG_QUEUE_SIZE}). ${snap.needed} more needed.`,
+        content: `✅ Joined queue (${result.count}/${PUG_QUEUE_SIZE}). ${result.needed} more needed.${created}`,
         ephemeral: true,
       });
       break;
     }
-    case "leave":
-      queue.delete(interaction.user.id);
-      await interaction.reply({ content: "Left the queue.", ephemeral: true });
-      break;
-    case "queue": {
-      const snap = queueSnapshot(queue.size);
+    case "leave": {
+      const result = await api.leaveQueue(discordId);
       await interaction.reply({
-        content: `Queue: **${snap.count}/${PUG_QUEUE_SIZE}** players${snap.ready ? " — Draft starting!" : ""}`,
+        content: `Left the queue. **${result.count}** players waiting.`,
+        ephemeral: true,
       });
       break;
     }
-    case "result":
+    case "queue": {
+      const snap = await api.getQueue(discordId);
+      const ready = snap.count >= PUG_QUEUE_SIZE ? " — Matchmaking!" : "";
       await interaction.reply({
-        content: `Result submitted: Alpha ${interaction.options.getString("alpha")} — Bravo ${interaction.options.getString("bravo")}. Awaiting /confirm.`,
+        content: `Queue: **${snap.count}/${PUG_QUEUE_SIZE}** players${ready}`,
       });
       break;
-    case "confirm":
-      await interaction.reply({ content: `Match ${interaction.options.getString("match_id")} confirmed. ELO updated.` });
+    }
+    case "result": {
+      const matchId = await resolveMatchId(interaction);
+      if (!matchId) {
+        await interaction.reply({
+          content: "No active match found. Pass `match_id` or join a live match on https://bscl.gg/play",
+          ephemeral: true,
+        });
+        return;
+      }
+      const alpha = interaction.options.getInteger("alpha", true);
+      const bravo = interaction.options.getInteger("bravo", true);
+      const { match } = await api.submitResult(discordId, matchId, alpha, bravo);
+      await interaction.reply({
+        content: `Result submitted for #${String(match.number).padStart(3, "0")}: **${alpha} — ${bravo}**. Awaiting opposing captain /confirm.`,
+        ephemeral: true,
+      });
       break;
-    case "dispute":
-      await interaction.reply({ content: `Match ${interaction.options.getString("match_id")} disputed. Moderator notified.` });
+    }
+    case "confirm": {
+      const matchId = await resolveMatchId(interaction);
+      if (!matchId) {
+        await interaction.reply({ content: "No match to confirm.", ephemeral: true });
+        return;
+      }
+      const { match, alreadyConfirmed } = await api.confirmResult(discordId, matchId);
+      await interaction.reply({
+        content: alreadyConfirmed
+          ? `Match #${String(match.number).padStart(3, "0")} was already confirmed.`
+          : `Match #${String(match.number).padStart(3, "0")} confirmed. ELO updated.`,
+        ephemeral: true,
+      });
       break;
+    }
+    case "dispute": {
+      const matchId = await resolveMatchId(interaction);
+      if (!matchId) {
+        await interaction.reply({ content: "No match to dispute.", ephemeral: true });
+        return;
+      }
+      const reason = interaction.options.getString("reason") ?? undefined;
+      const { match } = await api.disputeResult(discordId, matchId, reason);
+      await interaction.reply({
+        content: `Match #${String(match.number).padStart(3, "0")} disputed. Moderators notified.`,
+        ephemeral: true,
+      });
+      break;
+    }
     case "profile":
       await interaction.reply({
-        content: "Profile: **xGhost_BR** · Diamond · 1642 ELO · 61% WR\nhttps://bscl.gg/profile",
+        content: "View your live stats at https://bscl.gg/profile",
         ephemeral: true,
       });
       break;
     case "team":
-      await interaction.reply({ content: "You are not in a team. Create one at https://bscl.gg/teams", ephemeral: true });
+      await interaction.reply({
+        content: "Manage your team at https://bscl.gg/teams",
+        ephemeral: true,
+      });
       break;
     case "support":
       await interaction.reply({
-        content: `Ticket created: **${interaction.options.getString("subject")}**. Staff will respond soon.`,
+        content: `Open a ticket at https://bscl.gg/tickets — subject: **${interaction.options.getString("subject")}**`,
         ephemeral: true,
       });
       break;
@@ -122,6 +184,7 @@ async function main() {
 
   client.once("ready", () => {
     console.log(`BSCL Matchmaker online as ${client.user?.tag}`);
+    console.log(`API: ${process.env.BSCL_API_URL ?? process.env.AUTH_URL ?? "http://localhost:3000"}`);
   });
 
   client.on("interactionCreate", async (interaction) => {
@@ -130,10 +193,11 @@ async function main() {
       await handleCommand(interaction);
     } catch (err) {
       console.error(err);
+      const message = formatApiError(err);
       if (interaction.replied || interaction.deferred) {
-        await interaction.followUp({ content: "Command failed.", ephemeral: true });
+        await interaction.followUp({ content: message, ephemeral: true });
       } else {
-        await interaction.reply({ content: "Command failed.", ephemeral: true });
+        await interaction.reply({ content: message, ephemeral: true });
       }
     }
   });

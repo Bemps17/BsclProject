@@ -2,14 +2,7 @@ import { auth } from "@/auth";
 import { UserRole } from "@/generated/prisma/client";
 import { isBackendEnabled } from "@/lib/backend";
 import { prisma } from "@/lib/prisma";
-
-const ROLE_HIERARCHY: Record<UserRole, number> = {
-  PLAYER: 0,
-  CAPTAIN: 1,
-  MODERATOR: 2,
-  ADMIN: 3,
-  OWNER: 4,
-};
+import { hasRole } from "@/lib/roles";
 
 export async function getSessionUser() {
   if (!isBackendEnabled()) return null;
@@ -30,9 +23,7 @@ export async function getSessionUser() {
   return user;
 }
 
-export function hasRole(userRole: UserRole, required: UserRole): boolean {
-  return ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[required];
-}
+export { hasRole } from "@/lib/roles";
 
 export async function requireAuth(requiredRole: UserRole = "PLAYER") {
   const user = await getSessionUser();

@@ -86,9 +86,9 @@ The schema and UI exist; **orchestration** is the main gap.
 |------|--------|--------|
 | **7a** | **Matchmaker** — pop queue at 10 players, snake draft, create `Match` + `MatchPlayer` rows | Done |
 | **7b** | **Results pipeline** — submit → confirm → `EloHistory` + player ELO update (transactional) | Done |
-| **7c** | **Bot sync** — replace in-memory bot queue; wire `/result`, `/confirm`, `/dispute` to API/DB | Not started |
+| **7c** | **Bot sync** — `/api/bot/*` + Discord bot wired to shared queue/match APIs | Done |
 | **7d** | **Auth guards** — middleware platform gate, `/admin` role check, banned users on mutating routes | Partial (middleware + `/admin` server guard) |
-| **7e** | **Integration tests** — OAuth → queue → match → ELO; confirm idempotency | Not started |
+| **7e** | **Integration tests** — queue → match → confirm idempotency (`src/lib/integration/pug-flow.integration.test.ts`) | Done |
 | **7f** | **Security review** — rate limits, error sanitization, audit log on admin actions | Not started |
 
 ### Features — after core loop

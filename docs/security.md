@@ -47,7 +47,33 @@ Voir `scripts/neon-roles.sql` (optionnel) pour un rôle applicatif limité aux t
 
 ## CSP (S4)
 
-Si une CSP est ajoutée dans `middleware.ts`, documenter ici toute directive requise (`unsafe-eval`, domaines Discord, Vercel).
+Applied on HTML responses via `src/middleware.ts` (`buildContentSecurityPolicy()` in `src/lib/csp.ts`).
+
+| Directive | Value |
+|-----------|--------|
+| `script-src` | `'self' 'unsafe-inline'` — **no `unsafe-eval`** |
+| `style-src` | `'self' 'unsafe-inline'` |
+| `img-src` | `'self' data: blob: https://cdn.discordapp.com` |
+| `connect-src` | `'self' https://discord.com https://discordapp.com` |
+| `form-action` | `'self' https://discord.com` (OAuth) |
+
+## Bot API (7c)
+
+Discord bot calls `/api/bot/*` with:
+
+```bash
+Authorization: Bearer <DISCORD_BOT_TOKEN or BOT_API_SECRET>
+X-Discord-User-Id: <discord snowflake>
+```
+
+Linked BSCL account required (`User.discordId` from Discord OAuth on web).
+
+```bash
+# Queue status (bot auth)
+curl -sS "http://localhost:3000/api/bot/queue" \
+  -H "Authorization: Bearer $DISCORD_BOT_TOKEN" \
+  -H "X-Discord-User-Id: 123456789012345678"
+```
 
 ## Checklist PR
 
