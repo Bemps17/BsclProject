@@ -7,7 +7,6 @@ import { DiscordIcon } from "@/components/bscl/icons";
 import {
   Button,
   Field,
-  FieldGroup,
   FieldLabel,
   Input,
 } from "@/components/bscl/ui";
@@ -16,7 +15,6 @@ import {
   DialogContent,
   DialogDescription,
   DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import {

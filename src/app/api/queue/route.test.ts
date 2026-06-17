@@ -68,6 +68,14 @@ describe("POST /api/queue", () => {
     expect(res.status).toBe(401);
   });
 
+  it("returns 403 when user is banned", async () => {
+    mockRequireAuth.mockRejectedValue(new Error("BANNED"));
+    const res = await POST();
+    expect(res.status).toBe(403);
+    const body = await res.json();
+    expect(body.error).toBe("BANNED");
+  });
+
   it("returns 409 when player is already queued", async () => {
     mockRequireAuth.mockResolvedValue({
       player: { id: "player-1" },

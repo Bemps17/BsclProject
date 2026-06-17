@@ -3,7 +3,6 @@
 import { HomeClient } from "@/app/(platform)/home-client";
 import { useDemo } from "@/components/bscl/demo-provider";
 import { BSCL } from "@/lib/constants";
-import { formatMatchScore } from "@/lib/match-display";
 import type { RankKey } from "@/lib/constants";
 
 export function HomeDemo() {

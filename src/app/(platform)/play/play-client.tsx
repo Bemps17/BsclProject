@@ -18,6 +18,7 @@ import {
 } from "@/components/bscl/ui";
 import { matchStatusVariant } from "@/lib/match-display";
 import type { Translations } from "@/lib/i18n";
+import { ApiError, fetchJson } from "@/lib/fetch-client";
 import { cn } from "@/lib/utils";
 
 type QueuePlayer = {
@@ -92,9 +93,7 @@ export function PlayClient({
       return;
     }
     try {
-      const res = await fetch("/api/queue");
-      if (!res.ok) return;
-      const data = (await res.json()) as QueueState;
+      const data = await fetchJson<QueueState>("/api/queue");
       setQueue(data);
     } catch {
       /* ignore polling errors */
@@ -102,15 +101,31 @@ export function PlayClient({
   }, [isDemo, syncDemoQueue]);
 
   useEffect(() => {
-    fetchQueue();
-    if (isDemo) return;
-    const timer = setInterval(fetchQueue, 3000);
-    return () => clearInterval(timer);
-  }, [fetchQueue, isDemo]);
+    let cancelled = false;
 
-  useEffect(() => {
-    if (isDemo) syncDemoQueue();
-  }, [isDemo, syncDemoQueue, demo?.state]);
+    void (async () => {
+      if (isDemo) {
+        if (!cancelled) syncDemoQueue();
+        return;
+      }
+      try {
+        const data = await fetchJson<QueueState>("/api/queue");
+        if (!cancelled) setQueue(data);
+      } catch {
+        /* ignore initial load errors */
+      }
+    })();
+
+    if (isDemo) return;
+
+    const timer = setInterval(() => {
+      void fetchQueue();
+    }, 3000);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, [fetchQueue, isDemo, syncDemoQueue, demo?.state.inQueue]);
 
   const pct = (queue.count / SLOT_COUNT) * 100;
   const slots = Array.from({ length: SLOT_COUNT }, (_, i) => queue.players[i] ?? null);
@@ -134,29 +149,31 @@ export function PlayClient({
       }
 
       if (inQueue) {
-        const res = await fetch("/api/queue", { method: "DELETE" });
-        if (res.status === 401) {
-          router.push("/login");
+        try {
+          await fetchJson("/api/queue", { method: "DELETE" });
+          setInQueue(false);
+        } catch (err) {
+          if (err instanceof ApiError && err.status === 401) {
+            router.push("/login");
+            return;
+          }
+          setError(err instanceof ApiError ? err.message : t.play.failLeave);
+          await fetchQueue();
           return;
         }
-        if (!res.ok) {
-          const body = (await res.json()) as { error?: string };
-          setError(body.error ?? t.play.failLeave);
-          return;
-        }
-        setInQueue(false);
       } else {
-        const res = await fetch("/api/queue", { method: "POST" });
-        if (res.status === 401) {
-          router.push("/login");
+        try {
+          await fetchJson("/api/queue", { method: "POST" });
+          setInQueue(true);
+        } catch (err) {
+          if (err instanceof ApiError && err.status === 401) {
+            router.push("/login");
+            return;
+          }
+          setError(err instanceof ApiError ? err.message : t.play.failJoin);
+          await fetchQueue();
           return;
         }
-        if (!res.ok) {
-          const body = (await res.json()) as { error?: string };
-          setError(body.error ?? t.play.failJoin);
-          return;
-        }
-        setInQueue(true);
       }
       await fetchQueue();
     } finally {
@@ -240,7 +257,11 @@ export function PlayClient({
           </div>
         )}
 
-        {error && <p className="mb-3 text-center text-xs text-destructive">{error}</p>}
+        {error && (
+          <p className="mb-3 text-center text-xs text-destructive" role="alert" aria-live="polite">
+            {error}
+          </p>
+        )}
 
         <div className="mb-3">
           <div className="mb-1.5 flex justify-between text-[11px] text-muted-foreground">

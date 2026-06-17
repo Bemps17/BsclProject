@@ -9,7 +9,6 @@ import {
   RankBadge,
   StatCell,
   TableScroll,
-  Tag,
 } from "@/components/bscl/ui";
 import { useLocale, useT } from "@/components/bscl/locale-provider";
 import { formatCount, interpolate } from "@/lib/i18n";

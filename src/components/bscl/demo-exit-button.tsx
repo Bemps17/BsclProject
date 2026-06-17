@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useDemoOptional } from "@/components/bscl/demo-provider";
 import { DemoExitModal } from "@/components/bscl/demo-exit-modal";
 import { Button } from "@/components/ui/button";
+import { ApiError, fetchJson } from "@/lib/fetch-client";
 import { useT } from "@/components/bscl/locale-provider";
 
 export function DemoExitButton() {
@@ -13,19 +14,23 @@ export function DemoExitButton() {
   const demo = useDemoOptional();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!demo) return null;
 
   async function handleExit() {
     setLoading(true);
+    setError(null);
     try {
-      await fetch("/api/demo/exit", { method: "DELETE" }).catch(() => undefined);
+      await fetchJson("/api/demo/exit", { method: "DELETE" });
       demo!.exitDemo();
+      setOpen(false);
       router.push("/login");
       router.refresh();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t.login.demoExitFailed);
     } finally {
       setLoading(false);
-      setOpen(false);
     }
   }
 
@@ -43,7 +48,11 @@ export function DemoExitButton() {
       <DemoExitModal
         open={open}
         loading={loading}
-        onCancel={() => setOpen(false)}
+        error={error}
+        onCancel={() => {
+          setOpen(false);
+          setError(null);
+        }}
         onConfirm={handleExit}
       />
     </>

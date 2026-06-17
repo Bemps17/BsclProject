@@ -31,4 +31,15 @@ describe("createTeamSchema", () => {
       tag: "GHT",
     });
   });
+
+  it("strips unknown keys including prototype pollution attempts", () => {
+    const payload = JSON.parse(
+      '{"name":"APEX Gaming","tag":"APX","__proto__":{"admin":true},"constructor":{"name":"x"}}',
+    ) as Record<string, unknown>;
+
+    expect(createTeamSchema.parse(payload)).toEqual({
+      name: "APEX Gaming",
+      tag: "APX",
+    });
+  });
 });

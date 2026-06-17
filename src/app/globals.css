@@ -105,6 +105,27 @@
   * {
     @apply border-border outline-ring/50;
   }
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    z-index: 400;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--foreground);
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transform: translateY(-200%);
+    transition: transform 0.15s ease;
+  }
+  .skip-link:focus {
+    transform: translateY(0);
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
   html {
     @apply h-full font-sans antialiased;
     -webkit-tap-highlight-color: transparent;

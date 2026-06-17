@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Button, ButtonLink, LogoHex } from "@/components/bscl/ui";
+import { ButtonLink, LogoHex } from "@/components/bscl/ui";
 import { DemoExitButton } from "@/components/bscl/demo-exit-button";
 import { NavIcon, Play } from "@/components/bscl/icons";
 import { isMobileMorePath } from "@/components/bscl/more-menu";
@@ -220,7 +220,7 @@ export function Topbar({ demoMode }: { demoMode?: boolean }) {
   );
 }
 
-export function Tabbar({ demoMode }: { demoMode?: boolean }) {
+export function Tabbar() {
   const pathname = usePathname();
   const t = useT();
   const tabs = NAV_ITEMS.filter((n) => n.mobile);
@@ -267,22 +267,28 @@ export function AppShell({
   demoMode?: boolean;
 }) {
   const demo = useDemoOptional();
+  const t = useT();
   const resolvedUser = demoMode ? (demo?.shellUser ?? null) : user;
 
   return (
     <div
       data-demo-mode={demoMode ? "true" : undefined}
       className={cn(
-        "flex min-h-dvh min-h-svh flex-col md:grid md:h-dvh md:min-h-0 md:grid-cols-[240px_minmax(0,1fr)] md:grid-rows-[56px_minmax(0,1fr)] md:overflow-hidden lg:grid-cols-[252px_minmax(0,1fr)]",
+        "relative flex min-h-dvh min-h-svh flex-col md:grid md:h-dvh md:min-h-0 md:grid-cols-[240px_minmax(0,1fr)] md:grid-rows-[56px_minmax(0,1fr)] md:overflow-hidden lg:grid-cols-[252px_minmax(0,1fr)]",
         demoMode && "demo-mode-root",
       )}
     >
+      <a href="#main" className="skip-link">
+        {t.common.skipToContent}
+      </a>
       {demoMode && (
         <div className="fixed inset-x-0 top-0 z-[250] h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent md:hidden" aria-hidden />
       )}
       <Sidebar user={resolvedUser} demoMode={demoMode} />
       <Topbar demoMode={demoMode} />
       <main
+        id="main"
+        tabIndex={-1}
         className={cn(
           "flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-3 py-4 pb-[calc(4rem+env(safe-area-inset-bottom,0px)+1rem)] md:col-start-2 md:row-start-2 md:p-6 md:pb-6 lg:p-8",
           demoMode && "demo-mode-main",
@@ -292,7 +298,7 @@ export function AppShell({
           {children}
         </div>
       </main>
-      <Tabbar demoMode={demoMode} />
+      <Tabbar />
     </div>
   );
 }

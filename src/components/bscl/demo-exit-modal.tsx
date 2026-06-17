@@ -18,11 +18,13 @@ export function DemoExitModal({
   onCancel,
   onConfirm,
   loading,
+  error,
 }: {
   open: boolean;
   onCancel: () => void;
   onConfirm: () => void;
   loading?: boolean;
+  error?: string | null;
 }) {
   const t = useT();
 
@@ -34,6 +36,11 @@ export function DemoExitModal({
             {t.demo.exitTitle}
           </AlertDialogTitle>
           <AlertDialogDescription>{t.demo.exitDesc}</AlertDialogDescription>
+          {error && (
+            <p className="text-sm text-destructive" role="alert">
+              {error}
+            </p>
+          )}
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={loading}>{t.demo.exitCancel}</AlertDialogCancel>

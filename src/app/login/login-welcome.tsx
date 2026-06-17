@@ -5,6 +5,7 @@ import { useState } from "react";
 import { LanguageSwitcher, useT } from "@/components/bscl/locale-provider";
 import { DiscordIcon } from "@/components/bscl/icons";
 import { Button, LogoHex } from "@/components/bscl/ui";
+import { ApiError, fetchJson } from "@/lib/fetch-client";
 import { cn } from "@/lib/utils";
 import { LoginLangSwitcherSlot, LoginPageFrame } from "./login-page-frame";
 import { LoginShell } from "./login-shell";
@@ -75,13 +76,17 @@ export function LoginWelcome({
   const [step, setStep] = useState<"choose" | "standard">("choose");
   const [loadingDemo, setLoadingDemo] = useState(false);
   const [loadingStandard, setLoadingStandard] = useState(false);
+  const [modeError, setModeError] = useState<string | null>(null);
 
   async function enterDemo() {
     setLoadingDemo(true);
+    setModeError(null);
     try {
-      await fetch("/api/demo/enter", { method: "POST" });
+      await fetchJson("/api/demo/enter", { method: "POST" });
       router.push("/demo");
       router.refresh();
+    } catch (err) {
+      setModeError(err instanceof ApiError ? err.message : t.login.demoEnterFailed);
     } finally {
       setLoadingDemo(false);
     }
@@ -89,10 +94,13 @@ export function LoginWelcome({
 
   async function chooseStandard() {
     setLoadingStandard(true);
+    setModeError(null);
     try {
-      await fetch("/api/demo/exit", { method: "DELETE" });
+      await fetchJson("/api/demo/exit", { method: "DELETE" });
       setStep("standard");
       router.refresh();
+    } catch (err) {
+      setModeError(err instanceof ApiError ? err.message : t.login.demoExitFailed);
     } finally {
       setLoadingStandard(false);
     }
@@ -139,6 +147,14 @@ export function LoginWelcome({
       </div>
 
       <div className="grid w-full min-w-0 max-w-2xl grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+        {modeError && (
+          <p
+            className="col-span-full rounded-lg border border-destructive/35 bg-destructive/8 px-3 py-2 text-center text-sm text-destructive"
+            role="alert"
+          >
+            {modeError}
+          </p>
+        )}
         <ModeChoiceCard
           badge={t.login.standardBadge}
           badgeClassName="border-primary/35 bg-primary/12 text-primary"
