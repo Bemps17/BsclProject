@@ -9,7 +9,7 @@ Competitive platform for Black Squad: Discord auth, 5v5 PUGs, ELO rankings, team
 | Layer | Tech |
 |-------|------|
 | Frontend | Next.js 16, React, TypeScript, Tailwind CSS v4, shadcn/ui |
-| Backend | Next.js API Routes, Prisma ORM, PostgreSQL (Neon) |
+| Backend | Next.js API Routes, Prisma ORM, PostgreSQL (Supabase) |
 | Auth | Discord OAuth (Auth.js / NextAuth v5) · guest demo mode |
 | i18n | EN / FR client-side (`src/lib/i18n/`) |
 | Bot | Discord.js (`bot/`) — BSCL Matchmaker |
@@ -19,7 +19,7 @@ Competitive platform for Black Squad: Discord auth, 5v5 PUGs, ELO rankings, team
 
 ```bash
 cp .env.example .env
-# Fill DATABASE_URL, AUTH_SECRET, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET
+# Fill DATABASE_URL (Supabase Postgres), AUTH_SECRET, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET
 
 npm install
 npm run db:push
@@ -70,7 +70,7 @@ bot/                  # BSCL Matchmaker Discord bot
 
 ### Milestones — done
 
-- [x] **M1 — Live data** — Neon PostgreSQL, Prisma read layer, pages wired to DB (`src/lib/data.ts`)
+- [x] **M1 — Live data** — PostgreSQL (Prisma), read layer, pages wired to DB (`src/lib/data.ts`)
 - [x] **M2 — Demo mode** — Explicit choice (Demo vs Standard), cookie `bscl_demo`, localStorage journey (`src/lib/backend.ts`, `src/lib/local-store.ts`, `src/middleware.ts`)
 - [x] **M3 — i18n** — English + French, ENG/FR switcher in header (`src/lib/i18n/`, `LocaleProvider`)
 - [x] **M4 — Responsive** — `dvh`/safe-area login, mobile tab bar, adaptive content width, scrollable tables
