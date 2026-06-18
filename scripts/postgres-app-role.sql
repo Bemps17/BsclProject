@@ -1,9 +1,9 @@
--- Optional least-privilege role for BSCL app (Neon / PostgreSQL).
--- Run manually as superuser; never commit passwords.
+-- Optional least-privilege role for BSCL app (PostgreSQL / Supabase).
+-- Run manually as superuser in the SQL editor; never commit passwords.
 -- Adjust table list to match prisma/schema.prisma.
 
 -- CREATE ROLE bscl_app LOGIN;
--- GRANT CONNECT ON DATABASE bscl TO bscl_app;
+-- GRANT CONNECT ON DATABASE postgres TO bscl_app;
 -- GRANT USAGE ON SCHEMA public TO bscl_app;
 -- GRANT SELECT, INSERT, UPDATE ON TABLE
 --   "User", "Match", "MatchPlayer", "QueueEntry", "EloHistory", "Team", "TeamMember"

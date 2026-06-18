@@ -43,7 +43,7 @@ curl -sS -o /dev/null -w "%{http_code}\n" -X POST "https://bscl.gg/api/queue"
 
 ## Postgres moindre privilège (S6)
 
-Voir `scripts/neon-roles.sql` (optionnel) pour un rôle applicatif limité aux tables nécessaires. Brancher `DATABASE_URL` sur ce rôle en production.
+Voir `scripts/postgres-app-role.sql` (optionnel) pour un rôle applicatif limité aux tables nécessaires. Brancher `DATABASE_URL` sur ce rôle en production.
 
 ## CSP (S4)
 

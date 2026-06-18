@@ -14,7 +14,7 @@
 |------|--------|
 | Framework | Next.js 16 App Router, React 19, TypeScript strict |
 | UI | Tailwind v4, shadcn/ui (`src/components/ui/`), couche BSCL (`src/components/bscl/`) |
-| Data | Prisma 7, PostgreSQL (Neon), Auth.js (Discord) |
+| Data | Prisma 7, PostgreSQL (Supabase), Auth.js (Discord) |
 | Tests | **Vitest** (`npm test`) — ne pas introduire Jest sans demande explicite |
 | Bot | Discord.js dans `bot/` (package séparé) |
 
@@ -417,13 +417,13 @@ Ordre recommandé pour minimiser les régressions :
 
 ---
 
-### TÂCHE S6 — Rôle Postgres minimal (Neon)
+### TÂCHE S6 — Rôle Postgres minimal
 
 **Objectif :** Moindre privilège pour l'app.
 
 **Fichiers :**
 
-- `scripts/neon-roles.sql` (nouveau, optionnel)
+- `scripts/postgres-app-role.sql` (optionnel)
 - `docs/security.md`
 
 **Exemple :**
