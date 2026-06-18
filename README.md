@@ -59,6 +59,8 @@ bot/                  # BSCL Matchmaker Discord bot
 
 ## Development phases (roadmap)
 
+**Finalisation démo → production (Comet + Supabase + temps réel) :** [`docs/roadmap-comet.md`](docs/roadmap-comet.md)
+
 ### Foundation — done
 
 - [x] **Phase 1** — Next.js, Prisma, Tailwind, Discord OAuth scaffold
