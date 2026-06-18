@@ -293,9 +293,11 @@ export function PlayClient({
             ) : (
               <div
                 key={`empty-${i}`}
-                className="flex aspect-square flex-col items-center justify-center rounded-lg border border-dashed border-border text-[9px] text-muted-foreground"
+                className="flex aspect-square flex-col items-center justify-center rounded-lg border border-dashed border-border text-[9px] text-foreground/60"
               >
-                <span className="text-base opacity-30">+</span>
+                <span className="text-base text-foreground/45" aria-hidden>
+                  +
+                </span>
               </div>
             ),
           )}

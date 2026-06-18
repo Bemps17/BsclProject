@@ -39,7 +39,7 @@ Use these values consistently. Prefer CSS variables in `globals.css` or Tailwind
 | `--blue` | `#0066FF` | Primary actions, active nav, ELO accent |
 | `--blue-glow` | `rgba(0,102,255,.28)` | Primary button glow |
 | `--text` | `#E5E7EB` | Body text |
-| `--muted` | `#6B7280` | Secondary text, labels |
+| `--muted` | `#9CA3AF` | Secondary text, labels (WCAG AA on dark surfaces) |
 | `--green` | `#22C55E` | Win, online, positive delta |
 | `--red` | `#EF4444` | Loss, errors, sanctions |
 | `--gold` | `#F59E0B` | #1 rank, prizes, check-in |
@@ -48,13 +48,13 @@ Use these values consistently. Prefer CSS variables in `globals.css` or Tailwind
 
 | Role | Font | Weight | Where |
 |------|------|--------|-------|
-| Headings / stats | Space Grotesk (`--font-display` / `font-heading`) | 500–700 | Titles, ELO numbers, queue labels |
-| Body | Inter (`--font-inter`) | 400–600 | Paragraphs, tables, buttons |
+| Headings / stats | Sora (`--font-sora` / `font-heading`) | 500–700 | Titles, ELO numbers, queue labels |
+| Body | Montserrat (`--font-montserrat`) | 400–600 | Paragraphs, tables, buttons |
 | Scores / IDs | JetBrains Mono (`--font-jetbrains`) | 500–700 | Match scores, ticket IDs, ELO deltas |
 
 **Rules:**
 - Section labels: `10px`, uppercase, `letter-spacing: 1–1.5px`, `--muted`
-- Stat values: Space Grotesk `28–36px`, bold
+- Stat values: Sora `28–36px`, bold
 - Never use system default fonts for branded surfaces
 
 ### 2.3 Spacing & layout
@@ -105,11 +105,16 @@ Use these values consistently. Prefer CSS variables in `globals.css` or Tailwind
 
 ### 2.6 Accessibility
 
-- [ ] Touch targets ≥ 44px on mobile
-- [ ] Color is not the only indicator (WIN/LOSS uses text + color)
-- [ ] `theme-color: #0B0B0B`, `viewport-fit=cover` for notched devices
-- [ ] Semantic headings inside each page (one `h1` via topbar title on desktop)
-- [ ] Form inputs: visible focus ring (`outline-ring/50`)
+- [x] Touch targets ≥ 44px on mobile (tab bar, language switcher)
+- [x] Color is not the only indicator (WIN/LOSS uses text + color)
+- [x] `theme-color: #0B0B0B`, `viewport-fit=cover` for notched devices
+- [x] Semantic headings inside each page (one `h1` via topbar title on desktop)
+- [x] Form inputs: visible focus ring (`outline-ring/70`, `:focus-visible` 2px)
+- [x] Skip link → `#main` (shell)
+- [x] `aria-current="page"` on active nav links (sidebar + tab bar)
+- [x] `aria-pressed` on toggle filters (teams) and language switcher
+- [x] `--muted-foreground` ≥ WCAG AA contrast on `#111827` / `#0B0B0B` (`#9CA3AF`)
+- [x] `prefers-reduced-motion` respected for animations
 
 ### 2.7 Do / Don't
 

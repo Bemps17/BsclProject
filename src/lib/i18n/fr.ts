@@ -64,6 +64,9 @@ export const fr: Translations = {
     demo: "Démo",
     elo: "ELO",
     skipToContent: "Aller au contenu",
+    mainNavigation: "Navigation principale",
+    sidebarNavigation: "Navigation latérale",
+    language: "Langue",
   },
   home: {
     seasonLive: "En direct",

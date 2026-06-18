@@ -1,16 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { JetBrains_Mono, Montserrat, Sora } from "next/font/google";
 import { LocaleProvider } from "@/components/bscl/locale-provider";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 });
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-display",
+const sora = Sora({
+  variable: "--font-sora",
   subsets: ["latin"],
   weight: ["500", "600", "700"],
 });
@@ -45,10 +45,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body
-        className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrains.variable} min-h-dvh min-h-svh overflow-x-hidden`}
-      >
+    <html
+      lang="en"
+      className={`dark ${montserrat.variable} ${sora.variable} ${jetbrains.variable}`}
+    >
+      <body className="min-h-dvh min-h-svh overflow-x-hidden font-sans antialiased">
         <LocaleProvider>{children}</LocaleProvider>
       </body>
     </html>

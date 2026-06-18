@@ -271,12 +271,12 @@ Ordre recommandé pour minimiser les régressions :
 
 **Fichiers :**
 
-- `src/app/layout.tsx` (Space Grotesk, Inter, JetBrains Mono)
+- `src/app/layout.tsx` (Sora, Montserrat, JetBrains Mono)
 - Composants utilisant des polices hors `--font-heading` / `--font-sans`
 
 **Critères d'acceptation :**
 
-- [ ] Titres en Space Grotesk (`font-heading`) ; scores/IDs en JetBrains Mono
+- [ ] Titres en Sora (`font-heading`) ; corps en Montserrat (`font-sans`) ; scores/IDs en JetBrains Mono
 
 ---
 
