@@ -62,7 +62,7 @@ flowchart TB
 
 | Composant | Rôle | Pourquoi Supabase maintenant |
 |-----------|------|----------------------------|
-| **Supabase Postgres** | Source de vérité (Prisma inchangé) | Compatible `DATABASE_URL` ; remplace Neon |
+| **Supabase Postgres** | Source de vérité (Prisma inchangé) | Via `DATABASE_URL` (PostgreSQL standard) |
 | **Supabase Realtime** | Push sur `QueueEntry`, `Match`, `MatchPlayer` | Remplace le polling 3s de `play-client.tsx` |
 | **Supabase Storage** | Buckets `team-logos`, `match-screenshots` | Rapide à mettre en place ; migration R2 plus tard |
 | **Vercel** | Next.js web + API Routes | Déjà prévu dans README |
